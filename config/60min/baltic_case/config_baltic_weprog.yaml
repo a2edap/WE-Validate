@@ -1,0 +1,731 @@
+# validation location
+location: 
+  # latitude and longitude in degrees
+  # should be the same location as baseline dataset
+  lat: 54.9733
+  lon: 13.1778
+
+time:
+  window:
+    # validation period start time
+    start: 2020-10-03 23:00:00
+    # validation period end time
+    end: 2020-10-10 23:00:00
+
+# validation metrics to be calculated and plotted
+metrics:
+  - rmse
+  - crmse
+  - nrmse
+  - bias
+  - bias_pct
+  - mae
+  - mae_pct
+  - mdae
+  - mdae_pct
+
+levels: 
+  # height level of validation above ground level
+  height_agl: 
+    - 78.25
+  height_units: m
+
+# baseline dataset
+base:
+  name: baltic2
+  # data directory
+  path: data/baltic2/
+  # name of data processing function
+  function: baltic2_xlsx
+  # names of variables in data to validate
+  var: ws
+  # nature of variable
+  # ws: wind speed -- run power curve functions
+  nature: ws
+  # target variable name to be displayed
+  target_var: baltic_ws
+  # data frequency in minutes
+  freq: 15
+  # flag value
+  flag: 999
+
+# ramps
+ramps:
+  # all ramps
+  - definition: r_abs_magnitude
+    # in units of base var
+    magnitude: 2
+    # must be a Timedelta duration argument, with numeric and units
+    duration: 4 hours
+  # - definition: r_abs_magnitude
+  #   magnitude: 3
+  #   duration: 4 hours
+  # # up ramps
+  # - definition: r_magnitude
+  #   magnitude: 2
+  #   duration: 4 hours
+  # - definition: r_magnitude
+  #   magnitude: 3
+  #   duration: 4 hours
+  # # down ramps
+  # - definition: r_magnitude
+  #   magnitude: -2
+  #   duration: 4 hours
+  # - definition: r_magnitude
+  #   magnitude: -3
+  #   duration: 4 hours
+
+# power curve
+power_curve: 
+  # power curve csv data location
+  path: data/power_curve
+  # power curve csv name
+  file: siemens_SWT-3.6-120.csv
+  # name of data processing function
+  function: pc_csv
+  # wind speed column name in data file
+  ws: Wind Speed [m/s]
+  # power column name in data file
+  power: Power [kW]
+  # hub height above ground level
+  hub_height: 78.25
+  # generate derived power curve csv
+  output_path: p5_derived_power
+  # wind turbine number in wind farm
+  wt_num: 80
+
+# reference
+reference: 
+  # variable name to be displayed
+  var: wind speed
+  # variable units
+  units: ms-1
+
+# writing output file
+output:
+  writing: True
+  # path to write file
+  path: output/60min/baltic
+  # organization
+  org: p5
+  # output file format
+  format: csv
+
+# data input to be compared with the baseline dataset
+comp:
+  - name: p5-1
+    # data directory
+    path: data/submissions/WEPROG/
+    # data file
+    file: weprog_BALTIC2_m1.csv
+    # name of data processing function
+    function: submission_csv
+    # names of variables in data to validate
+    # not being used in submission_csv
+    var: dummy
+    # nature of variable
+    # ws: wind speed -- run power curve functions
+    nature: ws
+    # target variable name to be displayed
+    target_var: p5-1_ws
+    # data frequency in minutes
+    freq: 60
+  - name: p5-2
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m2.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-2_ws
+    freq: 60
+  - name: p5-3
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m3.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-3_ws
+    freq: 60
+  - name: p5-4
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m4.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-4_ws
+    freq: 60
+  - name: p5-5
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m5.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-5_ws
+    freq: 60
+  - name: p5-6
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m6.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-6_ws
+    freq: 60
+  - name: p5-7
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m7.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-7_ws
+    freq: 60
+  - name: p5-8
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m8.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-8_ws
+    freq: 60
+  - name: p5-9
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m9.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-9_ws
+    freq: 60
+  - name: p5-10
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m10.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-10_ws
+    freq: 60
+  #
+  - name: p5-11
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m11.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-11_ws
+    freq: 60
+  - name: p5-12
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m12.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-12_ws
+    freq: 60
+  - name: p5-13
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m13.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-13_ws
+    freq: 60
+  - name: p5-14
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m14.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-14_ws
+    freq: 60
+  - name: p5-15
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m15.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-15_ws
+    freq: 60
+  - name: p5-16
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m16.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-16_ws
+    freq: 60
+  - name: p5-17
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m17.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-17_ws
+    freq: 60
+  - name: p5-18
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m18.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-18_ws
+    freq: 60
+  - name: p5-19
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m19.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-19_ws
+    freq: 60
+  - name: p5-20
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m20.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-20_ws
+    freq: 60
+  #
+  - name: p5-21
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m21.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-21_ws
+    freq: 60
+  - name: p5-22
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m22.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-22_ws
+    freq: 60
+  - name: p5-23
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m23.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-23_ws
+    freq: 60
+  - name: p5-24
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m24.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-24_ws
+    freq: 60
+  - name: p5-25
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m25.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-25_ws
+    freq: 60
+  - name: p5-26
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m26.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-26_ws
+    freq: 60
+  - name: p5-27
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m27.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-27_ws
+    freq: 60
+  - name: p5-28
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m28.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-28_ws
+    freq: 60
+  - name: p5-29
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m29.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-29_ws
+    freq: 60
+  - name: p5-30
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m30.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-30_ws
+    freq: 60
+  #
+  - name: p5-31
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m31.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-31_ws
+    freq: 60
+  - name: p5-32
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m32.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-32_ws
+    freq: 60
+  - name: p5-33
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m33.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-33_ws
+    freq: 60
+  - name: p5-34
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m34.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-34_ws
+    freq: 60
+  - name: p5-35
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m35.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-35_ws
+    freq: 60
+  - name: p5-36
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m36.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-36_ws
+    freq: 60
+  - name: p5-37
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m37.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-37_ws
+    freq: 60
+  - name: p5-38
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m38.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-38_ws
+    freq: 60
+  - name: p5-39
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m39.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-39_ws
+    freq: 60
+  - name: p5-40
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m40.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-40_ws
+    freq: 60
+  #
+  - name: p5-41
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m41.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-41_ws
+    freq: 60
+  - name: p5-42
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m42.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-42_ws
+    freq: 60
+  - name: p5-43
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m43.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-43_ws
+    freq: 60
+  - name: p5-44
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m44.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-44_ws
+    freq: 60
+  - name: p5-45
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m45.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-45_ws
+    freq: 60
+  - name: p5-46
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m46.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-46_ws
+    freq: 60
+  - name: p5-47
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m47.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-47_ws
+    freq: 60
+  - name: p5-48
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m48.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-48_ws
+    freq: 60
+  - name: p5-49
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m49.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-49_ws
+    freq: 60
+  - name: p5-50
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m50.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-50_ws
+    freq: 60
+  #
+  - name: p5-51
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m51.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-51_ws
+    freq: 60
+  - name: p5-52
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m52.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-52_ws
+    freq: 60
+  - name: p5-53
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m53.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-53_ws
+    freq: 60
+  - name: p5-54
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m54.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-54_ws
+    freq: 60
+  - name: p5-55
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m55.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-55_ws
+    freq: 60
+  - name: p5-56
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m56.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-56_ws
+    freq: 60
+  - name: p5-57
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m57.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-57_ws
+    freq: 60
+  - name: p5-58
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m58.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-58_ws
+    freq: 60
+  - name: p5-59
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m59.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-59_ws
+    freq: 60
+  - name: p5-60
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m60.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-60_ws
+    freq: 60
+  #
+  - name: p5-61
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m61.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-61_ws
+    freq: 60
+  - name: p5-62
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m62.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-62_ws
+    freq: 60
+  - name: p5-63
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m63.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-63_ws
+    freq: 60
+  - name: p5-64
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m64.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-64_ws
+    freq: 60
+  - name: p5-65
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m65.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-65_ws
+    freq: 60
+  - name: p5-66
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m66.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-66_ws
+    freq: 60
+  - name: p5-67
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m67.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-67_ws
+    freq: 60
+  - name: p5-68
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m68.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-68_ws
+    freq: 60
+  - name: p5-69
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m69.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-69_ws
+    freq: 60
+  - name: p5-70
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m70.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-70_ws
+    freq: 60
+#
+  - name: p5-71
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m71.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-71_ws
+    freq: 60
+  - name: p5-72
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m72.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-72_ws
+    freq: 60
+  - name: p5-73
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m73.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-73_ws
+    freq: 60
+  - name: p5-74
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m74.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-74_ws
+    freq: 60
+  - name: p5-75
+    path: data/submissions/WEPROG/
+    file: weprog_BALTIC2_m75.csv
+    function: submission_csv
+    var: dummy
+    nature: ws
+    target_var: p5-75_ws
+    freq: 60
