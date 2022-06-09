@@ -23,6 +23,6 @@ class r_sōvētēs:
 
 ```
 
-The `process_ramp.py` script is a collection of useful functions that are called in `ivalidate.py`, including: compares baseline and comparison ramp events and categorize the results based on a 2x2 contingency table, calculate ramp skill scores, etc.
+The `process_ramp.py` script is a collection of useful functions that are called in `wevalidate.py`, including: compares baseline and comparison ramp events and categorize the results based on a 2x2 contingency table, calculate ramp skill scores, etc.
 
 For each ramp definition (`r_sōvētēs.py`), please also add unit tests as `test_r_sōvētēs.py`. 
