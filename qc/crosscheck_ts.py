@@ -163,7 +163,7 @@ class crosscheck_ts:
 
             print()
             print('!!!!!!!!!!')
-            print('WARNING: DESIERED EVALUATION DURATION DOES NOT MATCH '
+            print('WARNING: DESIRED EVALUATION DURATION DOES NOT MATCH '
                   + 'DATA DURATION'
                   )
             print('DESIRED: FROM '+str(self.lower)+' TO '+str(self.upper))

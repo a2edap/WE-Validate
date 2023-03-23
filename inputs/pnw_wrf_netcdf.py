@@ -1,10 +1,10 @@
-# This is a basic parser for WRF NetCDF data.
+# This is a basic parser for PNW WRF NetCDF data.
 #
 # This input parser expects to be given a directory filled with netcdf
 # files - each a grid at one particular time.
 #
-# We expect that the file has a field called XLAT which is a matrix of
-# latitude values for the grid and XLONG which is a matrix of longitude
+# We expect that the file has a field called latitude which is a matrix of
+# latitude values for the grid and longitude which is a matrix of longitude
 # values for the grid.
 
 import os
@@ -16,8 +16,7 @@ import pandas as pd
 
 from qc import check_input_data
 
-
-class wrf_netcdf:
+class pnw_wrf_netcdf:
     """WRF data class, using data from NetCDF files.
     Each NetCDF file should contain 1 time step of data.
     """
@@ -44,9 +43,8 @@ class wrf_netcdf:
         """Return data index (i and j) for nc file at a specified target
         location.
         """
-
-        lat = np.array(ih['XLAT'])
-        lon = np.array(ih['XLONG'])
+        lat = np.array(ih['latitude'])
+        lon = np.array(ih['longitude'])
 
         # If lat/lon were arrays (instead of matrixes)
         # something like this would work:
@@ -62,35 +60,32 @@ class wrf_netcdf:
 
     def get_ts(self, lev):
         """Get time series at a location at a certain height.
-        Resample data according to user-defined data frequency. 
+        Resample data according to user-defined data frequency.
         """
+        self.var2 = self.var + "_" + str(lev) + "m"
 
         df = pd.DataFrame({'t': [], self.target_var: []})
+
 
         # To print an empty line before masked value error messages
         mask_i = 0
 
         for file in os.listdir(self.path):
-
             data = Dataset(os.path.join(self.path, file), 'r')
             i, j = self.get_ij(data)
 
-            s = file.split('_')[2]+'_'+file.split('_')[3].split('.')[0]+':'\
-                + file.split('_')[4]+':'+file.split('_')[5].split('.')[0]
-            t = datetime.strptime(s, '%Y-%m-%d_%H:%M:%S')
+            s = file.split('_')[3] + '_' + file.split('_')[4].split('.')[0]
 
-            height_ind = np.where(data['level'][:].data == lev)[0][0]
+            t = datetime.strptime(s, '%Y%m%d_%H%M%S')
 
-            u = data.variables[self.var[0]][height_ind][i][j]
-            v = data.variables[self.var[1]][height_ind][i][j]
-            ws = np.sqrt(u**2 + v**2)
+            ws = data.variables[self.var2][i][j]
 
             ws, mask_i = check_input_data.convert_mask_to_nan(ws, t, mask_i)
             ws = check_input_data.convert_flag_to_nan(ws, self.flag, t)
 
             data.close()
 
-            df = df.append([{'t': t, self.target_var: ws}])
+            df = pd.concat([df, pd.DataFrame.from_records([{'t': t, self.target_var: ws}])])
 
         df = df.set_index('t').sort_index()
 

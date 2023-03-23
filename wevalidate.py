@@ -5,6 +5,12 @@
 # this code.
 #
 # Joseph Lee <joseph.lee at pnnl.gov>
+#%reload_ext autoreload
+#%autoreload 2
+
+# import importlib
+# importlib.reload(eval_tools)
+# importlib.reload(cal_print_metrics)
 
 import yaml
 import sys
@@ -15,45 +21,57 @@ import pandas as pd
 
 from tools import eval_tools, cal_print_metrics
 
+config = 'config_nrel_toolkit.yaml'
+
+# this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuratiom name.
+# If not, it assigns the default configuration
 
 def compare(config=None):
 
-    config_dir = os.path.join((pathlib.Path(os.getcwd()).parent), 'config')
-
+    config_dir = os.path.join(pathlib.Path(os.getcwd()), 'config')
+    #print(config_dir)
     if config is None:
         config_file = os.path.join(config_dir, 'config.yaml')
     else:
         config_file = os.path.join(config_dir, config)
-
+    #print(config_dir)
+    #print(config_file)
     sys.path.append('.')
 
     conf = yaml.load(open(config_file), Loader=yaml.FullLoader)
 
+    # conf
+
+    # set base, comparaison, and power curve configurations from config file
     base = conf['base']
     comp = conf['comp']
     p_curve = conf['power_curve']
-
-    print('validation start time:', conf['time']['window']['start'])
-    print('validation end time:', conf['time']['window']['end'])
-    print('location:', conf['location'])
-    print('baseline dataset:', base['name'])
-    print('variable:', conf['reference']['var'])
+    # p_curve
+    # print('validation start time:', conf['time']['window']['start'])
+    # print('validation end time:', conf['time']['window']['end'])
+    # print('location:', conf['location'])
+    # print('baseline dataset:', base['name'])
+    # print('variable:', conf['reference']['var'])
 
     # Load modules
+
     metrics = [eval_tools.get_module_class('metrics', m)()
                for m in conf['metrics']]
+    metrics
 
+    # loads QC module
     crosscheck_ts = eval_tools.get_module_class('qc', 'crosscheck_ts')(conf)
+
+    # loads plotting module
     plotting = eval_tools.get_module_class('plotting', 'plot_data')(conf)
 
-    # Data frame containing data at all heights
+    # Data frame containing data at all heights (empty data frames)
     all_lev_df = pd.DataFrame()
     all_lev_stat_df = pd.DataFrame()
     all_ramp_ts_df = pd.DataFrame()
     all_ramp_stat_df = pd.DataFrame()
 
     for lev in conf['levels']['height_agl']:
-
         # For data storage and metrics computation
         results = []
 
@@ -66,12 +84,13 @@ def compare(config=None):
         print('********** for '+base['name']+': **********')
 
         # Run __init__
+
         base['input'] = eval_tools.get_module_class(
             'inputs', base['function'])(base, conf)
 
         base['data'] = base['input'].get_ts(lev)
-
         # For each specified comparison dataset
+
         for ind, c in enumerate(comp):
 
             print()
@@ -82,6 +101,13 @@ def compare(config=None):
                 'inputs', c['function'])(c, conf)
 
             c['data'] = c['input'].get_ts(lev)
+
+            # added this code to edit year if comparing data from different years. uncomment if comparing 2016 base with 2018 comp
+            # c['data']['datetime'] = c['data'].index.to_pydatetime()
+            # c['data']['newdatetime'] = c['data']['datetime'] - pd.DateOffset(years=2)
+            # c['data'].set_index('newdatetime', inplace= True)
+            # c['data'].drop('datetime', axis = 1, inplace = True)
+
 
             results = eval_tools.append_results(results, base, c, conf)
 
@@ -103,7 +129,8 @@ def compare(config=None):
                 )
 
             if all_lev_stat_df.empty:
-                all_lev_stat_df = all_lev_stat_df.append(metricstat_df)
+               # all_lev_stat_df = all_lev_stat_df.append(metricstat_df)
+                all_lev_stat_df = pd.concat([all_lev_stat_df, metricstat_df], axis = 1)
             else:
                 all_lev_stat_df = pd.concat(
                     [all_lev_stat_df, metricstat_df], axis=1
@@ -184,14 +211,15 @@ def compare(config=None):
                 )
 
             if all_lev_df.empty:
-                all_lev_df = all_lev_df.append(combine_df)
+                # all_lev_df = all_lev_df.append(combine_df)
+                all_lev_df = pd.concat([all_lev_df, combine_df], axis=1)
             else:
                 all_lev_df = pd.concat([all_lev_df, combine_df], axis=1)
 
     if 'output' in conf and conf['output']['writing'] is True:
 
         output_path = os.path.join(
-            (pathlib.Path(os.getcwd()).parent), conf['output']['path']
+            (pathlib.Path(os.getcwd())), conf['output']['path']
             )
 
         if not os.path.exists(output_path):
@@ -310,3 +338,6 @@ def compare(config=None):
                   + 'or hub height does not exist in validation data,\n'
                   + 'hence power curve is not derived'
                   )
+
+if __name__ == '__main__':
+    compare(config = config)

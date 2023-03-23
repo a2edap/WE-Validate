@@ -10,8 +10,10 @@ import pandas as pd
 from qc import check_input_data
 
 
+obs = read(datadir, sitename, time=(start_hour, end_hour), height=80, freq='15min')
+
 class sodar_netcdf:
-    """Sodar data class, using data from NetCDF files.
+    """Observational sodar and lidar data class, using data from NetCDF files.
     Each NetCDF file should contain 1 time step of data.
     """
 
