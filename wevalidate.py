@@ -21,7 +21,7 @@ import pandas as pd
 
 from tools import eval_tools, cal_print_metrics
 
-config = 'config_nrel_toolkit.yaml'
+config = 'config_pnw_wrf_loop.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuratiom name.
 # If not, it assigns the default configuration

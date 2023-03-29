@@ -28,7 +28,7 @@ def remove_na(combine_df, ramp_txt=False):
     return compute_df
 
 
-def run(combine_df, metrics, results, ind, c, conf, base, lev):
+def run(combine_df, metrics, results, ind, c, conf, base):
     """Calculate metrics and print results.
     Remove NaNs in data frame.
     For each data column combination, split into baseline and
@@ -68,8 +68,7 @@ def run(combine_df, metrics, results, ind, c, conf, base, lev):
 
         print()
         print('==-- '+conf['reference']['var']+' metrics: '+c['name']
-              + ' - '+base['name']+' at '+str(lev)+' '
-              + conf['levels']['height_units']+' --=='
+              + ' - '+base['name']+' --=='
               )
         print()
 
