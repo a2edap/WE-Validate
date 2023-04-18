@@ -1,9 +1,10 @@
-# This script calculates and prints metrics results.
+# This script calculates and prints metrics results for csv files
 
 import numpy as np
 import itertools
 from tools import eval_tools
 import sys
+import pandas as pd
 
 
 def remove_na(combine_df, ramp_txt=False):
@@ -26,6 +27,14 @@ def remove_na(combine_df, ramp_txt=False):
           + ' time steps in data to calculate '+print_txt)
 
     return compute_df
+
+def monthly_metrics(x, y, freq='MS', func=None):
+    x_list = list(x.resample(freq))
+    y_list = list(y.resample(freq))
+
+    corr = [func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
+    corr = pd.Series(corr, index=[_x[0] for _x in x_list])
+    return corr
 
 
 def run(combine_df, metrics, results, ind, c, conf, base):
@@ -65,6 +74,7 @@ def run(combine_df, metrics, results, ind, c, conf, base):
         for m in metrics:
 
             results[ind][m.__class__.__name__] = m.compute(x, y)
+            results[ind][m.__class__.__name__ + '_monthly'] = monthly_metrics(x, y, freq='MS', func=m.compute)
 
         print()
         print('==-- '+conf['reference']['var']+' metrics: '+c['name']

@@ -1,8 +1,5 @@
 # This script runs the comparison between timeseries data,
-# as specified in config.yaml. This is the main routine for i-validate.
-#
-# config_test.yaml contains erroneous data that are designed for testing
-# this code.
+# as specified in config_ba_pc.yaml. This is the main routine for we-validate when using csv files
 #
 # Joseph Lee <joseph.lee at pnnl.gov>
 #%reload_ext autoreload

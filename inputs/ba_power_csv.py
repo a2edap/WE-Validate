@@ -46,7 +46,6 @@ class ba_power_csv:
 
         df = pd.read_csv(os.path.join(self.path))
         df.index = pd.to_datetime(df['time_stamp'])
-       # df = df.drop(columns=['time_stamp'])
         df = df[[self.BA]]
         df = df.rename(columns={self.BA: self.target_var})
 

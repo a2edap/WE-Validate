@@ -1,4 +1,4 @@
-# This script contains data plotting functions.
+# This script contains data plotting functions for csv files.
 #
 # This module is also called in other scripts.
 
