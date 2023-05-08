@@ -37,7 +37,7 @@ def monthly_metrics(x, y, freq='MS', func=None):
     return corr
 
 
-def run(combine_df, metrics, results, ind, c, conf, base):
+def run(combine_df, metrics, results, ind, c, conf, base, monthly_results):
     """Calculate metrics and print results.
     Remove NaNs in data frame.
     For each data column combination, split into baseline and
@@ -74,7 +74,8 @@ def run(combine_df, metrics, results, ind, c, conf, base):
         for m in metrics:
 
             results[ind][m.__class__.__name__] = m.compute(x, y)
-            results[ind][m.__class__.__name__ + '_monthly'] = monthly_metrics(x, y, freq='MS', func=m.compute)
+            # results[ind][m.__class__.__name__ + '_monthly'] = monthly_metrics(x, y, freq='MS', func=m.compute)
+            monthly_results.append(monthly_metrics(x, y, freq='MS', func=m.compute))
 
         print()
         print('==-- '+conf['reference']['var']+' metrics: '+c['name']
@@ -93,3 +94,9 @@ def run(combine_df, metrics, results, ind, c, conf, base):
                     end_units = '%'
 
                 print(str(key)+': '+str(np.round(val, 3))+end_units)
+
+            # if isinstance(val,pd.Series):
+            #
+            #     print(str(key))
+            #     for key2, val2 in val.items():
+            #         print('Month: ' + str(key2.month) + ' '+str(np.round(val2, 3))+end_units)

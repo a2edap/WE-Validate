@@ -69,6 +69,8 @@ def compare(config=None):
 
     # For data storage and metrics computation
     results = []
+    monthly_results = []
+
 
     print()
     print('********** for '+base['name']+': **********')
@@ -105,7 +107,7 @@ def compare(config=None):
         combine_df = crosscheck_ts.align_time(base, c)
 
         cal_print_metrics_csv.run(
-            combine_df, metrics, results, ind, c, conf, base
+            combine_df, metrics, results, ind, c, conf, base, monthly_results
             )
 
         metricstat_dict = {key: results[ind][key]
@@ -236,7 +238,11 @@ def compare(config=None):
                     os.path.join(output_path,
                                  'ramp_ts_'+conf['output']['org']+'.csv')
                     )
-
+    for item in monthly_results:
+        print(key)
+        print(item)
+        #     for key2, val2 in val.items():
+        #         print('Month: ' + str(key2.month) + ' '+str(np.round(val2, 3))+end_units)
 
 if __name__ == '__main__':
     compare(config = config)

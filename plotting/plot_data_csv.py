@@ -28,6 +28,14 @@ class plot_data_csv:
         for col in df.columns:
             plt.plot(df.index, df[col], label=col)
 
+            # my attempt to plot for every month
+            # months = df.index.month.unique()
+            # for month in months:
+            #     month_data = df[df.index.month == month]
+            #
+            #     # plot the data for the current month
+            #     plt.plot(month_data.index, month_data[col], label=month)
+
         plt.xticks(rotation=90)
         plt.legend()
 
@@ -38,9 +46,10 @@ class plot_data_csv:
         else:
             plt.ylabel(self.var)
 
-        plt.title(self.var)
+        plt.title(self.var + ': ' + df.columns[0] +' - ' + df.columns[1])
 
         plt.show()
+
 
     def plot_pair_scatter(self, df, self_units=True):
         """Generate scatter plots for each column pair."""
@@ -114,6 +123,6 @@ class plot_data_csv:
 
         plt.xlabel(self.var+' ('+self.units+')')
         plt.ylabel('count')
-        plt.title(self.var)
+        plt.title(self.var + ': ' + df.columns[0] +' - ' + df.columns[1])
 
         plt.show()

@@ -14,7 +14,6 @@ time:
     start: 2018-07-01 00:00:00
     # validation period end time
     end: 2018-12-31 23:00:00
-
 # validation metrics to be calculated and plotted
 metrics:
   - rmse
@@ -45,7 +44,7 @@ base:
 
 # data input to be compared with the baseline dataset
 comp:
-  - name: NREL_1h
+  - name: HRRR
     # data directory
     path: data/csv/NREL_1h.csv
     # name of data processing function
@@ -55,13 +54,13 @@ comp:
     # nature of variable
     nature: power
     # target variable name to be displayed
-    target_var: NREL_1h
+    target_var: HRRR
     # data frequency in minutes
     freq: 60
     # flag value
     flag: 999
 
-  - name: NREL_5min
+  - name: New_WTK
     # data directory
     path: data/csv/NREL_1h_downsampled_from_5min.csv
     # name of data processing function
@@ -71,7 +70,7 @@ comp:
     # nature of variable
     nature: power
     # target variable name to be displayed
-    target_var: NREL_5min
+    target_var: New_WTK
     # data frequency in minutes
     freq: 60
     # flag value
