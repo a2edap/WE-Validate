@@ -126,3 +126,35 @@ class plot_data_csv:
         plt.title(self.var + ': ' + df.columns[0] +' - ' + df.columns[1])
 
         plt.show()
+
+    def plot_ts_line_monthly(self, monthly_dict, self_units=False):
+        """Represent time series for each data column as a line,
+        combine the lines in one plot.
+        """
+
+        for key, val in monthly_dict.items():
+            if isinstance(val, pd.Series):
+                plt.plot(val.index, val, label=key)
+
+            # my attempt to plot for every month
+            # months = df.index.month.unique()
+            # for month in months:
+            #     month_data = df[df.index.month == month]
+            #
+            #     # plot the data for the current month
+            #     plt.plot(month_data.index, month_data[col], label=month)
+
+        plt.xticks(rotation=90)
+        plt.legend()
+
+        plt.xlabel('time')
+
+        if self_units is True:
+            plt.ylabel(self.var+' ('+self.units+')')
+        else:
+            plt.ylabel(self.var)
+
+        plt.title(self.var + ': ' + monthly_dict['compare'] +' - ' + monthly_dict['base'])
+
+        plt.show()
+

@@ -239,10 +239,21 @@ def compare(config=None):
                                  'ramp_ts_'+conf['output']['org']+'.csv')
                     )
     for item in monthly_results:
-        print(key)
-        print(item)
-        #     for key2, val2 in val.items():
-        #         print('Month: ' + str(key2.month) + ' '+str(np.round(val2, 3))+end_units)
+        plotting.plot_ts_line_monthly(item)
+        print('==-- monthly metrics: '+item['compare']
+              + ' - '+item['base']+' --=='
+              )
+        for key, val in item.items():
+            if isinstance(val, pd.Series):
+                end_units = ''
+                suffix_pct = 'pct'
+
+                if str(key).endswith(suffix_pct):
+                    end_units = '%'
+                print(key)
+                for key2, val2 in val.items():
+                    print('Month: ' + str(key2.month) + ', value:  '+str(np.round(val2, 3))+end_units)
+
 
 if __name__ == '__main__':
     compare(config = config)

@@ -71,11 +71,16 @@ def run(combine_df, metrics, results, ind, c, conf, base, monthly_results):
             # x as baseline, is set to zero
             x = np.zeros(len(y))
 
+        new_monthly_dict = {}
+        new_monthly_dict['compare'] = c['name']
+        new_monthly_dict['base'] = base['name']
         for m in metrics:
 
             results[ind][m.__class__.__name__] = m.compute(x, y)
             # results[ind][m.__class__.__name__ + '_monthly'] = monthly_metrics(x, y, freq='MS', func=m.compute)
-            monthly_results.append(monthly_metrics(x, y, freq='MS', func=m.compute))
+            # monthly_results.append(monthly_metrics(x, y, freq='MS', func=m.compute))
+            new_monthly_dict[m.__class__.__name__ + '_monthly'] = monthly_metrics(x, y, freq='MS', func=m.compute)
+        monthly_results.append(new_monthly_dict)
 
         print()
         print('==-- '+conf['reference']['var']+' metrics: '+c['name']
