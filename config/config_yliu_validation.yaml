@@ -1,0 +1,115 @@
+# validation location
+location: 
+  # latitude and longitude in degrees
+  # should be the same location as baseline dataset
+  lat: 45.57451
+  lon: -120.74734
+
+time:
+  window:
+    # validation period start time
+    start: 2015-10-01 12:00:00
+    # validation period end time
+    end: 2017-03-31 23:00:00
+# validation metrics to be calculated and plotted
+metrics:
+  - rmse
+  - crmse
+  - bias
+  - bias_pct
+  - mae
+  - mae_pct
+
+
+# baseline dataset
+base:
+  name: Obs
+  # data directory
+  path: data\obs\clean_csv_lidar_z01.nc.csv
+  # name of data processing function
+  function: yliu_validation_csv
+  # names of variables in data to validate
+  var: wind_speed
+  # nature of variable
+  nature: wind_speed
+  # target variable name to be displayed
+  target_var: Observed
+  # data frequency in minutes
+  freq: 60
+  # flag value
+  flag: 999
+
+# data input to be compared with the baseline dataset
+comp:
+  - name: pnnl_2km
+    # data directory
+    path: data\2km_pnnl\clean_pnnl_2km_0.0.csv
+    # name of data processing function
+    function: yliu_validation_csv
+    # names of variables in data to validate
+    var: wind_speed
+    # nature of variable
+    nature: wind_speed
+    # target variable name to be displayed
+    target_var: pnnl_2km
+    # data frequency in minutes
+    freq: 5
+    # flag value
+    flag: 999
+
+  - name: pnnl_2km_d01
+    # data directory
+    path: data\2km_pnnl_d01\clean_pnnl_2km_d01_0.0.csv
+    # name of data processing function
+    function: yliu_validation_csv
+    # names of variables in data to validate
+    var: wind_speed
+    # nature of variable
+    nature: wind_speed
+    # target variable name to be displayed
+    target_var: pnnl_2km_d01
+    # data frequency in minutes
+    freq: 5
+    # flag value
+    flag: 999
+
+  - name: wtk_4km
+    # data directory
+    path: data\4km_wtk\clean_4km_wtk_0.0.csv
+    # name of data processing function
+    function: yliu_validation_csv
+    # names of variables in data to validate
+    var: wind_speed
+    # nature of variable
+    nature: wind_speed
+    # target variable name to be displayed
+    target_var: wtk_4km
+    # data frequency in minutes
+    freq: 5
+    # flag value
+    flag: 999
+
+
+# reference
+reference: 
+  # variable name to be displayed
+  var: wind speed
+  # variable units
+  units: ms-1
+
+
+# output
+output:
+  # do we write data
+  writing: True
+  # output path
+  path: output
+  org: test
+  # should we save metrics
+  save_metrics: True
+  # metrics format
+  format: csv
+  # should we save figures
+  save_figs: True
+  # should we show figures
+  show_figs: False

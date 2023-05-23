@@ -18,7 +18,7 @@ import pandas as pd
 
 from tools import eval_tools, cal_print_metrics_csv
 
-config = 'config_ba_pc.yaml'
+config = 'config_yliu_validation.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuratiom name.
 # If not, it assigns the default configuration
@@ -64,6 +64,7 @@ def compare(config=None):
     # Data frame containing data at all heights (empty data frames)
     all_lev_df = pd.DataFrame()
     all_lev_stat_df = pd.DataFrame()
+    all_lev_monthly_stat_df = pd.DataFrame()
     all_ramp_ts_df = pd.DataFrame()
     all_ramp_stat_df = pd.DataFrame()
 
@@ -120,6 +121,7 @@ def compare(config=None):
             [[c['name']], metricstat_df.columns]
             )
 
+
         if all_lev_stat_df.empty:
            # all_lev_stat_df = all_lev_stat_df.append(metricstat_df)
             all_lev_stat_df = pd.concat([all_lev_stat_df, metricstat_df], axis = 1)
@@ -128,9 +130,14 @@ def compare(config=None):
                 [all_lev_stat_df, metricstat_df], axis=1
                 )
 
+        all_lev_monthly_stat_df = [pd.DataFrame(d) for d in monthly_results]
+        all_lev_monthly_stat_df = pd.concat(all_lev_monthly_stat_df)
+
         plotting.plot_ts_line(combine_df)
+        plotting.plot_ts_line_monthly(combine_df)
         plotting.plot_histogram(combine_df)
         plotting.plot_pair_scatter(combine_df)
+
 
         if 'ramps' in conf:
 
@@ -228,6 +235,11 @@ def compare(config=None):
                              'metrics_'+conf['output']['org']+'.csv')
                 )
 
+            all_lev_monthly_stat_df.to_csv(
+                os.path.join(output_path,
+                             'monthly_metrics_'+conf['output']['org']+'.csv')
+                )
+
             if 'ramps' in conf:
 
                 all_ramp_stat_df.to_csv(
@@ -238,22 +250,21 @@ def compare(config=None):
                     os.path.join(output_path,
                                  'ramp_ts_'+conf['output']['org']+'.csv')
                     )
-    for item in monthly_results:
-        plotting.plot_ts_line_monthly(item)
-        print('==-- monthly metrics: '+item['compare']
-              + ' - '+item['base']+' --=='
-              )
-        for key, val in item.items():
-            if isinstance(val, pd.Series):
-                end_units = ''
-                suffix_pct = 'pct'
+        for item in monthly_results:
+            plotting.plot_ts_line_monthly_metric(item)
+            print('==-- monthly metrics: '+item['compare']
+                  + ' - '+item['base']+' --=='
+                  )
+            for key, val in item.items():
+                if isinstance(val, pd.Series):
+                    end_units = ''
+                    suffix_pct = 'pct'
 
-                if str(key).endswith(suffix_pct):
-                    end_units = '%'
-                print(key)
-                for key2, val2 in val.items():
-                    print('Month: ' + str(key2.month) + ', value:  '+str(np.round(val2, 3))+end_units)
-
+                    if str(key).endswith(suffix_pct):
+                        end_units = '%'
+                    print(key)
+                    for key2, val2 in val.items():
+                        print('Month: ' + str(key2.month) + ', value:  '+str(np.round(val2, 3))+end_units)
 
 if __name__ == '__main__':
     compare(config = config)

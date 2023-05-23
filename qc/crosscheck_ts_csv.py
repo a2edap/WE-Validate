@@ -51,7 +51,6 @@ class crosscheck_ts_csv:
         """
 
         time_diff = ts.index.to_series().diff()
-
         if len(time_diff[1:].unique()) == 1:
             if (freq > time_diff[1].components.minutes)\
                and (self.select_data == 'end'):

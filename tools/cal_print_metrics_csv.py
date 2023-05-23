@@ -76,6 +76,7 @@ def run(combine_df, metrics, results, ind, c, conf, base, monthly_results):
         new_monthly_dict['base'] = base['name']
         for m in metrics:
 
+
             results[ind][m.__class__.__name__] = m.compute(x, y)
             # results[ind][m.__class__.__name__ + '_monthly'] = monthly_metrics(x, y, freq='MS', func=m.compute)
             # monthly_results.append(monthly_metrics(x, y, freq='MS', func=m.compute))
