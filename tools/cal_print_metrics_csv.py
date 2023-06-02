@@ -78,31 +78,25 @@ def run(combine_df, metrics, results, ind, c, conf, base, monthly_results):
 
 
             results[ind][m.__class__.__name__] = m.compute(x, y)
-            # results[ind][m.__class__.__name__ + '_monthly'] = monthly_metrics(x, y, freq='MS', func=m.compute)
-            # monthly_results.append(monthly_metrics(x, y, freq='MS', func=m.compute))
-            new_monthly_dict[m.__class__.__name__ + '_monthly'] = monthly_metrics(x, y, freq='MS', func=m.compute)
+            new_monthly_dict[m.__class__.__name__] = monthly_metrics(x, y, freq='MS', func=m.compute)
         monthly_results.append(new_monthly_dict)
 
-        print()
-        print('==-- '+conf['reference']['var']+' metrics: '+c['name']
-              + ' - '+base['name']+' --=='
-              )
-        print()
+        if conf['output']['print_results'] is True:
 
-        for key, val in results[ind].items():
+            print()
+            print('==-- '+conf['reference']['var']+' metrics: '+c['name']
+                  + ' - '+base['name']+' --=='
+                  )
+            print()
 
-            if isinstance(val, float):
+            for key, val in results[ind].items():
 
-                end_units = ''
-                suffix_pct = 'pct'
+                if isinstance(val, float):
 
-                if str(key).endswith(suffix_pct):
-                    end_units = '%'
+                    end_units = ''
+                    suffix_pct = 'pct'
 
-                print(str(key)+': '+str(np.round(val, 3))+end_units)
+                    if str(key).endswith(suffix_pct):
+                        end_units = '%'
 
-            # if isinstance(val,pd.Series):
-            #
-            #     print(str(key))
-            #     for key2, val2 in val.items():
-            #         print('Month: ' + str(key2.month) + ' '+str(np.round(val2, 3))+end_units)
+                    print(str(key)+': '+str(np.round(val, 3))+end_units)

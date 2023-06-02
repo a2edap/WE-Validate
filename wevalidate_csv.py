@@ -95,13 +95,6 @@ def compare(config=None):
 
         c['data'] = c['input'].get_ts()
 
-        # added this code to edit year if comparing data from different years. uncomment if comparing 2016 base with 2018 comp
-        # c['data']['datetime'] = c['data'].index.to_pydatetime()
-        # c['data']['newdatetime'] = c['data']['datetime'] - pd.DateOffset(years=2)
-        # c['data'].set_index('newdatetime', inplace= True)
-        # c['data'].drop('datetime', axis = 1, inplace = True)
-
-
         results = eval_tools.append_results(results, base, c, conf)
 
         # Crosscheck between datasets
@@ -136,7 +129,9 @@ def compare(config=None):
         plotting.plot_ts_line(combine_df)
         plotting.plot_ts_line_monthly(combine_df)
         plotting.plot_histogram(combine_df)
+        plotting.plot_histogram_monthly(combine_df)
         plotting.plot_pair_scatter(combine_df)
+        plotting.plot_pair_scatter_monthly(combine_df)
 
 
         if 'ramps' in conf:
@@ -215,7 +210,7 @@ def compare(config=None):
         else:
             all_lev_df = pd.concat([all_lev_df, combine_df], axis=1)
 
-    if 'output' in conf and conf['output']['writing'] is True:
+    if 'output' in conf:
 
         output_path = os.path.join(
         (pathlib.Path(os.getcwd())), conf['output']['path']
@@ -224,21 +219,23 @@ def compare(config=None):
         if not os.path.exists(output_path):
             os.makedirs(output_path)
 
-        if conf['output']['format'] == 'csv':
+        if conf['output']['save_metrics'] is True:
 
-            all_lev_df.to_csv(
-                os.path.join(output_path,
-                             'ts_'+conf['output']['org']+'.csv')
-                )
-            all_lev_stat_df.to_csv(
-                os.path.join(output_path,
-                             'metrics_'+conf['output']['org']+'.csv')
-                )
+            if conf['output']['format'] == 'csv':
 
-            all_lev_monthly_stat_df.to_csv(
-                os.path.join(output_path,
-                             'monthly_metrics_'+conf['output']['org']+'.csv')
-                )
+                all_lev_df.to_csv(
+                    os.path.join(output_path,
+                                 'time_series_'+conf['output']['org']+'.csv')
+                    )
+                all_lev_stat_df.to_csv(
+                    os.path.join(output_path,
+                                 'metrics_'+conf['output']['org']+'.csv')
+                    )
+
+                all_lev_monthly_stat_df.to_csv(
+                    os.path.join(output_path,
+                                 'metrics_monthly_'+conf['output']['org']+'.csv')
+                    )
 
             if 'ramps' in conf:
 
@@ -252,19 +249,21 @@ def compare(config=None):
                     )
         for item in monthly_results:
             plotting.plot_ts_line_monthly_metric(item)
-            print('==-- monthly metrics: '+item['compare']
-                  + ' - '+item['base']+' --=='
-                  )
-            for key, val in item.items():
-                if isinstance(val, pd.Series):
-                    end_units = ''
-                    suffix_pct = 'pct'
 
-                    if str(key).endswith(suffix_pct):
-                        end_units = '%'
-                    print(key)
-                    for key2, val2 in val.items():
-                        print('Month: ' + str(key2.month) + ', value:  '+str(np.round(val2, 3))+end_units)
+            if conf['output']['print_results'] is True:
+                print('==-- monthly metrics: '+item['compare']
+                      + ' - '+item['base']+' --=='
+                      )
+                for key, val in item.items():
+                    if isinstance(val, pd.Series):
+                        end_units = ''
+                        suffix_pct = 'pct'
+
+                        if str(key).endswith(suffix_pct):
+                            end_units = '%'
+                        print(key)
+                        for key2, val2 in val.items():
+                            print('Month: ' + str(key2.month) + ', value:  '+str(np.round(val2, 3))+end_units)
 
 if __name__ == '__main__':
     compare(config = config)

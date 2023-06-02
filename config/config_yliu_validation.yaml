@@ -2,8 +2,8 @@
 location: 
   # latitude and longitude in degrees
   # should be the same location as baseline dataset
-  lat: 45.57451
-  lon: -120.74734
+#  lat: 45.57451
+#  lon: -120.74734
 
 time:
   window:
@@ -93,23 +93,24 @@ comp:
 # reference
 reference: 
   # variable name to be displayed
-  var: wind speed
+  var: Wind Speed
   # variable units
   units: ms-1
 
 
 # output
 output:
-  # do we write data
-  writing: True
   # output path
   path: output
-  org: test
+  #
+  org: site_3
   # should we save metrics
   save_metrics: True
   # metrics format
   format: csv
   # should we save figures
-  save_figs: True
+  save_figs: False
   # should we show figures
-  show_figs: False
+  show_figs: True
+  # should we print results
+  print_results : False
