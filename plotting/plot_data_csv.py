@@ -344,7 +344,6 @@ class plot_data_csv:
                     xy1to1 = np.linspace(line_min * 0.9, line_max * 1.1)
 
                     plt.plot(xy1to1, xy1to1, c=onetoone_c, linestyle='--')
-                    plt.text(0.95, 0.9, '1:1', c=onetoone_c)
 
                     if self_units is True:
                         plt.xlabel(pair[0] + ' (' + self.units + ')')
@@ -377,8 +376,8 @@ class plot_data_csv:
                     plt.title(selected_month.index.strftime("%B").any() + ' '
                               + '\n linear fit: ' + pair[0] + ' = '
                               + str(round(coeffs[0], 3))
-                              + ' * ' + pair[1] + ' + ' + str(round(coeffs[1], 3))
-                              + r'$, R{^2} = $' + str(round(r2, 3))
+                              + ' * ' + pair[1] + ' + ' + str(round(coeffs[1], 3)) + '\n'
+                              + r'$ R{^2} = $' + str(round(r2, 3))
                               )
 
                     plt.tight_layout(rect=[0, 0, 1, 0.9])
@@ -411,7 +410,6 @@ class plot_data_csv:
                         xy1to1 = np.linspace(line_min * 0.9, line_max * 1.1)
 
                         plt.plot(xy1to1, xy1to1, c=onetoone_c, linestyle='--')
-                        plt.text(0.95, 0.9, '1:1', c=onetoone_c)
 
                         if self_units is True:
                             plt.xlabel(pair[0] + ' (' + self.units + ')')
@@ -444,8 +442,8 @@ class plot_data_csv:
                         plt.title(selected_month.index.strftime("%B").any() + ' '
                                   + '\n linear fit: ' + pair[0] + ' = '
                                   + str(round(coeffs[0], 3))
-                                  + ' * ' + pair[1] + ' + ' + str(round(coeffs[1], 3))
-                                  + r'$, R{^2} = $' + str(round(r2, 3))
+                                  + ' * ' + pair[1] + ' + ' + str(round(coeffs[1], 3))+ '\n'
+                                  + r'$ R{^2} = $' + str(round(r2, 3))
                                   )
 
                         plt.tight_layout(rect=[0, 0, 1, 0.9])

@@ -1,13 +1,7 @@
-# This script runs the comparison between timeseries data,
-# as specified in config_ba_pc.yaml. This is the main routine for we-validate when using csv files
+# This script runs the comparison between timeseries data.
+# This is the main routine for we-validate when using csv files
 #
-# Joseph Lee <joseph.lee at pnnl.gov>
-#%reload_ext autoreload
-#%autoreload 2
-
-# import importlib
-# importlib.reload(eval_tools)
-# importlib.reload(cal_print_metrics)
+# Malcolm Moncheur de Rieudotte <malcolm.moncheurderieudotte at pnnl.gov>
 
 import yaml
 import sys
@@ -64,13 +58,16 @@ def compare(config=None):
     # Data frame containing data at all heights (empty data frames)
     all_lev_df = pd.DataFrame()
     all_lev_stat_df = pd.DataFrame()
-    all_lev_monthly_stat_df = pd.DataFrame()
+    # all_lev_monthly_stat_df = pd.DataFrame()
     all_ramp_ts_df = pd.DataFrame()
     all_ramp_stat_df = pd.DataFrame()
 
     # For data storage and metrics computation
     results = []
     monthly_results = []
+    weekly_results = []
+    annual_results = []
+    daily_results = []
 
 
     print()
@@ -101,7 +98,7 @@ def compare(config=None):
         combine_df = crosscheck_ts.align_time(base, c)
 
         cal_print_metrics_csv.run(
-            combine_df, metrics, results, ind, c, conf, base, monthly_results
+            combine_df, metrics, results, ind, c, conf, base, monthly_results, weekly_results, annual_results, daily_results
             )
 
         metricstat_dict = {key: results[ind][key]
@@ -126,6 +123,15 @@ def compare(config=None):
         all_lev_monthly_stat_df = [pd.DataFrame(d) for d in monthly_results]
         all_lev_monthly_stat_df = pd.concat(all_lev_monthly_stat_df)
 
+        all_lev_weekly_stat_df = [pd.DataFrame(d) for d in weekly_results]
+        all_lev_weekly_stat_df = pd.concat(all_lev_weekly_stat_df)
+
+        all_lev_annual_stat_df = [pd.DataFrame(d) for d in annual_results]
+        all_lev_annual_stat_df = pd.concat(all_lev_annual_stat_df)
+
+        all_lev_daily_stat_df = [pd.DataFrame(d) for d in daily_results]
+        all_lev_daily_stat_df = pd.concat(all_lev_daily_stat_df)
+
         plotting.plot_ts_line(combine_df)
         plotting.plot_ts_line_monthly(combine_df)
         plotting.plot_histogram(combine_df)
@@ -136,7 +142,7 @@ def compare(config=None):
 
         if 'ramps' in conf:
 
-            ramp_data = cal_print_metrics.remove_na(
+            ramp_data = cal_print_metrics_csv.remove_na(
                 combine_df, ramp_txt=True
                 )
 
@@ -236,6 +242,21 @@ def compare(config=None):
                     os.path.join(output_path,
                                  'metrics_monthly_'+conf['output']['org']+'.csv')
                     )
+
+                all_lev_weekly_stat_df.to_csv(
+                    os.path.join(output_path,
+                                 'metrics_weekly_' + conf['output']['org'] + '.csv')
+                )
+
+                all_lev_annual_stat_df.to_csv(
+                    os.path.join(output_path,
+                                 'metrics_annual_' + conf['output']['org'] + '.csv')
+                )
+
+                all_lev_daily_stat_df.to_csv(
+                    os.path.join(output_path,
+                                 'metrics_daily_' + conf['output']['org'] + '.csv')
+                )
 
             if 'ramps' in conf:
 

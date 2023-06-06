@@ -8,9 +8,9 @@ location:
 time:
   window:
     # validation period start time
-    start: 2015-10-01 12:00:00
+    start: 2016-01-01 12:00:00
     # validation period end time
-    end: 2017-03-31 23:00:00
+    end: 2017-01-01 23:00:00
 # validation metrics to be calculated and plotted
 metrics:
   - rmse
@@ -100,9 +100,9 @@ reference:
 
 # output
 output:
-  # output path
+  # path to output folder
   path: output
-  #
+  # name of the run
   org: site_3
   # should we save metrics
   save_metrics: True
