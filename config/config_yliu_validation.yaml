@@ -11,6 +11,7 @@ time:
     start: 2016-01-01 12:00:00
     # validation period end time
     end: 2017-01-01 23:00:00
+
 # validation metrics to be calculated and plotted
 metrics:
   - rmse
@@ -21,11 +22,26 @@ metrics:
   - mae_pct
 
 
+# output
+output:
+  # output folder pth
+  path: output
+  # name of the run
+  org: test
+  # save metrics?
+  save_metrics: True
+  # save figures?
+  save_figs: False
+  # show figures?
+  show_figs: False
+  # print results?
+  print_results : False
+
 # baseline dataset
 base:
   name: Obs
   # data directory
-  path: data\obs\clean_csv_lidar_z01.nc.csv
+  path: data/obs/clean_csv_lidar_z01.nc.csv
   # name of data processing function
   function: yliu_validation_csv
   # names of variables in data to validate
@@ -43,7 +59,7 @@ base:
 comp:
   - name: pnnl_2km
     # data directory
-    path: data\2km_pnnl\clean_pnnl_2km_0.0.csv
+    path: data/2km_pnnl/clean_pnnl_2km_0.0.csv
     # name of data processing function
     function: yliu_validation_csv
     # names of variables in data to validate
@@ -59,7 +75,7 @@ comp:
 
   - name: pnnl_2km_d01
     # data directory
-    path: data\2km_pnnl_d01\clean_pnnl_2km_d01_0.0.csv
+    path: data/2km_pnnl_d01/clean_pnnl_2km_d01_0.0.csv
     # name of data processing function
     function: yliu_validation_csv
     # names of variables in data to validate
@@ -75,7 +91,7 @@ comp:
 
   - name: wtk_4km
     # data directory
-    path: data\4km_wtk\clean_4km_wtk_0.0.csv
+    path: data/4km_wtk/clean_4km_wtk_0.0.csv
     # name of data processing function
     function: yliu_validation_csv
     # names of variables in data to validate
@@ -97,20 +113,3 @@ reference:
   # variable units
   units: ms-1
 
-
-# output
-output:
-  # path to output folder
-  path: output
-  # name of the run
-  org: site_3
-  # should we save metrics
-  save_metrics: True
-  # metrics format
-  format: csv
-  # should we save figures
-  save_figs: False
-  # should we show figures
-  show_figs: True
-  # should we print results
-  print_results : False

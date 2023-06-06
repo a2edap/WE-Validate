@@ -227,36 +227,34 @@ def compare(config=None):
 
         if conf['output']['save_metrics'] is True:
 
-            if conf['output']['format'] == 'csv':
-
-                all_lev_df.to_csv(
-                    os.path.join(output_path,
-                                 'time_series_'+conf['output']['org']+'.csv')
-                    )
-                all_lev_stat_df.to_csv(
-                    os.path.join(output_path,
-                                 'metrics_'+conf['output']['org']+'.csv')
-                    )
-
-                all_lev_monthly_stat_df.to_csv(
-                    os.path.join(output_path,
-                                 'metrics_monthly_'+conf['output']['org']+'.csv')
-                    )
-
-                all_lev_weekly_stat_df.to_csv(
-                    os.path.join(output_path,
-                                 'metrics_weekly_' + conf['output']['org'] + '.csv')
+            all_lev_df.to_csv(
+                os.path.join(output_path,
+                             'time_series_'+conf['output']['org']+'.csv')
+                )
+            all_lev_stat_df.to_csv(
+                os.path.join(output_path,
+                             'metrics_'+conf['output']['org']+'.csv')
                 )
 
-                all_lev_annual_stat_df.to_csv(
-                    os.path.join(output_path,
-                                 'metrics_annual_' + conf['output']['org'] + '.csv')
+            all_lev_monthly_stat_df.to_csv(
+                os.path.join(output_path,
+                             'metrics_monthly_'+conf['output']['org']+'.csv')
                 )
 
-                all_lev_daily_stat_df.to_csv(
-                    os.path.join(output_path,
-                                 'metrics_daily_' + conf['output']['org'] + '.csv')
-                )
+            all_lev_weekly_stat_df.to_csv(
+                os.path.join(output_path,
+                             'metrics_weekly_' + conf['output']['org'] + '.csv')
+            )
+
+            all_lev_annual_stat_df.to_csv(
+                os.path.join(output_path,
+                             'metrics_annual_' + conf['output']['org'] + '.csv')
+            )
+
+            all_lev_daily_stat_df.to_csv(
+                os.path.join(output_path,
+                             'metrics_daily_' + conf['output']['org'] + '.csv')
+            )
 
             if 'ramps' in conf:
 
