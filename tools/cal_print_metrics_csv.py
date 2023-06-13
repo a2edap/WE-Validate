@@ -60,19 +60,10 @@ def daily_metrics(x, y, freq='D', func=None):
     corr = pd.Series(corr, index=[_x[0] for _x in x_list])
     return corr
 
-def hourly_metrics(x, y, freq='H', func=None):
+def hourly_metrics(x, y, func=None):
 
-    x_grouped = x.groupby([x.index.hour]).mean().reset_index()
-    x_grouped.set_index(pd.to_datetime( x_grouped['time_stamp'], format = "%H"), inplace=True)
-    x_grouped.drop(['time_stamp'], axis = 1, inplace = True)
-    x_grouped =  x_grouped.squeeze()
-    y_grouped = y.groupby([y.index.hour]).mean().reset_index()
-    y_grouped.set_index(pd.to_datetime(y_grouped['time_stamp'], format = "%H"), inplace=True)
-    y_grouped.drop(['time_stamp'], axis = 1, inplace = True)
-    y_grouped = y_grouped.squeeze()
-
-    x_list = list(x_grouped.resample(freq))
-    y_list = list(y_grouped.resample(freq))
+    x_list = list(x.groupby([x.index.hour]))
+    y_list = list(y.groupby([y.index.hour]))
 
     corr = [func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
     corr = pd.Series(corr, index=[_x[0] for _x in x_list])

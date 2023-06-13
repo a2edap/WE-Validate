@@ -136,12 +136,12 @@ def compare(config=None):
         all_lev_hourly_stat_df = [pd.DataFrame(d) for d in hourly_results]
         all_lev_hourly_stat_df = pd.concat(all_lev_hourly_stat_df)
 
-        # plotting.plot_ts_line(combine_df)
+        plotting.plot_ts_line(combine_df)
         plotting.plot_ts_line_monthly(combine_df)
-        # plotting.plot_histogram(combine_df)
-        # plotting.plot_histogram_monthly(combine_df)
-        # plotting.plot_pair_scatter(combine_df)
-        # plotting.plot_pair_scatter_monthly(combine_df)
+        plotting.plot_histogram(combine_df)
+        plotting.plot_histogram_monthly(combine_df)
+        plotting.plot_pair_scatter(combine_df)
+        plotting.plot_pair_scatter_monthly(combine_df)
 
 
         if 'ramps' in conf:
