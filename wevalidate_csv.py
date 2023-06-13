@@ -68,6 +68,7 @@ def compare(config=None):
     weekly_results = []
     annual_results = []
     daily_results = []
+    hourly_results = []
 
 
     print()
@@ -98,13 +99,13 @@ def compare(config=None):
         combine_df = crosscheck_ts.align_time(base, c)
 
         cal_print_metrics_csv.run(
-            combine_df, metrics, results, ind, c, conf, base, monthly_results, weekly_results, annual_results, daily_results
+            combine_df, metrics, results, ind, c, conf, base, monthly_results, weekly_results, annual_results, daily_results, hourly_results
             )
 
         metricstat_dict = {key: results[ind][key]
                            for key in conf['metrics']}
         metricstat_df = pd.DataFrame.from_dict(
-            metricstat_dict, orient='index', columns=[c['target_var']]
+            metricstat_dict, orient='index', columns=[c['name']]
             )
 
         metricstat_df.columns = pd.MultiIndex.from_product(
@@ -132,12 +133,15 @@ def compare(config=None):
         all_lev_daily_stat_df = [pd.DataFrame(d) for d in daily_results]
         all_lev_daily_stat_df = pd.concat(all_lev_daily_stat_df)
 
-        plotting.plot_ts_line(combine_df)
+        all_lev_hourly_stat_df = [pd.DataFrame(d) for d in hourly_results]
+        all_lev_hourly_stat_df = pd.concat(all_lev_hourly_stat_df)
+
+        # plotting.plot_ts_line(combine_df)
         plotting.plot_ts_line_monthly(combine_df)
-        plotting.plot_histogram(combine_df)
-        plotting.plot_histogram_monthly(combine_df)
-        plotting.plot_pair_scatter(combine_df)
-        plotting.plot_pair_scatter_monthly(combine_df)
+        # plotting.plot_histogram(combine_df)
+        # plotting.plot_histogram_monthly(combine_df)
+        # plotting.plot_pair_scatter(combine_df)
+        # plotting.plot_pair_scatter_monthly(combine_df)
 
 
         if 'ramps' in conf:
@@ -254,6 +258,11 @@ def compare(config=None):
             all_lev_daily_stat_df.to_csv(
                 os.path.join(output_path,
                              'metrics_daily_' + conf['output']['org'] + '.csv')
+            )
+
+            all_lev_hourly_stat_df.to_csv(
+                os.path.join(output_path,
+                             'metrics_hourly_' + conf['output']['org'] + '.csv')
             )
 
             if 'ramps' in conf:

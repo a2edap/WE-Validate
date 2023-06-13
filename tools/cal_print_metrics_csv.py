@@ -60,7 +60,26 @@ def daily_metrics(x, y, freq='D', func=None):
     corr = pd.Series(corr, index=[_x[0] for _x in x_list])
     return corr
 
-def run(combine_df, metrics, results, ind, c, conf, base, monthly_results, weekly_results, annual_results, daily_results):
+def hourly_metrics(x, y, freq='H', func=None):
+
+    x_grouped = x.groupby([x.index.hour]).mean().reset_index()
+    x_grouped.set_index(pd.to_datetime( x_grouped['time_stamp'], format = "%H"), inplace=True)
+    x_grouped.drop(['time_stamp'], axis = 1, inplace = True)
+    x_grouped =  x_grouped.squeeze()
+    y_grouped = y.groupby([y.index.hour]).mean().reset_index()
+    y_grouped.set_index(pd.to_datetime(y_grouped['time_stamp'], format = "%H"), inplace=True)
+    y_grouped.drop(['time_stamp'], axis = 1, inplace = True)
+    y_grouped = y_grouped.squeeze()
+
+    x_list = list(x_grouped.resample(freq))
+    y_list = list(y_grouped.resample(freq))
+
+    corr = [func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
+    corr = pd.Series(corr, index=[_x[0] for _x in x_list])
+    return corr
+
+
+def run(combine_df, metrics, results, ind, c, conf, base, monthly_results, weekly_results, annual_results, daily_results, hourly_results):
     """Calculate metrics and print results.
     Remove NaNs in data frame.
     For each data column combination, split into baseline and
@@ -84,16 +103,6 @@ def run(combine_df, metrics, results, ind, c, conf, base, monthly_results, weekl
                      + ' not equal!'
                      )
 
-        if base['nature'] == 'wd' and c['nature'] == 'wd':
-
-            print()
-            print('calculating differences in wind directions after converting'
-                  + ' them into unit vectors')
-
-            y = eval_tools.get_wd_angle_diff_series(x, y)
-            # x as baseline, is set to zero
-            x = np.zeros(len(y))
-
         monthly_dict = {}
         monthly_dict['compare'] = c['name']
         monthly_dict['base'] = base['name']
@@ -110,6 +119,10 @@ def run(combine_df, metrics, results, ind, c, conf, base, monthly_results, weekl
         daily_dict['compare'] = c['name']
         daily_dict['base'] = base['name']
 
+        hourly_dict = {}
+        hourly_dict['compare'] = c['name']
+        hourly_dict['base'] = base['name']
+
         for m in metrics:
 
             results[ind][m.__class__.__name__] = m.compute(x, y)
@@ -117,11 +130,13 @@ def run(combine_df, metrics, results, ind, c, conf, base, monthly_results, weekl
             weekly_dict[m.__class__.__name__] = weekly_metrics(x, y, func=m.compute)
             annual_dict[m.__class__.__name__] = annual_metrics(x, y, func=m.compute)
             daily_dict[m.__class__.__name__] = daily_metrics(x, y, func=m.compute)
+            hourly_dict[m.__class__.__name__] = hourly_metrics(x, y, func=m.compute)
 
         monthly_results.append(monthly_dict)
         weekly_results.append(weekly_dict)
         annual_results.append(annual_dict)
         daily_results.append(daily_dict)
+        hourly_results.append(hourly_dict)
 
         if conf['output']['print_results'] is True:
 

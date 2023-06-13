@@ -25,11 +25,11 @@ class yliu_validation_csv:
             (pathlib.Path(os.getcwd())), str(info['path'])
             )
         self.var = info['var']
-        self.target_var = info['target_var']
+        self.name = info['name']
         self.freq = info['freq']
         self.flag = info['flag']
 
-        self.loc = conf['location']
+        # self.loc = conf['location']
 
 
         try:
@@ -46,7 +46,7 @@ class yliu_validation_csv:
         df = pd.read_csv(os.path.join(self.path))
         df.index = pd.to_datetime(df['time_stamp'])
         df = df[[self.var]]
-        df = df.rename(columns={self.var: self.target_var})
+        df = df.rename(columns={self.var: self.name})
 
         # Same process as in the crosscheck_ts class
         time_diff = df.index.to_series().diff()

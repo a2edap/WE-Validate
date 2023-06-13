@@ -124,6 +124,7 @@ class plot_data_csv:
 
                 for col in df.columns:
                     plt.plot(selected_month.index, selected_month[col], label=col)
+
                 count += 1
                 plt.title(selected_month.index.strftime("%B").any())
                 plt.tight_layout(rect=[0,0,1,0.95])
@@ -135,9 +136,9 @@ class plot_data_csv:
                 else:
                     plt.ylabel(self.var)
 
-            plt.legend()
+            plt.legend(bbox_to_anchor=(1, 0.5))
             plt.savefig(output_path + '\\timeseries_monthly_' + df.columns[0] + "-" + df.columns[
-                1] + '_' + self.org + '.png')
+                1] + '_' + self.org + '.png', bbox_inches='tight')
 
             if self.showfig is True:
                 plt.show()
@@ -167,7 +168,7 @@ class plot_data_csv:
                     else:
                         plt.ylabel(self.var)
 
-                plt.legend()
+                plt.legend(bbox_to_anchor=(1, 0.5))
                 plt.show()
 
 
@@ -595,7 +596,7 @@ class plot_data_csv:
                 if isinstance(val, pd.Series):
                     plt.subplot(grid_size, grid_size, count)
                     # plt.plot(val.index, val, label=key)
-                    plt.plot(val.index.strftime("%b-%y"), val, label=key)
+                    plt.plot(val.index.strftime("%y-%m"), val, label=key)
                     count += 1
 
                 plt.xticks(rotation=90)
@@ -609,7 +610,7 @@ class plot_data_csv:
                 plt.tight_layout(rect=[0,0,1,0.95])
                 suptitle = 'Monthly Metrics: ' + monthly_dict['base'] + " - "+ monthly_dict['compare']
                 plt.suptitle(suptitle)
-                plt.savefig(output_path + '\\metrics_monthly_' + monthly_dict['base'] + "-"+ monthly_dict['compare'] + '_' + self.org + '.png')
+                plt.savefig(output_path + '\\metrics_monthly_' + monthly_dict['base'] + "-"+ monthly_dict['compare'] + '_' + self.org + '.png', bbox_inches='tight')
 
             if self.showfig is True:
                 plt.show()
@@ -623,8 +624,7 @@ class plot_data_csv:
                 for i, (key, val) in enumerate(monthly_dict.items()):
                     if isinstance(val, pd.Series):
                         plt.subplot(grid_size, grid_size, count)
-                        # plt.plot(val.index, val, label=key)
-                        plt.plot(val.index.strftime("%b-%y"), val, label=key)
+                        plt.plot(val.index.strftime("%y-%m"), val, label=key)
                         count += 1
 
                         plt.xticks(rotation=90)

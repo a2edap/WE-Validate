@@ -1,5 +1,5 @@
 # validation location
-location: 
+location:
   # latitude and longitude in degrees
   # should be the same location as baseline dataset
 #  lat: 45.57451
@@ -24,14 +24,14 @@ metrics:
 
 # output
 output:
-  # output folder pth
+  # output folder path
   path: output
   # name of the run
   org: test
   # save metrics?
   save_metrics: True
   # save figures?
-  save_figs: False
+  save_figs: True
   # show figures?
   show_figs: False
   # print results?
@@ -39,17 +39,14 @@ output:
 
 # baseline dataset
 base:
-  name: Obs
+  # name of dataset
+  name: Observed
   # data directory
   path: data/obs/clean_csv_lidar_z01.nc.csv
   # name of data processing function
   function: yliu_validation_csv
-  # names of variables in data to validate
+  # variable name
   var: wind_speed
-  # nature of variable
-  nature: wind_speed
-  # target variable name to be displayed
-  target_var: Observed
   # data frequency in minutes
   freq: 60
   # flag value
@@ -57,51 +54,42 @@ base:
 
 # data input to be compared with the baseline dataset
 comp:
+  # name of dataset
   - name: pnnl_2km
     # data directory
     path: data/2km_pnnl/clean_pnnl_2km_0.0.csv
     # name of data processing function
     function: yliu_validation_csv
-    # names of variables in data to validate
+    # variable name
     var: wind_speed
-    # nature of variable
-    nature: wind_speed
-    # target variable name to be displayed
-    target_var: pnnl_2km
     # data frequency in minutes
-    freq: 5
+    freq: 60
     # flag value
     flag: 999
 
+  # name of dataset
   - name: pnnl_2km_d01
     # data directory
     path: data/2km_pnnl_d01/clean_pnnl_2km_d01_0.0.csv
     # name of data processing function
     function: yliu_validation_csv
-    # names of variables in data to validate
+    # variable name
     var: wind_speed
-    # nature of variable
-    nature: wind_speed
-    # target variable name to be displayed
-    target_var: pnnl_2km_d01
     # data frequency in minutes
-    freq: 5
+    freq: 60
     # flag value
     flag: 999
 
+  # name of dataset
   - name: wtk_4km
     # data directory
     path: data/4km_wtk/clean_4km_wtk_0.0.csv
     # name of data processing function
     function: yliu_validation_csv
-    # names of variables in data to validate
+    # variable name
     var: wind_speed
-    # nature of variable
-    nature: wind_speed
-    # target variable name to be displayed
-    target_var: wtk_4km
     # data frequency in minutes
-    freq: 5
+    freq: 60
     # flag value
     flag: 999
 

@@ -52,15 +52,6 @@ def run(combine_df, metrics, results, ind, c, conf, base, lev):
                      + ' not equal!'
                      )
 
-        if base['nature'] == 'wd' and c['nature'] == 'wd':
-
-            print()
-            print('calculating differences in wind directions after converting'
-                  + ' them into unit vectors')
-
-            y = eval_tools.get_wd_angle_diff_series(x, y)
-            # x as baseline, is set to zero
-            x = np.zeros(len(y))
 
         for m in metrics:
 
