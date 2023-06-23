@@ -12,7 +12,7 @@ import pandas as pd
 
 from tools import eval_tools, cal_print_metrics_csv
 
-config = 'config_yliu_validation.yaml'
+config = 'config.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuratiom name.
 # If not, it assigns the default configuration
@@ -144,72 +144,6 @@ def compare(config=None):
         plotting.plot_pair_scatter_monthly(combine_df)
 
 
-        if 'ramps' in conf:
-
-            ramp_data = cal_print_metrics_csv.remove_na(
-                combine_df, ramp_txt=True
-                )
-
-            for ramps in conf['ramps']:
-
-                r = eval_tools.get_module_class(
-                    'ramps', ramps['definition'])(
-                        conf, c, ramp_data, ramps)
-
-                print()
-                print('@@@@@~~ calculating ramp skill scores at '+str(lev)
-                      + ' '+conf['levels']['height_units']
-                      + ' using definition: '
-                      + r.__class__.__name__+' ~~@@@@@')
-
-                ramp_df = r.get_rampdf()
-
-                process_ramp = eval_tools.get_module_class(
-                    'ramps', 'process_ramp')(ramp_df)
-
-                ramp_df = process_ramp.add_contingency_table()
-
-                plot_ramp = eval_tools.get_module_class(
-                    'plotting', 'plot_ramp')(
-                        ramp_df, combine_df, conf, lev, ramps)
-
-                # Generating all the ramp texts and plots can take up memory space
-                if 'plotting' in ramps:
-
-                    if ramps['plotting'] is True:
-
-                        plot_ramp.plot_ts_contingency()
-                        process_ramp.print_contingency_table()
-                        # Print skill scores
-                        # process_ramp.cal_print_scores()
-
-                ramp_summary_df = process_ramp.generate_ramp_summary_df()
-
-                ramp_summary_df.columns = pd.MultiIndex.from_product(
-                    [[lev], [c['name']], [c['target_var']],
-                     [r.ramp_nature], [r.get_ramp_method_name()]]
-                    )
-
-                ramp_df.columns = pd.MultiIndex.from_product(
-                    [[lev], [c['name']], [c['target_var']],
-                     [r.ramp_nature], [r.get_ramp_method_name()], ramp_df.columns]
-                    )
-
-                if all_ramp_stat_df.empty:
-                    all_ramp_stat_df = all_ramp_stat_df.append(
-                        ramp_summary_df
-                        )
-                    all_ramp_ts_df = all_ramp_ts_df.append(
-                        ramp_df
-                        )
-                else:
-                    all_ramp_stat_df = pd.concat(
-                        [all_ramp_stat_df, ramp_summary_df], axis=1
-                        )
-                    all_ramp_ts_df = pd.concat(
-                        [all_ramp_ts_df, ramp_df], axis=1
-                        )
-
         combine_df.columns = pd.MultiIndex.from_product(
             [[c['name']], combine_df.columns]
             )
@@ -265,16 +199,7 @@ def compare(config=None):
                              'metrics_hourly_' + conf['output']['org'] + '.csv')
             )
 
-            if 'ramps' in conf:
 
-                all_ramp_stat_df.to_csv(
-                    os.path.join(output_path,
-                                 'ramp_'+conf['output']['org']+'.csv')
-                    )
-                all_ramp_ts_df.to_csv(
-                    os.path.join(output_path,
-                                 'ramp_ts_'+conf['output']['org']+'.csv')
-                    )
         for item in monthly_results:
             plotting.plot_ts_line_monthly_metric(item)
 
