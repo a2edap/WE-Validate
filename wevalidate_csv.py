@@ -31,17 +31,11 @@ def compare(config=None):
 
     conf = yaml.load(open(config_file), Loader=yaml.FullLoader)
 
-    # conf
 
-    # set base, comparaison, and power curve configurations from config file
+    # set base and comparaison configurations from config file
     base = conf['base']
     comp = conf['comp']
-    # p_curve
-    # print('validation start time:', conf['time']['window']['start'])
-    # print('validation end time:', conf['time']['window']['end'])
-    # print('location:', conf['location'])
-    # print('baseline dataset:', base['name'])
-    # print('variable:', conf['reference']['var'])
+
 
     # Load modules
 
