@@ -108,7 +108,6 @@ def compare(config=None):
 
 
         if all_lev_stat_df.empty:
-           # all_lev_stat_df = all_lev_stat_df.append(metricstat_df)
             all_lev_stat_df = pd.concat([all_lev_stat_df, metricstat_df], axis = 1)
         else:
             all_lev_stat_df = pd.concat(
@@ -143,7 +142,6 @@ def compare(config=None):
             )
 
         if all_lev_df.empty:
-            # all_lev_df = all_lev_df.append(combine_df)
             all_lev_df = pd.concat([all_lev_df, combine_df], axis=1)
         else:
             all_lev_df = pd.concat([all_lev_df, combine_df], axis=1)
