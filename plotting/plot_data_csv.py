@@ -136,7 +136,7 @@ class plot_data_csv:
                 else:
                     plt.ylabel(self.var)
 
-            plt.legend(bbox_to_anchor=(1, 0.5))
+            plt.legend()
             plt.savefig(output_path + '\\timeseries_monthly_' + df.columns[0] + "-" + df.columns[
                 1] + '_' + self.org + '.png', bbox_inches='tight')
 
@@ -168,7 +168,7 @@ class plot_data_csv:
                     else:
                         plt.ylabel(self.var)
 
-                plt.legend(bbox_to_anchor=(1, 0.5))
+                plt.legend()
                 plt.show()
 
 
