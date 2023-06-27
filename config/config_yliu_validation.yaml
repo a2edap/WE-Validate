@@ -1,9 +1,3 @@
-# validation location
-location:
-  # latitude and longitude in degrees
-  # should be the same location as baseline dataset
-#  lat: 45.57451
-#  lon: -120.74734
 
 time:
   window:

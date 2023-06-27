@@ -29,7 +29,6 @@ def append_results(results, base, c, conf):
     results.append({'truth name': base['name'],
                     'model name': c['name'],
                     'path': c['path'],
-                    'location': conf['location'],
                     'var': c['var']}
                    )
 
