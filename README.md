@@ -106,5 +106,5 @@ To make it easy for you to get started with WE-Validate GUI, here's a list of re
 8, python wevalidate_gui.py \
 9, copy and paste the serve address (http://127.0.0.1:8088/ or localhost:8088) into web browser \
 10, Crtl + c to stop server \
-11, deactivate (optional, once done, deactivate the virtual environment) \
+11, deactivate (optional, once done, deactivate the virtual environment) 
 
