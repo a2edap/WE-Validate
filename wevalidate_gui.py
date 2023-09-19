@@ -1,20 +1,20 @@
 # Run this app with `python wevalidate_gui.py` and
 # visit http://127.0.0.1:8088/ in your web browser.
-import dash_datetimepicker
-from dash import Dash, html, dcc, Input, Output, State, callback_context, Patch, MATCH, ALL
-import dash
-import plotly.express as px
-import plotly.subplots as sp
-import pandas as pd
 import base64
-import plotly.graph_objects as go
-import dash_bootstrap_components as dbc
 import datetime
-import re
+import io
+import os
+
+import dash
+import dash_bootstrap_components as dbc
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 import plotly.io as pio
+from dash import Dash, html, dcc, Input, Output, State, Patch, MATCH, ALL
 from dash.exceptions import PreventUpdate
+
 from validate import compare
-import io, os
 
 app = Dash(external_stylesheets=[dbc.themes.DARKLY])
 
