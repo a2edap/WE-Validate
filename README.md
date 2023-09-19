@@ -85,3 +85,26 @@ The [original version](https://github.com/somerandomsequence/nwtc-ivalidate) of 
 
 Our contributors in alphabetical order:
 Larry Berg, Caroline Draxl, Joseph Lee, and Will Shaw. 
+
+# WE-Validate GUI
+
+This is the GUI for the WE-Validate written in Python 3. 
+
+## Requirements
+To run this application, Python 3 and pip is required. The following installation instruction is for Windows only.
+
+## Installation Instruction
+
+To make it easy for you to get started with WE-Validate GUI, here's a list of recommended next steps.
+
+1, git clone https://github.com/a2edap/WE-Validate.git \
+2, switch to the gui branch by: git checkout gui \
+3, python -m pip install virtualenv (optional, if you want to run the app in virtual environment and does not have virtualenv installed) \
+4, python -m venv env (optional, setting up the virtual environment called env) \
+5, source env/Scripts/activate (optional, starting the virtual environment) \
+6, pip install -r requirements.txt \
+8, python wevalidate_gui.py \
+9, copy and paste the serve address (http://127.0.0.1:8088/ or localhost:8088) into web browser \
+10, Crtl + c to stop server \
+11, deactivate (optional, once done, deactivate the virtual environment) \
+
