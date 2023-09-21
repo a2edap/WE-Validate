@@ -11,10 +11,13 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
-from dash import Dash, html, dcc, Input, Output, State, Patch, MATCH, ALL
+from dash import Dash, html, dcc, Input, Output, State, Patch, MATCH, ALL, ctx
 from dash.exceptions import PreventUpdate
+import yaml
+import pathlib
 
 from validate import compare
+from tools import eval_tools
 
 app = Dash(external_stylesheets=[dbc.themes.DARKLY])
 
@@ -143,9 +146,60 @@ def _run_gui(debug=True, port=8088):
                     # ),
             html.Details([
                 html.Summary(
+                    # html.Div(children=[
+                    #     html.H4("Configurations",
+                    #             style={'display': 'inline-block', 'color': 'WhiteSmoke', 'vertical-align': 'middle',
+                    #                    'word-spacing': '15px'}),
+                    #     html.Button('Load A Configuration',
+                    #              id='load-configuration',
+                    #              n_clicks=0,
+                    #              style={'vertical-align': 'top', 'margin-left': 80, 'margin-top': 0, 'border-radius': 8, 'height': 25})
+                    # ], style={'display': 'flex', 'margin-bottom': 5}),
+                    # dbc.Col([
+                    #     html.H4("Configurations",
+                    #             style={'display': 'inline-block', 'color': 'WhiteSmoke', 'vertical-align': 'middle',
+                    #                    'word-spacing': '15px'}),
+                    #     html.Button('Load A Configuration',
+                    #              id='load-configuration',
+                    #              n_clicks=0,
+                    #              style={'vertical-align': 'top', 'margin-left': 120, 'margin-top': 0, 'border-radius': 8, 'height': 20})
+                    #
+                    # ]),
                     html.H4("Configurations",
                             style={'display': 'inline-block', 'color': 'WhiteSmoke', 'vertical-align': 'middle',
-                                   'word-spacing': '15px'})),
+                                   'word-spacing': '15px'})
+                ),
+                dbc.Row([
+                    dbc.Tooltip('Please drag and drop or select a configuration yml file to run We-Validate, or fill the configuration '
+                                'form below and click the "Run WeValidate" button.',
+                                target="upload-config-div",
+                                placement='left-end'),
+                    # dcc.Tooltip('Please drag and drop or select a configuration yml file or fill the configuration '
+                    #             'form below'),
+                    # html.Button('Load a Configuration',
+                    #             id='load-configuration',
+                    #             n_clicks=0,
+                    #             title='Load a configuration yml file to auto fill the form',
+                    #             style={'vertical-align': 'middle', 'margin-left': 30, 'margin-top': 10, 'margin-bottom': 20, 'border-radius': 8, 'height': 35, 'width': 180}),
+                    dcc.Upload(
+                        children=html.Div([
+                            'Drag and Drop or ',
+                            html.A('Select a Files ', style={'font-weight': 'bolder', 'cursor': 'pointer'}),
+                            'to Run We-Validate, or Fill the Form Below and Click the Run WeValidate Button'
+                        ], style={'font-size': 20, 'word-spacing': '3px', 'display': 'inline'}, id='upload-config-div'),
+
+                        id='configuration-upload',
+                        multiple=False,
+                        style={'margin-bottom': 15,
+                               'width': '100%',
+                               'height': '60px',
+                               'lineHeight': '60px',
+                               'borderWidth': '1px',
+                               'borderStyle': 'dashed',
+                               'borderRadius': '5px',
+                               'textAlign': 'center'}),
+                    dcc.Store(id='configuration')]
+                ),
                 dbc.Row([
                     dbc.Col([
                         html.Div(children=[
@@ -487,6 +541,54 @@ def _run_gui(debug=True, port=8088):
 
 
 @app.callback(
+    Output('configuration', 'data'),
+    Output('start-time', 'value'),
+    Output('end-time', 'value'),
+    Output('metrics', 'value'),
+    Output('output-dir', 'value'),
+    Output('run-name', 'value'),
+    Output('ref-var-name', 'value'),
+    Output('ref-var-unit', 'value'),
+    Output({"type": 'base', "parameter": "data-name", "index": 0}, 'value'),
+    Output({"type": 'base', "parameter": "function", "index": 0}, 'value'),
+    Output({"type": 'base', "parameter": "var-name", "index": 0}, 'value'),
+    Output({"type": 'base', "parameter": "frequency", "index": 0}, 'value'),
+    Output({"type": 'base', "parameter": "flag", "index": 0}, 'value'),
+    # Output({"type": 'comp', "parameter": "data-name", "index": 1}, 'value'),
+    # Output({"type": 'comp', "parameter": "function", "index": 1}, 'value'),
+    # Output({"type": 'comp', "parameter": "var-name", "index": 1}, 'value'),
+    # Output({"type": 'comp', "parameter": "frequency", "index": 1}, 'value'),
+    # Output({"type": 'comp', "parameter": "flag", "index": 1}, 'value'),
+    # Output({"type": 'base', "parameter": "file-path", "index": 0}, 'value'),
+    # Output({"type": ALL, "parameter": "data-name", "index": ALL}, 'value'),
+    # Output({"type": ALL, "parameter": "function", "index": ALL}, 'value'),
+    # Output({"type": ALL, "parameter": "var-name", "index": ALL}, 'value'),
+    # Output({"type": ALL, "parameter": "frequency", "index": ALL}, 'value'),
+    # Output({"type": ALL, "parameter": "flag", "index": ALL}, 'value'),
+    # Output({"type": ALL, "parameter": "file-path", "index": ALL}, 'value'),
+    # Output({"type": ALL, "parameter": "file-content", "index": ALL}, 'data'),
+    Input('configuration-upload', 'contents'),
+    State('configuration-upload', 'filename'),
+    prevent_initial_call=True,)
+def fill_config_from(content, filename):
+    if content is not None:
+        frags = filename.split('.')
+        if len(frags) == 2 and frags[1] == 'yaml':
+            content_type, content_string = content.split(',')
+            decoded = base64.b64decode(content_string)
+            conf = yaml.load(decoded, Loader=yaml.FullLoader)
+            start = datetime.datetime.strftime(conf['time']['window']['start'], '%Y-%m-%dT%H:%M')
+            end = datetime.datetime.strftime(conf['time']['window']['end'], '%Y-%m-%dT%H:%M')
+            return conf, start, end, ','.join(conf['metrics']), conf['output']['path'], conf['output']['org'],\
+                   conf['reference']['var'], conf['reference']['units'], conf['base']['name'],\
+                   conf['base']['function'], conf['base']['var'], conf['base']['freq'], conf['base']['flag']#,\
+                   # conf['comp']['name'], conf['comp']['function'], conf['comp']['var'], conf['comp']['freq'],\
+                   # conf['comp']['flag']
+        else:
+            return 'invalid config file'
+
+
+@app.callback(
     Output('comp-config', 'children'),
     Input('add-data', 'n_clicks'),
 )
@@ -634,6 +736,8 @@ def _plot_timeseries(combined_df):
     Output('hourly-link', 'children'),
     Output('hourly-link', 'href'),
     Input('run-validate', 'n_clicks'),
+    Input('configuration-upload', 'contents'),
+    State('configuration-upload', 'filename'),
     State('start-time', 'value'),
     State('end-time', 'value'),
     State('metrics', 'value'),
@@ -660,55 +764,114 @@ def _plot_timeseries(combined_df):
     # State({"parameter": "file-path", "index": ALL}, 'id'),
     prevent_initial_call=True,
 )
-def run_validation(click, stime, etime, metrics, output_dir, run_name, ref_var, ref_unit, data_name, data_name_id,
+def run_validation(click, content, filename, stime, etime, metrics, output_dir, run_name, ref_var, ref_unit, data_name, data_name_id,
                    function, function_id, var_name, var_name_id, frequency, frequency_id, flag, flag_id,
                    input_files, input_files_id, input_df, input_df_id):
-    if click:
+    triggered_id = ctx.triggered_id
+    conf = {}
+    if triggered_id == 'run-validate' and click:
+    # if click:
         conf = _reorg_parameters(stime, etime, metrics, output_dir, run_name, ref_var, ref_unit, data_name, data_name_id,
                            function, function_id, var_name, var_name_id, frequency, frequency_id, flag, flag_id,
                            input_files, input_files_id, input_df, input_df_id)
-        combined_df, monthly_results = compare(conf)
-        time_series, histogram_options, unique_timeseries = _plot_timeseries(combined_df)
-        first_date = unique_timeseries.index[0]
-        last_date = unique_timeseries.index[-1]
-        year_month = list(set(unique_timeseries.index.to_period('M').astype(str).tolist()))
-        # year_month = ['All'] + list(set(year_month))
-        year_month.sort()
-        # _plot_metrics(monthly_results)
-        monthly_results.reset_index(inplace=True)
-        grouped = monthly_results.groupby(['compare'])
-        metrics_monthly_dict = {}
-        for item in grouped:
-            item[1].reset_index(inplace=True, drop=True)
-            for columnName, columnData in item[1].items():
-                if columnName not in ['compare', 'base', 'index']:
-                    if columnName not in metrics_monthly_dict:
-                        metrics_monthly_dict[columnName] = pd.DataFrame()
-                        metrics_monthly_dict[columnName]['timestamp'] = pd.DataFrame(item[1]['index'])
-                    metrics_monthly_dict[columnName][item[0][0]] = columnData
-        metrics_monthly_dict2 = {}
-        for key, value in metrics_monthly_dict.items():
-            metrics_monthly_dict2[key] = value.to_dict('records')
-        timeseries_link = 'time_series_' + run_name + '.csv'
-        metrics_link = 'metrics_' + run_name + '.csv'
-        annual_link = 'metrics_annual_' + run_name + '.csv'
-        monthly_link = 'metrics_monthly_' + run_name + '.csv'
-        weekly_link = 'metrics_weekly_' + run_name + '.csv'
-        daily_link = 'metrics_daily_' + run_name + '.csv'
-        hourly_link = 'metrics_hourly_' + run_name + '.csv'
-        return {'display': 'block'}, time_series, histogram_options, unique_timeseries.reset_index(names='index').to_dict('records'),\
-               histogram_options, year_month, histogram_options, histogram_options[0],\
-               histogram_options, histogram_options[-1], year_month, metrics, metrics[0], metrics_monthly_dict2, \
-               timeseries_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + timeseries_link).replace('\\', '/'), \
-               metrics_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + metrics_link).replace('\\', '/'), \
-               annual_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + annual_link).replace('\\', '/'), \
-               monthly_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + monthly_link).replace('\\', '/'), \
-               weekly_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + weekly_link).replace('\\', '/'), \
-               daily_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + daily_link).replace('\\', '/'), \
-               hourly_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + hourly_link).replace('\\', '/')
-                # first_date, last_date, first_date, last_date, \
+        # combined_df, monthly_results = compare(conf)
+        # time_series, histogram_options, unique_timeseries = _plot_timeseries(combined_df)
+        # first_date = unique_timeseries.index[0]
+        # last_date = unique_timeseries.index[-1]
+        # year_month = list(set(unique_timeseries.index.to_period('M').astype(str).tolist()))
+        # # year_month = ['All'] + list(set(year_month))
+        # year_month.sort()
+        # # _plot_metrics(monthly_results)
+        # monthly_results.reset_index(inplace=True)
+        # grouped = monthly_results.groupby(['compare'])
+        # metrics_monthly_dict = {}
+        # for item in grouped:
+        #     item[1].reset_index(inplace=True, drop=True)
+        #     for columnName, columnData in item[1].items():
+        #         if columnName not in ['compare', 'base', 'index']:
+        #             if columnName not in metrics_monthly_dict:
+        #                 metrics_monthly_dict[columnName] = pd.DataFrame()
+        #                 metrics_monthly_dict[columnName]['timestamp'] = pd.DataFrame(item[1]['index'])
+        #             metrics_monthly_dict[columnName][item[0][0]] = columnData
+        # metrics_monthly_dict2 = {}
+        # for key, value in metrics_monthly_dict.items():
+        #     metrics_monthly_dict2[key] = value.to_dict('records')
+        # timeseries_link = 'time_series_' + run_name + '.csv'
+        # metrics_link = 'metrics_' + run_name + '.csv'
+        # annual_link = 'metrics_annual_' + run_name + '.csv'
+        # monthly_link = 'metrics_monthly_' + run_name + '.csv'
+        # weekly_link = 'metrics_weekly_' + run_name + '.csv'
+        # daily_link = 'metrics_daily_' + run_name + '.csv'
+        # hourly_link = 'metrics_hourly_' + run_name + '.csv'
+        # return {'display': 'block'}, time_series, histogram_options, unique_timeseries.reset_index(names='index').to_dict('records'),\
+        #        histogram_options, year_month, histogram_options, histogram_options[0],\
+        #        histogram_options, histogram_options[-1], year_month, metrics, metrics[0], metrics_monthly_dict2, \
+        #        timeseries_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + timeseries_link).replace('\\', '/'), \
+        #        metrics_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + metrics_link).replace('\\', '/'), \
+        #        annual_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + annual_link).replace('\\', '/'), \
+        #        monthly_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + monthly_link).replace('\\', '/'), \
+        #        weekly_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + weekly_link).replace('\\', '/'), \
+        #        daily_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + daily_link).replace('\\', '/'), \
+        #        hourly_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + hourly_link).replace('\\', '/')
+        #         # first_date, last_date, first_date, last_date, \
+    elif triggered_id == 'configuration-upload':
+        if content is not None:
+            frags = filename.split('.')
+            if len(frags) == 2 and frags[1] == 'yaml':
+                content_type, content_string = content.split(',')
+                decoded = base64.b64decode(content_string)
+                conf = yaml.load(decoded, Loader=yaml.FullLoader)
+                # loads QC module
+                # crosscheck_ts = eval_tools.get_module_class('qc', 'crosscheck_ts_csv')(conf)
+                df = pd.read_csv(os.path.join((pathlib.Path(os.getcwd())), str(conf['base']['path'])))
+                conf['base']['df'] = {conf['base']['path']: df}
+                for comp in conf['comp']:
+                    df = pd.read_csv(os.path.join((pathlib.Path(os.getcwd())), str(comp['path'])))
+                    comp['df'] = {comp['path']: df}
     else:
         raise PreventUpdate
+    combined_df, monthly_results = compare(conf)
+    time_series, histogram_options, unique_timeseries = _plot_timeseries(combined_df)
+    first_date = unique_timeseries.index[0]
+    last_date = unique_timeseries.index[-1]
+    year_month = list(set(unique_timeseries.index.to_period('M').astype(str).tolist()))
+    # year_month = ['All'] + list(set(year_month))
+    year_month.sort()
+    # _plot_metrics(monthly_results)
+    monthly_results.reset_index(inplace=True)
+    grouped = monthly_results.groupby(['compare'])
+    metrics_monthly_dict = {}
+    for item in grouped:
+        item[1].reset_index(inplace=True, drop=True)
+        for columnName, columnData in item[1].items():
+            if columnName not in ['compare', 'base', 'index']:
+                if columnName not in metrics_monthly_dict:
+                    metrics_monthly_dict[columnName] = pd.DataFrame()
+                    metrics_monthly_dict[columnName]['timestamp'] = pd.DataFrame(item[1]['index'])
+                metrics_monthly_dict[columnName][item[0][0]] = columnData
+    metrics_monthly_dict2 = {}
+    for key, value in metrics_monthly_dict.items():
+        metrics_monthly_dict2[key] = value.to_dict('records')
+    run_name = conf['output']['org']
+    metrics = conf['metrics']
+    output_dir = os.path.join((pathlib.Path(os.getcwd())), str(conf['output']['path']))
+    timeseries_link = 'time_series_' + run_name + '.csv'
+    metrics_link = 'metrics_' + run_name + '.csv'
+    annual_link = 'metrics_annual_' + run_name + '.csv'
+    monthly_link = 'metrics_monthly_' + run_name + '.csv'
+    weekly_link = 'metrics_weekly_' + run_name + '.csv'
+    daily_link = 'metrics_daily_' + run_name + '.csv'
+    hourly_link = 'metrics_hourly_' + run_name + '.csv'
+    return {'display': 'block'}, time_series, histogram_options, unique_timeseries.reset_index(names='index').to_dict('records'),\
+           histogram_options, year_month, histogram_options, histogram_options[0],\
+           histogram_options, histogram_options[-1], year_month, metrics, metrics[0], metrics_monthly_dict2, \
+           timeseries_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + timeseries_link).replace('\\', '/'), \
+           metrics_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + metrics_link).replace('\\', '/'), \
+           annual_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + annual_link).replace('\\', '/'), \
+           monthly_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + monthly_link).replace('\\', '/'), \
+           weekly_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + weekly_link).replace('\\', '/'), \
+           daily_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + daily_link).replace('\\', '/'), \
+           hourly_link, ('ms-excel:ofe|u|file:///' + output_dir + '/' + hourly_link).replace('\\', '/')
 
 
 @app.callback(
