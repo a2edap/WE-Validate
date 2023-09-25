@@ -35,7 +35,7 @@ base:
   # name of dataset
   name: EIA 930
   # data directory
-  path: data/pluswind/EIA_930.csv
+  path: data/example/EIA_930.csv
   # name of data processing function
   function: csv
   # variable name
@@ -50,7 +50,7 @@ comp:
   # name of dataset
   - name: NREL 2018 (2032 ADS) - HRRR
     # data directory
-    path: data/pluswind/nrel_2018_(2032 ADS)-HRRR.csv
+    path: data/example/nrel_2018_(2032 ADS)-HRRR.csv
     # name of data processing function
     function: csv
     # variable name
@@ -63,7 +63,7 @@ comp:
   # name of dataset
   - name: PLUSWIND HRRR
     # data directory
-    path: data/pluswind/plant.c0.2018.57530.csv
+    path: data/example/example-HRRR.csv
     # name of data processing function
     function: csv
     # variable name
