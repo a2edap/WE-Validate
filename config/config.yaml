@@ -14,6 +14,7 @@ metrics:
   - bias_pct
   - mae
   - mae_pct
+  - cross_correlation
 
 # output
 output:
@@ -26,9 +27,9 @@ output:
   # save figures?
   save_figs: False
   # show figures?
-  show_figs: True
+  show_figs: False
   # print results?
-  print_results : False
+  print_results : True
 
 # baseline dataset
 base:
@@ -63,7 +64,7 @@ comp:
   # name of dataset
   - name: PLUSWIND HRRR
     # data directory
-    path: data/example/example-HRRR.csv
+    path: data/example/pluswind-HRRR.csv
     # name of data processing function
     function: csv
     # variable name

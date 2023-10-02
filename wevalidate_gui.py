@@ -22,6 +22,7 @@ from tools import eval_tools
 app = Dash(external_stylesheets=[dbc.themes.DARKLY])
 
 
+# noinspection PyPackageRequirements,PyPackageRequirements
 def _build_dataset_form(type, n):
     openicon = 'images/open.gif'
     open_icon = base64.b64encode(open(openicon, 'rb').read())
@@ -54,7 +55,7 @@ def _build_dataset_form(type, n):
                                         html.H6('Data Processing Function:', style={'margin-left': 50, 'text-align': 'right', 'width': 123}),
                                         dcc.Input(placeholder="If using csv files, no need to change this input",
                                                   id={"type": type, "parameter": "function", "index": n},
-                                                  value='yliu_validation_csv',
+                                                  value='csv',
                                                   style={'margin-left': 47, 'margin-top': 8, 'vertical-align': 'middle', 'width': 500, 'height': 30},
                                                   required=True)
                                     ],
@@ -212,7 +213,7 @@ def _run_gui(debug=True, port=8088):
                         ], style={'display': 'flex', 'margin-bottom': 5}),
                         html.Div(children=[
                             html.H5('Metrics:', style={'margin-left': 20, 'vertical-align': 'middle', 'width': 200}),
-                            dcc.Dropdown(['rmse', 'crmse', 'bias', 'bias_pct', 'mae', 'mae_pct'],
+                            dcc.Dropdown(['rmse', 'crmse', 'bias', 'bias_pct', 'mae', 'mae_pct', 'cross_correlation'],
                                          multi=True,
                                          id='metrics',
                                          placeholder="Select at least one metric to be calculated and plotted",
