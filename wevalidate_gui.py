@@ -28,7 +28,7 @@ def _build_dataset_form(type, n):
     open_icon = base64.b64encode(open(openicon, 'rb').read())
     return html.Div(children=[
                                     html.Div(children=[
-                                        html.H6('Name:', style={'margin-left': 130, 'vertical-align': 'middle', 'width': 90}),
+                                        html.H6('Name:', style={'margin-left': 128, 'vertical-align': 'middle', 'width': 92}),
                                         dcc.Input(placeholder="Name of the data set used in naming dataframe columns",
                                                   id={"type": type, "parameter": "data-name", "index": n},
                                                   style={'vertical-align': 'middle', 'width': 500},
@@ -69,7 +69,7 @@ def _build_dataset_form(type, n):
                                     ],
                                         style={'display': 'flex', 'margin-top': 5, 'margin-bottom': 5}),
                                     html.Div(children=[
-                                        html.H6('Frequency (min):', style={'margin-left': 70, 'vertical-align': 'middle', 'width': 150}),
+                                        html.H6('Frequency (min):', style={'margin-left': 57, 'vertical-align': 'middle', 'width': 163}),
                                         dcc.Input(placeholder="Data frequency in minutes",
                                                   id={"type": type, "parameter": "frequency", "index": n},
                                                   value=60,
