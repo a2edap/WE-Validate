@@ -51,15 +51,15 @@ def _build_dataset_form(type, n):
                                         dcc.Store(id={"type": type, "parameter": "file-content", "index": n})
                                     ],
                                         style={'display': 'flex', 'margin-top': 5, 'margin-bottom': 5}),
-                                    html.Div(children=[
-                                        html.H6('Data Processing Function:', style={'margin-left': 50, 'text-align': 'right', 'width': 123}),
-                                        dcc.Input(placeholder="If using csv files, no need to change this input",
-                                                  id={"type": type, "parameter": "function", "index": n},
-                                                  value='csv',
-                                                  style={'margin-left': 47, 'margin-top': 8, 'vertical-align': 'middle', 'width': 500, 'height': 30},
-                                                  required=True)
-                                    ],
-                                        style={'display': 'flex', 'margin-top': 5, 'margin-bottom': 5}),
+                                    # html.Div(children=[
+                                    #     html.H6('Data Processing Function:', style={'margin-left': 50, 'text-align': 'right', 'width': 123}),
+                                    #     dcc.Input(placeholder="If using csv files, no need to change this input",
+                                    #               id={"type": type, "parameter": "function", "index": n},
+                                    #               value='csv',
+                                    #               style={'margin-left': 47, 'margin-top': 8, 'vertical-align': 'middle', 'width': 500, 'height': 30},
+                                    #               required=True)
+                                    # ],
+                                    #     style={'display': 'flex', 'margin-top': 5, 'margin-bottom': 5}),
                                     html.Div(children=[
                                         html.H6('Variable Name:', style={'margin-left': 67, 'vertical-align': 'middle', 'width': 153}),
                                         dcc.Input(placeholder="Must match column header in csv file",
@@ -69,7 +69,7 @@ def _build_dataset_form(type, n):
                                     ],
                                         style={'display': 'flex', 'margin-top': 5, 'margin-bottom': 5}),
                                     html.Div(children=[
-                                        html.H6('Frequency (m):', style={'margin-left': 70, 'vertical-align': 'middle', 'width': 150}),
+                                        html.H6('Frequency (min):', style={'margin-left': 70, 'vertical-align': 'middle', 'width': 150}),
                                         dcc.Input(placeholder="Data frequency in minutes",
                                                   id={"type": type, "parameter": "frequency", "index": n},
                                                   value=60,
@@ -267,16 +267,16 @@ def _run_gui(debug=True, port=8088):
                         html.Div(
                             children=[
                                  html.Div(children=[
-                                     html.H5('Compare Data Set(s):', style={'margin-left': -10, 'vertical-align': 'middle', 'width': 230}),
+                                     html.H5('Compare Data Set(s):', style={'margin-left': 0, 'vertical-align': 'middle', 'width': 230}),
                                      html.Button('Add A Dataset',
                                                  id='add-data',
                                                  n_clicks=0,
-                                                 style={'vertical-align': 'top', 'margin-top': -5, 'border-radius': 8, 'height': 30})
+                                                 style={'vertical-align': 'top', 'margin-top': 0, 'border-radius': 8, 'height': 30})
                                  ],
                                      style={'display': 'flex'}),
                                  html.Div(id='comp-config',
                                           children=[],
-                                          style={'maxHeight': 250, "overflow": "scroll", 'margin-top': -5})
+                                          style={'maxHeight': 250, "overflow": "scroll", 'margin-top': 0})
                             ], style={'margin-top': 95, 'margin-bottom': 5})
                     ],
                         width=6)]
@@ -551,10 +551,10 @@ def _run_gui(debug=True, port=8088):
     Output('ref-var-name', 'value'),
     Output('ref-var-unit', 'value'),
     Output({"type": 'base', "parameter": "data-name", "index": 0}, 'value'),
-    Output({"type": 'base', "parameter": "function", "index": 0}, 'value'),
     Output({"type": 'base', "parameter": "var-name", "index": 0}, 'value'),
     Output({"type": 'base', "parameter": "frequency", "index": 0}, 'value'),
     Output({"type": 'base', "parameter": "flag", "index": 0}, 'value'),
+    # Output({"type": 'base', "parameter": "function", "index": 0}, 'value'),
     # Output({"type": 'comp', "parameter": "data-name", "index": 1}, 'value'),
     # Output({"type": 'comp', "parameter": "function", "index": 1}, 'value'),
     # Output({"type": 'comp', "parameter": "var-name", "index": 1}, 'value'),
@@ -582,7 +582,7 @@ def fill_config_from(content, filename):
             end = datetime.datetime.strftime(conf['time']['window']['end'], '%Y-%m-%dT%H:%M')
             return conf, start, end, ','.join(conf['metrics']), conf['output']['path'], conf['output']['org'],\
                    conf['reference']['var'], conf['reference']['units'], conf['base']['name'],\
-                   conf['base']['function'], conf['base']['var'], conf['base']['freq'], conf['base']['flag']#,\
+                   conf['base']['var'], conf['base']['freq'], conf['base']['flag'] # conf['base']['function'],
                    # conf['comp']['name'], conf['comp']['function'], conf['comp']['var'], conf['comp']['freq'],\
                    # conf['comp']['flag']
         else:
@@ -640,7 +640,7 @@ def select_file(filename_list, contents_list):
         raise PreventUpdate
 
 
-def _reorg_parameters(stime, etime, metrics, output_dir, run_name, ref_var, ref_unit, data_name, data_name_id, function, function_id,
+def _reorg_parameters(stime, etime, metrics, output_dir, run_name, ref_var, ref_unit, data_name, data_name_id, #function, function_id,
                 var_name, var_name_id, frequency, frequency_id, flag, flag_id, input_files, input_files_id, input_df, input_df_id):
     conf = {'location': None, 'time': {}, 'metrics': [], 'output': {}, 'base': {}, 'comp': [], 'reference': {}}
     conf['time']['window'] = {}
@@ -658,7 +658,8 @@ def _reorg_parameters(stime, etime, metrics, output_dir, run_name, ref_var, ref_
     base_idx = [x['index'] for x in data_name_id if x['type'] == 'base'][0]
     conf['base']['name'] = data_name[base_idx]
     conf['base']['path'] = input_files[base_idx]
-    conf['base']['function'] = function[base_idx]
+    # conf['base']['function'] = function[base_idx]
+    conf['base']['function'] = 'csv'
     conf['base']['var'] = var_name[base_idx]
     conf['base']['freq'] = frequency[base_idx]
     conf['base']['flag'] = flag[base_idx]
@@ -673,7 +674,8 @@ def _reorg_parameters(stime, etime, metrics, output_dir, run_name, ref_var, ref_
         comp = {}
         comp['name'] = data_name[idx]
         comp['path'] = input_files[idx]
-        comp['function'] = function[idx]
+        # comp['function'] = function[idx]
+        comp['function'] = 'csv'
         comp['var'] = var_name[idx]
         comp['freq'] = frequency[idx]
         comp['flag'] = flag[idx]
@@ -748,8 +750,8 @@ def _plot_timeseries(combined_df):
     State('ref-var-unit', 'value'),
     State({"type": ALL, "parameter": "data-name", "index": ALL}, 'value'),
     State({"type": ALL, "parameter": "data-name", "index": ALL}, 'id'),
-    State({"type": ALL, "parameter": "function", "index": ALL}, 'value'),
-    State({"type": ALL, "parameter": "function", "index": ALL}, 'id'),
+    # State({"type": ALL, "parameter": "function", "index": ALL}, 'value'),
+    # State({"type": ALL, "parameter": "function", "index": ALL}, 'id'),
     State({"type": ALL, "parameter": "var-name", "index": ALL}, 'value'),
     State({"type": ALL, "parameter": "var-name", "index": ALL}, 'id'),
     State({"type": ALL, "parameter": "frequency", "index": ALL}, 'value'),
@@ -766,15 +768,17 @@ def _plot_timeseries(combined_df):
     prevent_initial_call=True,
 )
 def run_validation(click, content, filename, stime, etime, metrics, output_dir, run_name, ref_var, ref_unit, data_name, data_name_id,
-                   function, function_id, var_name, var_name_id, frequency, frequency_id, flag, flag_id,
+                   # function, function_id,
+                   var_name, var_name_id, frequency, frequency_id, flag, flag_id,
                    input_files, input_files_id, input_df, input_df_id):
     triggered_id = ctx.triggered_id
     conf = {}
     if triggered_id == 'run-validate' and click:
     # if click:
         conf = _reorg_parameters(stime, etime, metrics, output_dir, run_name, ref_var, ref_unit, data_name, data_name_id,
-                           function, function_id, var_name, var_name_id, frequency, frequency_id, flag, flag_id,
-                           input_files, input_files_id, input_df, input_df_id)
+                           # function, function_id,
+                                 var_name, var_name_id, frequency, frequency_id, flag, flag_id,
+                                 input_files, input_files_id, input_df, input_df_id)
         # combined_df, monthly_results = compare(conf)
         # time_series, histogram_options, unique_timeseries = _plot_timeseries(combined_df)
         # first_date = unique_timeseries.index[0]
