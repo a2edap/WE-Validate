@@ -98,13 +98,12 @@ To run this application, Python 3 and pip is required. The following installatio
 To make it easy for you to get started with WE-Validate GUI, here's a list of recommended next steps.
 
 1, git clone https://github.com/a2edap/WE-Validate.git \
-2, switch to the gui branch by: git checkout gui \
-3, python -m pip install virtualenv (optional, if you want to run the app in virtual environment and does not have virtualenv installed) \
-4, python -m venv env (optional, setting up the virtual environment called env) \
-5, source env/Scripts/activate (optional, starting the virtual environment) \
-6, pip install -r requirements.txt \
-8, python wevalidate_gui.py \
-9, copy and paste the serve address (http://127.0.0.1:8088/ or localhost:8088) into web browser \
-10, Crtl + c to stop server \
-11, deactivate (optional, once done, deactivate the virtual environment) 
+2, python -m pip install virtualenv (optional, if you want to run the app in virtual environment and does not have virtualenv installed) \
+3, python -m venv env (optional, setting up the virtual environment called env) \
+4, source env/Scripts/activate (optional, starting the virtual environment) \
+5, pip install -r requirements.txt \
+6, python wevalidate_gui.py \
+7, copy and paste the serve address (http://127.0.0.1:8088/ or localhost:8088) into web browser \
+8, Crtl + c to stop server \
+9, deactivate (optional, once done, deactivate the virtual environment) 
 
