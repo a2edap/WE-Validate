@@ -81,10 +81,7 @@ The current implementation is serial, however future versions may exploit local 
 
 ## Contributors
 
-The [original version](https://github.com/somerandomsequence/nwtc-ivalidate) of the code was first developed by Caleb Phillips in 2016. Joseph Lee has been building onto Phillips's code and [implemented further development](https://github.com/joejoeyjoseph/nwtc-ivalidate) since 2020. For questions and comments regarding the current version of the code, please contact Joseph Lee at <joseph.lee at pnnl.gov>.
-
-Our contributors in alphabetical order:
-Larry Berg, Caroline Draxl, Joseph Lee, and Will Shaw. 
+The [original version](https://github.com/somerandomsequence/nwtc-ivalidate) of the code was first developed by Caleb Phillips in 2016. Joseph Lee built onto Phillips's code and [implemented further development](https://github.com/joejoeyjoseph/nwtc-ivalidate) until 2022. Malcolm Moncheur and Heng Wang built onto Lee's code and developed the GUI.
 
 # WE-Validate GUI
 
@@ -93,7 +90,7 @@ This is the GUI for the WE-Validate written in Python 3.
 ## Requirements
 To run this application, Python 3 and pip is required. The following installation instruction is for Windows only.
 
-## Installation Instruction
+## Installation Instructions
 
 To make it easy for you to get started with WE-Validate GUI, here's a list of recommended next steps.
 
@@ -120,14 +117,17 @@ The follow table describes the GUI's various input parameters:
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Time Window                  | Defines the start and end times of the validation period. Must be input in the following format: MM/DD/YYYY HH:MM:SS                                                                                                                                     |
 | Metrics                      | Selects validation metrics. Any combination of the following metrics can be selected: Centered Root Mean Squared Error (CRMSE), Bias, Percent Bias, Mean Average Error (MAE), Percent MAE, Cross-correlation. Selecting at least one metric is required. |
-| Output Directory             | Output directory path.                                                                                                                                                                                                                                   |
-| Name of the Run              | Simulation name. It is appended to the end of all saved files.                                                                                                                                                                                           |
-| Variable Name                | Validation variable name to be displayed on figures. The csv column header of the data being validated must match the ‘Variable Name’ input field (e.g. if the column header is ‘power’, then the ‘Variable Name’ should be ‘power’).                    |
-| Variable Unit                | Validation variable units to be displayed on figures.                                                                                                                                                                                                    |
+| Output Directory             | Output directory path                                                                                                                                                                                                                                   |
+| Name of the Run              | Simulation name. It is appended to the end of all saved files                                                                                                                                                                                           |
+| Variable Name                | Validation variable name to be displayed on figures. The csv column header of the data being validated must match the ‘Variable Name’ input field (e.g. if the column header is ‘power’, then the ‘Variable Name’ should be ‘power’)                    |
+| Variable Unit                | Validation variable units to be displayed on figures                                                                                                                                                                                                   |
 | Name                         | Dataset name. Displays on figures and output files                                                                                                                                                                                                       |
-| Data Path                    | Defines the path to the file                                                                                                                                                                                                                             |
+| Data Path                    | Defines the path to the file. Must be an absolute file path                                                                                                                                                                                                                             |
 | Variable Name                | Column header for the variable of interest in input csv file                                                                                                                                                                                             |
 | Frequency                    | Validation variable frequency, in minutes                                                                                                                                                                                                                |
 
 
+## Results
+The  GUI provides the user graphical outputs of time series, histograms of the power, a scatterplot of correlation between time series, and plots that display each user-defined metric on a monthly basis, illustrating the temporal dependence of the relationship between the baseline and comparison data. The GUI supports zooming into specific time intervals to visually compare the baseline and comparison data sets.
+WE-Validate also generates tabular data containing the seven user-defined metrics in the form of individual csv files, calculated on an hourly, daily, weekly, monthly, and annual basis.
 
