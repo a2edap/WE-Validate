@@ -107,3 +107,27 @@ To make it easy for you to get started with WE-Validate GUI, here's a list of re
 8, Crtl + c to stop server \
 9, deactivate (optional, once done, deactivate the virtual environment) 
 
+## Configuration
+
+If a configuration yaml file already exists, drag and drop or select it.
+If no config file exists, user can fill out the form and click the Run WeValidate button below.
+
+## Input Parameters
+
+The follow table describes the GUI's various input parameters:
+
+| Input                        | Description                                                                                                                                                                                                                                              |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Time Window                  | Defines the start and end times of the validation period. Must be input in the following format: MM/DD/YYYY HH:MM:SS                                                                                                                                     |
+| Metrics                      | Selects validation metrics. Any combination of the following metrics can be selected: Centered Root Mean Squared Error (CRMSE), Bias, Percent Bias, Mean Average Error (MAE), Percent MAE, Cross-correlation. Selecting at least one metric is required. |
+| Output Directory             | Output directory path.                                                                                                                                                                                                                                   |
+| Name of the Run              | Simulation name. It is appended to the end of all saved files.                                                                                                                                                                                           |
+| Variable Name                | Validation variable name to be displayed on figures. The csv column header of the data being validated must match the ‘Variable Name’ input field (e.g. if the column header is ‘power’, then the ‘Variable Name’ should be ‘power’).                    |
+| Variable Unit                | Validation variable units to be displayed on figures.                                                                                                                                                                                                    |
+| Name                         | Dataset name. Displays on figures and output files                                                                                                                                                                                                       |
+| Data Path                    | Defines the path to the file                                                                                                                                                                                                                             |
+| Variable Name                | Column header for the variable of interest in input csv file                                                                                                                                                                                             |
+| Frequency                    | Validation variable frequency, in minutes                                                                                                                                                                                                                |
+
+
+
