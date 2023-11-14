@@ -81,7 +81,7 @@ The current implementation is serial, however future versions may exploit local 
 
 ## Contributors
 
-The [original version](https://github.com/somerandomsequence/nwtc-ivalidate) of the code was first developed by Caleb Phillips in 2016. Joseph Lee built onto Phillips's code and [implemented further development](https://github.com/joejoeyjoseph/nwtc-ivalidate) until 2022. Malcolm Moncheur and Heng Wang built onto Lee's code and developed the GUI.
+The [original version](https://github.com/somerandomsequence/nwtc-ivalidate) of the code was first developed by Caleb Phillips in 2016. Joseph Lee built onto Phillips's code and [implemented further development](https://github.com/joejoeyjoseph/nwtc-ivalidate). Malcolm Moncheur and Heng Wang built onto Lee's code and developed the GUI.
 
 # WE-Validate GUI
 
