@@ -19,7 +19,7 @@ import pathlib
 from validate import compare
 from tools import eval_tools
 
-app = Dash(external_stylesheets=[dbc.themes.DARKLY])
+app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 
 # noinspection PyPackageRequirements,PyPackageRequirements
@@ -90,51 +90,12 @@ def _build_dataset_form(type, n):
 
 
 def _run_gui(debug=True, port=8088):
-    # openicon = 'images/open.gif'
-    # open_icon = base64.b64encode(open(openicon, 'rb').read())
-    plotly_template = pio.templates["plotly_dark"]
-    # print(plotly_template)
-
-    pio.templates["plotly_dark_custom"] = pio.templates["plotly_dark"]
-
-    pio.templates["plotly_dark_custom"].update({'layout': {
-        'font': {'color': '#aaa'},
-        'paper_bgcolor': 'rgba(0,0,0,0)',
-        'plot_bgcolor': 'rgba(0,0,0,0)',
-        'geo': {'bgcolor': 'rgba(0,0,0,0)',
-                'lakecolor': 'rgba(0,0,0,0)',
-                'landcolor': 'rgba(0,0,0,0)',
-                'showlakes': True,
-                'showland': True,
-                'subunitcolor': '#506784'},
-    }})
-    pio.templates.default = "plotly_dark_custom"
-    tab_style = {
-        'backgroundColor': '#222',
-        'borderTop': '1px solid #222',
-        'borderLeft': '1px solid #222',
-        'borderRight': '1px solid #222',
-        'borderBottom': '0.1px solid grey',
-        'padding': '0px',
-        'fontWeight': 'bold',
-    }
-
-    tab_selected_style = {
-        'borderTop': '3px solid #119DFF',
-        'borderBottom': '1px solid #222',
-        'borderLeft': '1px solid #222',
-        'borderRight': '1px solid #222',
-        'backgroundColor': 'black',
-        'color': 'WhiteSmoke',
-        'padding': '6px'
-    }
-
     app.title = "We Validate"
     app.layout = dbc.Container(
         [
             # html.Div(
             html.H2("WeValidate GUI",
-                    style={'color': 'WhiteSmoke', 'vertical-align': 'middle',
+                    style={'vertical-align': 'middle',
                            'word-spacing': '15px', 'textAlign': 'center', 'margin-bottom': 0}),
             html.Hr(style={'margin-top': 0}),
             #     style={'textAlign': 'center'}
@@ -167,7 +128,7 @@ def _run_gui(debug=True, port=8088):
                     #
                     # ]),
                     html.H4("Configurations",
-                            style={'display': 'inline-block', 'color': 'WhiteSmoke', 'vertical-align': 'middle',
+                            style={'display': 'inline-block', 'vertical-align': 'middle',
                                    'word-spacing': '15px'})
                 ),
                 dbc.Row([
@@ -341,7 +302,7 @@ def _run_gui(debug=True, port=8088):
                         dcc.Tab(label='Time Series', children=[
                             html.Div(style={'height': 76}),
                             dcc.Graph(id='time_series', style={'padding-top': 20, 'height': '65vh'})
-                        ], style=tab_style, selected_style=tab_selected_style),
+                        ]),
                         dcc.Tab(label='Histogram', children=[
                             dbc.Row([
                                 dbc.Col(html.Label('Data:', style={'vertical-align': 'middle', 'horizontal-align': 'right', 'textAlign': 'right'}), width=1),
@@ -367,7 +328,7 @@ def _run_gui(debug=True, port=8088):
                             # dcc.Graph(
                             #     id='histogram2'
                             # ),
-                        ], style=tab_style, selected_style=tab_selected_style),
+                        ]),
                         dcc.Tab(label='Scatter Plot', children=[
                             dbc.Row([
                                 dbc.Col(html.Label('X:'), width=1),
@@ -383,7 +344,7 @@ def _run_gui(debug=True, port=8088):
                             dcc.Graph(
                                 id='scatter-plot', style={'height': '65vh'}
                             ),
-                        ], style=tab_style, selected_style=tab_selected_style),
+                        ]),
                         dcc.Tab(label='Monthly Metrics', children=[
                             dbc.Row([
                                 dbc.Col(html.Label('Metrics:'), width=1),
@@ -393,7 +354,7 @@ def _run_gui(debug=True, port=8088):
                             dcc.Graph(
                                 id='metrics-plot', style={'height': '65vh'}
                             ),
-                        ], style=tab_style, selected_style=tab_selected_style),
+                        ]),
                         dcc.Tab(label='CSV Files', children=[
                             html.Div(style={'height': 76}),
                             dbc.Col(dbc.Row(children=[
@@ -420,13 +381,8 @@ def _run_gui(debug=True, port=8088):
                                 ], style={'padding-left': 20})
                             ], style={'height': '65vh'}
                             ), width={"size": 3})
-                        ], style=tab_style, selected_style=tab_selected_style),
-                    ], style=tab_style,
-                        # colors={
-                        # "border": "WhiteSmoke",
-                        # "primary": "#222",
-                        # "background": "#222"}
-                    ),
+                        ]),
+                    ]),
                     html.Div(children=[
                         html.Button('Save Outputs',
                                     id='save-output',
