@@ -7,11 +7,11 @@ import sys
 import pandas as pd
 
 
-def remove_na(combine_df, ramp_txt=False):
+def remove_na(full_df, ramp_txt=False):
 
-    compute_df = combine_df.dropna()
+    compute_df = full_df.dropna()
 
-    only_na = combine_df[~combine_df.index.isin(compute_df.index)]
+    only_na = full_df[~full_df.index.isin(compute_df.index)]
 
     if ramp_txt is True:
         print_txt = 'ramp skill scores'
@@ -41,7 +41,7 @@ def calc_metrics(x, y, freq, func=None): #'MS','W','A','D','H'
     return corr
 
 
-def run(combine_df, metrics, results, ind, c, conf, base, aggregations):
+def run(full_df, metrics, results, ind, c, conf, base, aggregations, analysis_type):
     """Calculate metrics and print results.
     Remove NaNs in data frame.
     For each data column combination, split into baseline and
@@ -49,7 +49,7 @@ def run(combine_df, metrics, results, ind, c, conf, base, aggregations):
     Calculate and print metrics, as listed in the yaml file.
     """
 
-    compute_df = remove_na(combine_df)
+    compute_df = remove_na(full_df)
 
     # For future purposes,
     # In case of reading in multiple compare data columns
@@ -74,7 +74,7 @@ def run(combine_df, metrics, results, ind, c, conf, base, aggregations):
                 # aggregation_results[a] = results[ind][m.__class__.__name__]
                 aggregation_results[a][m.__class__.__name__] = calc_metrics(x,y,freq=a,func=m.compute)
 
-        results[ind].update(aggregation_results)
+        results[ind][analysis_type] = aggregation_results
         # Malcolm to do -- is this impacted?
         if conf['output']['print_results'] is True:
 

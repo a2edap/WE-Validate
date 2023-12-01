@@ -10,22 +10,24 @@ time:
 metrics:
   - rmse
   - crmse
-  - bias
-  - bias_pct
-  - mae
-  - mae_pct
-  - cross_correlation
+  # - bias
+  # - bias_pct
+  # - mae
+  # - mae_pct
+  # - cross_correlation
 
-# analysis type (base or swingdoor)
 analysis:
-  - base
-  - swingdoor
-    - magnitude
+  - base_analysis
+  - swingdoor-mag
+  # - swingdoor-ramp
+  # - swingdoor-dur
+
+
 
 aggregation:
   - MS
-  - D
-  - H
+  # - D
+  # - H
 
 # output
 output:
@@ -60,7 +62,7 @@ base:
 # data input to be compared with the baseline dataset
 comp:
   # name of dataset
-  - name: NREL 2018 (2032 ADS) - HRRR
+  - name: NWPDB HRRR
     # data directory
     path: data/example/nwpdb-HRRR.csv
     # name of data processing function
