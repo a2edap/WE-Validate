@@ -28,49 +28,20 @@ def remove_na(combine_df, ramp_txt=False):
 
     return compute_df
 
-def monthly_metrics(x, y, freq='MS', func=None):
-    x_list = list(x.resample(freq))
-    y_list = list(y.resample(freq))
-
-    corr = [func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
-    corr = pd.Series(corr, index=[_x[0] for _x in x_list])
-    return corr
-
-def weekly_metrics(x, y, freq='W', func=None):
-    x_list = list(x.resample(freq))
-    y_list = list(y.resample(freq))
-
-    corr = [func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
-    corr = pd.Series(corr, index=[_x[0] for _x in x_list])
-    return corr
-
-def annual_metrics(x, y, freq='A', func=None):
-    x_list = list(x.resample(freq))
-    y_list = list(y.resample(freq))
-
-    corr = [func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
-    corr = pd.Series(corr, index=[_x[0] for _x in x_list])
-    return corr
-
-def daily_metrics(x, y, freq='D', func=None):
-    x_list = list(x.resample(freq))
-    y_list = list(y.resample(freq))
-
-    corr = [func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
-    corr = pd.Series(corr, index=[_x[0] for _x in x_list])
-    return corr
-
-def hourly_metrics(x, y, func=None):
-
-    x_list = list(x.groupby([x.index.hour]))
-    y_list = list(y.groupby([y.index.hour]))
+def calc_metrics(x, y, freq, func=None): #'MS','W','A','D','H'
+    if freq=='H':
+        x_list = list(x.groupby([x.index.hour]))
+        y_list = list(y.groupby([y.index.hour]))
+    else:
+        x_list = list(x.resample(freq))
+        y_list = list(y.resample(freq))
 
     corr = [func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
     corr = pd.Series(corr, index=[_x[0] for _x in x_list])
     return corr
 
 
-def run(combine_df, metrics, results, ind, c, conf, base, monthly_results, weekly_results, annual_results, daily_results, hourly_results):
+def run(combine_df, metrics, results, ind, c, conf, base, aggregations):
     """Calculate metrics and print results.
     Remove NaNs in data frame.
     For each data column combination, split into baseline and
@@ -94,41 +65,17 @@ def run(combine_df, metrics, results, ind, c, conf, base, monthly_results, weekl
                      + ' not equal!'
                      )
 
-        monthly_dict = {}
-        monthly_dict['compare'] = c['name']
-        monthly_dict['base'] = base['name']
+        aggregation_results = {}
+        for a in aggregations:
+            aggregation_results[a]={'compare':c['name'],
+                        'base': base['name']}
+            for m in metrics:
+                # results[ind][m.__class__.__name__] = calc_metrics(x,y,freq=a,func=m.compute)
+                # aggregation_results[a] = results[ind][m.__class__.__name__]
+                aggregation_results[a][m.__class__.__name__] = calc_metrics(x,y,freq=a,func=m.compute)
 
-        weekly_dict = {}
-        weekly_dict['compare'] = c['name']
-        weekly_dict['base'] = base['name']
-
-        annual_dict = {}
-        annual_dict['compare'] = c['name']
-        annual_dict['base'] = base['name']
-
-        daily_dict = {}
-        daily_dict['compare'] = c['name']
-        daily_dict['base'] = base['name']
-
-        hourly_dict = {}
-        hourly_dict['compare'] = c['name']
-        hourly_dict['base'] = base['name']
-
-        for m in metrics:
-
-            results[ind][m.__class__.__name__] = m.compute(x, y)
-            monthly_dict[m.__class__.__name__] = monthly_metrics(x, y, func=m.compute)
-            weekly_dict[m.__class__.__name__] = weekly_metrics(x, y, func=m.compute)
-            annual_dict[m.__class__.__name__] = annual_metrics(x, y, func=m.compute)
-            daily_dict[m.__class__.__name__] = daily_metrics(x, y, func=m.compute)
-            hourly_dict[m.__class__.__name__] = hourly_metrics(x, y, func=m.compute)
-
-        monthly_results.append(monthly_dict)
-        weekly_results.append(weekly_dict)
-        annual_results.append(annual_dict)
-        daily_results.append(daily_dict)
-        hourly_results.append(hourly_dict)
-
+        results[ind].update(aggregation_results)
+        # Malcolm to do -- is this impacted?
         if conf['output']['print_results'] is True:
 
             print()

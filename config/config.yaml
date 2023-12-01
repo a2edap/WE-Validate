@@ -16,6 +16,17 @@ metrics:
   - mae_pct
   - cross_correlation
 
+# analysis type (base or swingdoor)
+analysis:
+  - base
+  - swingdoor
+    - magnitude
+
+aggregation:
+  - MS
+  - D
+  - H
+
 # output
 output:
   # output folder path
