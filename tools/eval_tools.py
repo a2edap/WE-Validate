@@ -23,7 +23,7 @@ def apply_trans(ts, modlist):
     return ts
 
 
-def append_results(results, base, c, conf, analysis):
+def append_results(results, base, c, analysis):
     """Append results before calculating metrics."""
 
     results.append({'truth name': base['name'],

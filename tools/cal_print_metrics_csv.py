@@ -5,6 +5,7 @@ import itertools
 from tools import eval_tools
 import sys
 import pandas as pd
+import inspect
 
 
 def remove_na(full_df, ramp_txt=False):
@@ -28,7 +29,8 @@ def remove_na(full_df, ramp_txt=False):
 
     return compute_df
 
-def calc_metrics(x, y, freq, func=None): #'MS','W','A','D','H'
+def calc_metrics(x, y, freq, func=None, z=None): #'MS','W','A','D','H'
+
     if freq=='H':
         x_list = list(x.groupby([x.index.hour]))
         y_list = list(y.groupby([y.index.hour]))
@@ -36,7 +38,7 @@ def calc_metrics(x, y, freq, func=None): #'MS','W','A','D','H'
         x_list = list(x.resample(freq))
         y_list = list(y.resample(freq))
 
-    corr = [func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
+    corr = [func(_x[1], _y[1], z) if z is not None else func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
     corr = pd.Series(corr, index=[_x[0] for _x in x_list])
     return corr
 
@@ -59,6 +61,11 @@ def run(full_df, metrics, results, ind, c, conf, base, aggregations, analysis_ty
         x = compute_df[pair[0]]
         y = compute_df[pair[1]]
 
+        if conf['capacity'] is None:
+            z = x.max()
+        else:
+            z = conf['capacity']
+
         if len(x) != len(y):
 
             sys.exit('Lengths of baseline and compare datasets are'
@@ -70,28 +77,10 @@ def run(full_df, metrics, results, ind, c, conf, base, aggregations, analysis_ty
             aggregation_results[a]={'compare':c['name'],
                         'base': base['name']}
             for m in metrics:
-                # results[ind][m.__class__.__name__] = calc_metrics(x,y,freq=a,func=m.compute)
-                # aggregation_results[a] = results[ind][m.__class__.__name__]
-                aggregation_results[a][m.__class__.__name__] = calc_metrics(x,y,freq=a,func=m.compute)
+                # bias_pct and mae_pct both use z (capacity of power plant)
+                if "z" in inspect.signature(m.compute).parameters:
+                    aggregation_results[a][m.__class__.__name__] = calc_metrics(x, y, freq=a, func=m.compute, z=z)
+                else:
+                    aggregation_results[a][m.__class__.__name__] = calc_metrics(x, y, freq=a, func=m.compute, z=None)
 
         results[ind][analysis_type] = aggregation_results
-        # Malcolm to do -- is this impacted?
-        if conf['output']['print_results'] is True:
-
-            print()
-            print('==-- '+conf['reference']['var']+' metrics: '+c['name']
-                  + ' - '+base['name']+' --=='
-                  )
-            print()
-
-            for key, val in results[ind].items():
-
-                if isinstance(val, float):
-
-                    end_units = ''
-                    suffix_pct = 'pct'
-
-                    if str(key).endswith(suffix_pct):
-                        end_units = '%'
-
-                    print(str(key)+': '+str(np.round(val, 3))+end_units)

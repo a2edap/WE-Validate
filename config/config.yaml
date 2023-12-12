@@ -10,46 +10,49 @@ time:
 metrics:
   - rmse
   - crmse
-  # - bias
-  # - bias_pct
-  # - mae
-  # - mae_pct
-  # - cross_correlation
+  - bias
+  - bias_pct
+  - mae
+  - mae_pct
+  - cross_correlation
+
+# power plant capacity. should have same units as reference.
+# used to normalize average percent bias (bias_pct) and mean average percent error (mae_pct)
+# If left blank, will be calculated from the max of the baseline dataset
+capacity: 104
 
 analysis:
   - base_analysis
   - swingdoor-mag
-  # - swingdoor-ramp
-  # - swingdoor-dur
+  - swingdoor-ramp
+  - swingdoor-dur
 
 
 
 aggregation:
   - MS
-  # - D
-  # - H
+  - D
+  - H
 
 # output
 output:
   # output folder path
   path: output
   # name of the run
-  org: palouse
+  org: test
   # save metrics?
   save_metrics: True
   # save figures?
   save_figs: False
   # show figures?
   show_figs: False
-  # print results?
-  print_results : True
 
 # baseline dataset
 base:
   # name of dataset
   name: EIA 930
   # data directory
-  path: data/example/EIA_930.csv
+  path: data/example/EIA-930.csv
   # name of data processing function
   function: csv
   # variable name
@@ -89,9 +92,8 @@ comp:
 
 
 # reference
-reference: 
+reference:
   # variable name to be displayed
   var: Power
   # variable units
   units: MW
-
