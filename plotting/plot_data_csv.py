@@ -9,6 +9,7 @@ import itertools
 import math
 import os
 import pathlib
+from pathlib import Path
 
 
 class plot_data_csv:
@@ -23,6 +24,7 @@ class plot_data_csv:
         self.showfig = conf['output']['show_figs']
 
         self.path = conf['output']['path']
+        output_path = Path(self.path)
 
         self.org = conf['output']['org']
 
@@ -56,8 +58,8 @@ class plot_data_csv:
                 plt.ylabel(self.var)
 
             plt.title(self.var + ': ' + df.columns[0] + ' - ' + df.columns[1])
-            plt.savefig(output_path + '\\timeseries_' + df.columns[0] + "-" + df.columns[
-                1] + '_' + self.org + '.png')
+
+            plt.savefig(os.path.join(self.path, f'timeseries_{df.columns[0]}-{df.columns[1]}_{self.org}.png'))
 
             if self.showfig is True:
                 plt.show()
@@ -126,7 +128,7 @@ class plot_data_csv:
                     plt.plot(selected_month.index, selected_month[col], label=col)
 
                 count += 1
-                plt.title(selected_month.index.strftime("%B").any())
+                plt.title(selected_month.index[0].strftime("%B"))
                 plt.tight_layout(rect=[0,0,1,0.95])
                 plt.xticks(rotation=90)
                 plt.suptitle(self.var + ': ' + df.columns[0] + ' - ' + df.columns[1])
@@ -137,8 +139,8 @@ class plot_data_csv:
                     plt.ylabel(self.var)
 
             plt.legend()
-            plt.savefig(output_path + '\\timeseries_monthly_' + df.columns[0] + "-" + df.columns[
-                1] + '_' + self.org + '.png', bbox_inches='tight')
+
+            plt.savefig(os.path.join(self.path, f'timeseries_monthly_{df.columns[0]}-{df.columns[1]}_{self.org}.png'), bbox_inches='tight')
 
             if self.showfig is True:
                 plt.show()
@@ -158,7 +160,7 @@ class plot_data_csv:
                     for col in df.columns:
                         plt.plot(selected_month.index, selected_month[col], label=col)
                     count += 1
-                    plt.title(selected_month.index.strftime("%B").any())
+                    plt.title(selected_month.index[0].strftime("%B"))
                     plt.tight_layout(rect=[0, 0, 1, 0.95])
                     plt.xticks(rotation=90)
                     plt.suptitle(self.var + ': ' + df.columns[0] + ' - ' + df.columns[1])
@@ -233,9 +235,7 @@ class plot_data_csv:
                           + ' * ' + pair[1] + ' + ' + str(round(coeffs[1], 3))
                           + r'$, R{^2} = $' + str(round(r2, 3))
                           )
-
-                plt.savefig(output_path + '\\scatterplot_' + df.columns[0] + "-" + df.columns[
-                    1] + '_' + self.org + '.png')
+                plt.savefig(os.path.join(self.path, f'scatterplot_{df.columns[0]}-{df.columns[1]}_{self.org}.png'))
 
             if self.showfig is True:
                 plt.show()
@@ -374,7 +374,7 @@ class plot_data_csv:
                     count += 1
 
                     # Linear equation for title
-                    plt.title(selected_month.index.strftime("%B").any() + ' '
+                    plt.title(selected_month.index.strftime("%B")[0] + ' '
                               + '\n linear fit: ' + pair[0] + ' = '
                               + str(round(coeffs[0], 3))
                               + ' * ' + pair[1] + ' + ' + str(round(coeffs[1], 3)) + '\n'
@@ -384,9 +384,8 @@ class plot_data_csv:
                     plt.tight_layout(rect=[0, 0, 1, 0.9])
                     suptitle = 'Monthly ' + self.var + ' Scatterplot: ' + selected_month.columns[0] + " - " + selected_month.columns[1]
                     plt.suptitle(suptitle)
-
-                    plt.savefig(output_path + '\\scatterplot_monthly_' + selected_month.columns[0] + "-" + selected_month.columns[
-                        1] + '_' + self.org + '.png')
+                    plt.savefig(os.path.join(self.path, f'scatterplot_monthly_{df.columns[0]}-{selected_month.columns[
+                        1]}_{self.org}.png'), bbox_inches='tight')
 
             if self.showfig is True:
                 plt.show()
@@ -440,7 +439,7 @@ class plot_data_csv:
                         count += 1
 
                         # Linear equation for title
-                        plt.title(selected_month.index.strftime("%B").any() + ' '
+                        plt.title(selected_month.columns[0] + ' '
                                   + '\n linear fit: ' + pair[0] + ' = '
                                   + str(round(coeffs[0], 3))
                                   + ' * ' + pair[1] + ' + ' + str(round(coeffs[1], 3))+ '\n'
@@ -472,7 +471,7 @@ class plot_data_csv:
             plt.xlabel(self.var + ' (' + self.units + ')')
             plt.ylabel('count')
             plt.title(self.var + ': ' + df.columns[0] + ' - ' + df.columns[1])
-            plt.savefig(output_path + '\\histogram_' + df.columns[0] + "-" + df.columns[1] + '_' + self.org + '.png')
+            plt.savefig(os.path.join(self.path, f'histogram_{df.columns[0]}-{df.columns[1]}_{self.org}.png'))
 
             if self.showfig is True:
                 plt.show()
@@ -535,12 +534,11 @@ class plot_data_csv:
 
                 plt.xlabel(self.var + ' (' + self.units + ')')
                 plt.ylabel('count')
-                plt.title(selected_month.index.strftime("%B").any())
+                plt.title(selected_month.index[0].strftime("%B"))
                 plt.tight_layout(rect=[0, 0, 1, 0.95])
                 suptitle = 'Monthly Histogram: ' + df.columns[0] + " - "+ df.columns[1]
                 plt.suptitle(suptitle)
-                plt.savefig(output_path + '\\histogram_monthly_' + df.columns[0] + "-" + df.columns[
-                    1] + '_' + self.org + '.png')
+                plt.savefig(os.path.join(self.path, f'histogram_monthly_{df.columns[0]}-{df.columns[1]}_{self.org}.png'))
 
             plt.legend()
 
@@ -564,7 +562,7 @@ class plot_data_csv:
 
                     plt.xlabel(self.var + ' (' + self.units + ')')
                     plt.ylabel('count')
-                    plt.title(selected_month.index.strftime("%B").any())
+                    plt.title(selected_month.index[0].strftime("%B"))
                     plt.tight_layout(rect=[0, 0, 1, 0.95])
                     suptitle = 'Monthly Histogram: ' + df.columns[0] + " - " + df.columns[1]
                     plt.suptitle(suptitle)
@@ -610,7 +608,7 @@ class plot_data_csv:
                 plt.tight_layout(rect=[0,0,1,0.95])
                 suptitle = 'Monthly Metrics: ' + monthly_dict['base'] + " - "+ monthly_dict['compare']
                 plt.suptitle(suptitle)
-                plt.savefig(output_path + '\\metrics_monthly_' + monthly_dict['base'] + "-"+ monthly_dict['compare'] + '_' + self.org + '.png', bbox_inches='tight')
+                plt.savefig(os.path.join(self.path, f'metrics_monthly_{monthly_dict['base']}-{monthly_dict['compare']}_{self.org}.png'), bbox_inches='tight')
 
             if self.showfig is True:
                 plt.show()

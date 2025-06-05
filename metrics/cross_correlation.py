@@ -6,8 +6,8 @@ import numpy as np
 
 class cross_correlation:
 
-    def compute(self, x, y):
+    def compute(self, x, y, z):
 
         # x is baseline
-        z = np.corrcoef(x, y)
-        return float(z[0,1])
+        q = np.corrcoef(x, y)
+        return float(q[0,1])

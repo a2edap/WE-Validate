@@ -12,9 +12,10 @@ import pandas as pd
 
 from tools import eval_tools, cal_print_metrics_csv
 
-config = 'config.yaml'
+config = 'config_PS1.yaml'
 
-# this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuratiom name.
+
+# this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
 
 def compare(config=None):
@@ -31,11 +32,29 @@ def compare(config=None):
 
     conf = yaml.load(open(config_file), Loader=yaml.FullLoader)
 
+    #multiply by number of turbines if specified in config file
+    # This section will read the comparison datasets and multiply the specified column by the number of turbines
+    # This is useful for datasets that are not already normalized by the number of turbines, such as WRF data.
+    for dataset in conf['comp']:  # Loop through comparison datasets
+        csv_path = dataset["path"]                
+        column_name = dataset["var"]            
+        turbines = dataset.get("turbines", 1)  #default to 1 if not specified  
 
-    # set base and comparaison configurations from config file
+        df = pd.read_csv(csv_path)
+
+        #Multiply comparison data by # of turbines 
+        df[column_name] = (df[column_name] * turbines)
+
+        # Save transformed data back to a new CSV
+        transformed_csv_path = f"data/transformed_csv/updated_{csv_path.split('/')[-1]}" 
+        df.to_csv(transformed_csv_path, index=False)  
+
+        # Update path 
+        dataset["path"] = transformed_csv_path 
+
+    # set base and comparison configurations from config file
     base = conf['base']
     comp = conf['comp']
-
 
     # Load modules
 

@@ -9,7 +9,7 @@ import numpy as np
 
 class bias:
 
-    def compute(self, x, y):
+    def compute(self, x, y, z):
 
         # x is baseline
         return float(np.mean(y - x))

@@ -11,7 +11,7 @@ import numpy as np
 
 class mdae_pct:
 
-    def compute(self, x, y):
+    def compute(self, x, y, z):
 
         fraction_array = np.ma.masked_invalid(abs(x - y) / x)
 

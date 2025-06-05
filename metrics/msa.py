@@ -8,7 +8,7 @@ import numpy as np
 
 class msa:
 
-    def compute(self, x, y):
+    def compute(self, x, y, z):
 
         q = y/x
         median = np.nanmedian(np.abs(np.log(q)))

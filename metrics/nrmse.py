@@ -9,7 +9,7 @@ import numpy as np
 
 class nrmse:
 
-    def compute(self, x, y):
+    def compute(self, x, y, z):
 
         x_norm = x/np.mean(x)
         y_norm = y/np.mean(y)

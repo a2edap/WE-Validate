@@ -5,6 +5,7 @@ import itertools
 from tools import eval_tools
 import sys
 import pandas as pd
+import inspect
 
 
 def remove_na(combine_df, ramp_txt=False):
@@ -28,44 +29,44 @@ def remove_na(combine_df, ramp_txt=False):
 
     return compute_df
 
-def monthly_metrics(x, y, freq='MS', func=None):
+def monthly_metrics(x, y, freq='MS', func=None, z=None):
     x_list = list(x.resample(freq))
     y_list = list(y.resample(freq))
 
-    corr = [func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
+    corr = [func(_x[1], _y[1], z) if z is not None else func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
     corr = pd.Series(corr, index=[_x[0] for _x in x_list])
     return corr
 
-def weekly_metrics(x, y, freq='W', func=None):
+def weekly_metrics(x, y, freq='W', func=None, z=None):
     x_list = list(x.resample(freq))
     y_list = list(y.resample(freq))
 
-    corr = [func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
+    corr = [func(_x[1], _y[1], z) if z is not None else func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
     corr = pd.Series(corr, index=[_x[0] for _x in x_list])
     return corr
 
-def annual_metrics(x, y, freq='A', func=None):
+def annual_metrics(x, y, freq='YE', func=None, z=None):
     x_list = list(x.resample(freq))
     y_list = list(y.resample(freq))
 
-    corr = [func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
+    corr = [func(_x[1], _y[1], z) if z is not None else func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
     corr = pd.Series(corr, index=[_x[0] for _x in x_list])
     return corr
 
-def daily_metrics(x, y, freq='D', func=None):
+def daily_metrics(x, y, freq='D', func=None, z=None):
     x_list = list(x.resample(freq))
     y_list = list(y.resample(freq))
 
-    corr = [func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
+    corr = [func(_x[1], _y[1], z) if z is not None else func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
     corr = pd.Series(corr, index=[_x[0] for _x in x_list])
     return corr
 
-def hourly_metrics(x, y, func=None):
+def hourly_metrics(x, y, func=None, z=None):
 
     x_list = list(x.groupby([x.index.hour]))
     y_list = list(y.groupby([y.index.hour]))
 
-    corr = [func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
+    corr = [func(_x[1], _y[1], z) if z is not None else func(_x[1], _y[1]) for _x, _y in zip(x_list, y_list)]
     corr = pd.Series(corr, index=[_x[0] for _x in x_list])
     return corr
 
@@ -87,6 +88,11 @@ def run(combine_df, metrics, results, ind, c, conf, base, monthly_results, weekl
         # Baseline should be the 1st (Python's 0th) column
         x = compute_df[pair[0]]
         y = compute_df[pair[1]]
+
+        if conf['capacity'] is None:
+            z = x.max()
+        else:
+            z = conf['capacity']
 
         if len(x) != len(y):
 
@@ -115,13 +121,19 @@ def run(combine_df, metrics, results, ind, c, conf, base, monthly_results, weekl
         hourly_dict['base'] = base['name']
 
         for m in metrics:
-
-            results[ind][m.__class__.__name__] = m.compute(x, y)
-            monthly_dict[m.__class__.__name__] = monthly_metrics(x, y, func=m.compute)
-            weekly_dict[m.__class__.__name__] = weekly_metrics(x, y, func=m.compute)
-            annual_dict[m.__class__.__name__] = annual_metrics(x, y, func=m.compute)
-            daily_dict[m.__class__.__name__] = daily_metrics(x, y, func=m.compute)
-            hourly_dict[m.__class__.__name__] = hourly_metrics(x, y, func=m.compute)
+            results[ind][m.__class__.__name__] = m.compute(x, y, z)
+            if "z" in inspect.signature(m.compute).parameters:
+                monthly_dict[m.__class__.__name__] = monthly_metrics(x, y, func=m.compute, z=z)
+                weekly_dict[m.__class__.__name__] = weekly_metrics(x, y, func=m.compute, z=z)
+                annual_dict[m.__class__.__name__] = annual_metrics(x, y, func=m.compute, z=z)
+                daily_dict[m.__class__.__name__] = daily_metrics(x, y, func=m.compute, z=z)
+                hourly_dict[m.__class__.__name__] = hourly_metrics(x, y, func=m.compute, z=z)
+            else:
+                monthly_dict[m.__class__.__name__] = monthly_metrics(x, y, func=m.compute, z=None)
+                weekly_dict[m.__class__.__name__] = weekly_metrics(x, y, func=m.compute, z=None)
+                annual_dict[m.__class__.__name__] = annual_metrics(x, y, func=m.compute, z=None)
+                daily_dict[m.__class__.__name__] = daily_metrics(x, y, func=m.compute, z=None)
+                hourly_dict[m.__class__.__name__] = hourly_metrics(x, y, func=m.compute, z=None)
 
         monthly_results.append(monthly_dict)
         weekly_results.append(weekly_dict)

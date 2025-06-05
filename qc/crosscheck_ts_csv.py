@@ -49,10 +49,21 @@ class crosscheck_ts_csv:
         than the existing data frequency, and then derive new time series based
         on :func:`~crosscheck_ts.crosscheck_ts.run_select_method`.
         """
+        t_min = ts.index.min()
+        t_max = ts.index.max()
+        ideal_index = pd.date_range(start=t_min, end=t_max, freq=f'{freq}min')
+        missing_time_steps = ideal_index.difference(ts.index)
+
+        #insert NaN for missing time steps
+        if len(missing_time_steps) > 0:
+            print('')
+            print(f'DETECTED {len(missing_time_steps)} MISSING TIME STEPS.')
+            print('THEY WILL BE HANDLED AUTOMATICALLY.')
+            ts = ts.reindex(ideal_index)
 
         time_diff = ts.index.to_series().diff()
         if len(time_diff[1:].unique()) == 1:
-            if (freq > time_diff[1].components.minutes)\
+            if (freq > time_diff.iloc[1].components.minutes)\
                and (self.select_data == 'end'):
 
                 ts = ts.resample(str(freq)+'T', label='right', closed='right')
@@ -105,13 +116,13 @@ class crosscheck_ts_csv:
             if base['freq'] < c['freq']:
 
                 base_data = base_data.resample(
-                    str(c['freq'])+'T', label='right', closed='right',
+                    str(c['freq'])+'min', label='right', closed='right',
                     origin=comp_data.index.min())
 
                 base_data = self.run_select_method(base_data)
 
                 print()
-                print('aligning the '+str(base['freq'])+'-miniute baseline '
+                print('aligning the '+str(base['freq'])+'-minute baseline '
                       + 'data ('+base_data.columns.values[0]+') to match the ')
                 print(str(c['freq'])+'-minute comparison data ('
                       + comp_data.columns.values[0]+'), at the end of the')
@@ -127,7 +138,7 @@ class crosscheck_ts_csv:
                 comp_data = self.run_select_method(comp_data)
 
                 print()
-                print('aligning the '+str(c['freq'])+'-miniute comparison '
+                print('aligning the '+str(c['freq'])+'-minute comparison '
                       + 'data ('+comp_data.columns.values[0]+') to match the ')
                 print(str(base['freq'])+'-minute baseline data ('
                       + base_data.columns.values[0]+'), at the end of the')

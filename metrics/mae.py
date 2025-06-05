@@ -8,7 +8,7 @@ import pandas as pd
 
 class mae:
 
-    def compute(self, x, y):
+    def compute(self, x, y, z):
 
         return float(np.mean(abs(x - y)))
 

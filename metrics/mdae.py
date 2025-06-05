@@ -8,6 +8,6 @@ import numpy as np
 
 class mdae:
 
-    def compute(self, x, y):
+    def compute(self, x, y, z):
 
         return float(np.median(abs(x - y)))

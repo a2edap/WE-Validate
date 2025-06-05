@@ -9,7 +9,7 @@ import numpy as np
 
 class crmse:
 
-    def compute(self, x, y):
+    def compute(self, x, y, z):
 
         x_demean = x - np.mean(x)
         y_demean = y - np.mean(y)
