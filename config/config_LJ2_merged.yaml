@@ -15,7 +15,7 @@ metrics:
   - mae_pct
   - cross_correlation
 
-# power plant capacity. should have same units as reference.Add commentMore actions
+# power plant capacity. should have same units as reference.
 # used to normalize average percent bias (bias_pct) and mean average percent error (mae_pct)
 # If left blank, will be calculated from the max of the baseline dataset
 capacity: 201.3

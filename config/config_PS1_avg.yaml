@@ -23,9 +23,9 @@ capacity: 98.7
 # output
 output:
   # output folder path
-  path: output/pnw/SP1
+  path: output/pnw/PS1_avg
   # name of the run
-  org: SP1
+  org: PS1_avg
   # save metrics?
   save_metrics: True
   # save figures?
@@ -38,15 +38,15 @@ output:
 # baseline dataset
 base:
   # name of dataset
-  name: PNW_SP1
+  name: PNW_PS1_avg
   # data directory
-  path: data/PNW_obs/wind_power_data.SP1.csv
+  path: data/PNW_obs_avg/averaged_wind_power_data.PS1.csv
   # name of data processing function
   function: csv_pnw
   # variable name
   var: Value
   # data frequency in minutes
-  freq: 1
+  freq: 5
   # flag value
   flag: 999
 
@@ -55,7 +55,7 @@ comp:
   # name of dataset
   - name: WRF Centroid Actual
     # data directory
-    path: data/PNW_centr/wind_wrf_centroid.201608.57096.actual.csv
+    path: data/PNW_centr/wind_wrf_centroid.201608.56789.actual.csv
     # name of data processing function
     function: csv_pnw
     # variable name
@@ -70,7 +70,7 @@ comp:
   # name of dataset
   - name: WRF Centroid A1
     # data directory
-    path: data/PNW_centr/wind_wrf_centroid.201608.57096.A1.csv
+    path: data/PNW_centr/wind_wrf_centroid.201608.56789.A1.csv
     # name of data processing function
     function: csv_pnw
     # variable name
@@ -85,7 +85,7 @@ comp:
   # name of dataset
   - name: WRF Centroid A2
     # data directory
-    path: data/PNW_centr/wind_wrf_centroid.201608.57096.A2.csv
+    path: data/PNW_centr/wind_wrf_centroid.201608.56789.A2.csv
     # name of data processing function
     function: csv_pnw
     # variable name
@@ -100,7 +100,7 @@ comp:
   # name of dataset
   - name: WRF Centroid A3
     # data directory
-    path: data/PNW_centr/wind_wrf_centroid.201608.57096.A3.csv
+    path: data/PNW_centr/wind_wrf_centroid.201608.56789.A3.csv
     # name of data processing function
     function: csv_pnw
     # variable name
@@ -111,6 +111,7 @@ comp:
     flag: 999
     # number of turbines
     turbines: 47
+
 
 
 # reference

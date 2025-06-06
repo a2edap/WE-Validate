@@ -12,7 +12,7 @@ import pandas as pd
 
 from tools import eval_tools, cal_print_metrics_csv
 
-config = 'config_PS1.yaml'
+config = 'config_SP1_avg.yaml'
 
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.

@@ -23,9 +23,9 @@ capacity: 98.7
 # output
 output:
   # output folder path
-  path: output/pnw/SP1
+  path: output/pnw/SP1_avg
   # name of the run
-  org: SP1
+  org: SP1_avg
   # save metrics?
   save_metrics: True
   # save figures?
@@ -38,15 +38,15 @@ output:
 # baseline dataset
 base:
   # name of dataset
-  name: PNW_SP1
+  name: PNW_SP1_avg
   # data directory
-  path: data/PNW_obs/wind_power_data.SP1.csv
+  path: data/PNW_obs_avg/averaged_wind_power_data.SP1.csv
   # name of data processing function
   function: csv_pnw
   # variable name
   var: Value
   # data frequency in minutes
-  freq: 1
+  freq: 5
   # flag value
   flag: 999
 

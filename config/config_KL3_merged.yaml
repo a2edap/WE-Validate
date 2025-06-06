@@ -18,7 +18,7 @@ metrics:
 # power plant capacity. should have same units as reference.Add commentMore actions
 # used to normalize average percent bias (bias_pct) and mean average percent error (mae_pct)
 # If left blank, will be calculated from the max of the baseline dataset
-capacity: 221.2
+capacity: 297.7
 
 # output
 output:
