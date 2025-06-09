@@ -8,7 +8,7 @@
 import os
 import pathlib
 from datetime import datetime
-from netCDF4 import Dataset
+# from netCDF4 import Dataset
 import numpy as np
 import pandas as pd
 
@@ -55,7 +55,7 @@ class csv:
             if self.freq > time_diff[1].components.minutes:
 
                 df = df.resample(
-                    str(self.freq) + 'T', label='right',
+                    str(self.freq) + 'min', label='right',
                     closed='right')
 
                 if self.select_method == 'average':

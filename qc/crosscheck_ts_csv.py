@@ -66,7 +66,7 @@ class crosscheck_ts_csv:
             if (freq > time_diff.iloc[1].components.minutes)\
                and (self.select_data == 'end'):
 
-                ts = ts.resample(str(freq)+'T', label='right', closed='right')
+                ts = ts.resample(str(freq)+'min', label='right', closed='right')
 
                 ts = self.run_select_method(ts)
 
