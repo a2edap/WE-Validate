@@ -33,9 +33,9 @@ class plot_ramp:
         output_path = os.path.join(
                 (pathlib.Path(os.getcwd())), self.path)
         
-        plt.rcParams["figure.figsize"] = (30, 15)
+        plt.rcParams["figure.figsize"] = (20, 10)
         # Set the default text font size
-        plt.rc('font', size=16)
+        plt.rc('font', size=14)
         # Set the axes title font size
         plt.rc('axes', titlesize=16)
         # Set the axes labels font size
@@ -45,9 +45,9 @@ class plot_ramp:
         # Set the font size for y tick labels
         plt.rc('ytick', labelsize=16)
         # Set the legend font size
-        plt.rc('legend', fontsize=18)
+        plt.rc('legend', fontsize=16)
         # Set the font size of the figure title
-        plt.rc('figure', titlesize=20)
+        plt.rc('figure', titlesize=18)
         
 
         if self.savefig is True:
@@ -58,7 +58,7 @@ class plot_ramp:
         
 
             # Create figure and axes with shared x-axis
-            fig, axes = plt.subplots(3, 1, sharex=True, figsize=(12, 8))
+            fig, axes = plt.subplots(3, 1, sharex=True)
             for ax in axes:
                 ax.tick_params(axis='x', labelrotation=45)  # Rotate x-axis labels
 
@@ -84,7 +84,7 @@ class plot_ramp:
             # Adjust layout
             fig.tight_layout(rect=[0, 0, 1, 0.95])
 
-            plt.savefig(os.path.join(self.path, f'ramp_timeseries_{df.columns[0]}-{df.columns[1]}_{self.org}.png'))
+            plt.savefig(os.path.join(self.path, f'ramp_timeseries_{df.columns[0]}-{df.columns[1]}_{self.org}.png'), dpi=300,bbox_inches="tight")
             if self.showfig is True:
                 plt.show()
             else:
@@ -100,7 +100,7 @@ class plot_ramp:
             
 
                 # Create figure and axes with shared x-axis
-                fig, axes = plt.subplots(3, 1, sharex=True, figsize=(12, 8))
+                fig, axes = plt.subplots(3, 1, sharex=True, figsize=(9, 8))
                 for ax in axes:
                     ax.tick_params(axis='x', labelrotation=45)
 
@@ -123,9 +123,6 @@ class plot_ramp:
                 axes[2].set_xlabel("Date")
                 axes[2].legend()
                 axes[2].grid()
-
-                # Adjust layout
-                fig.tight_layout(rect=[0, 0, 1, 0.95])
 
                 plt.show()
 
@@ -162,7 +159,7 @@ class plot_ramp:
                 selected_month_rate = sd['swingdoor-ramp'][sd['swingdoor-ramp'].index.month == month]
                 selected_month_dur = sd['swingdoor-dur'][sd['swingdoor-dur'].index.month == month]
 
-                fig, axes = plt.subplots(3, 1, sharex=True, figsize=(12, 8))
+                fig, axes = plt.subplots(3, 1, sharex=True, figsize=(10, 8))
                 for ax in axes:
                     # ax.xaxis.set_major_locator(mdates.DayLocator(interval=3))  # Tick every 3 days
                     ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))  # Format: 'YYYY-MM-DD'

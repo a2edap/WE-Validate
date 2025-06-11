@@ -238,12 +238,12 @@ def compare(config=None):
                     if conf['output']['save_metrics'] is True:
                         globals()[dfname].to_csv(os.path.join(output_path, conf['output']['org'] + '_' + dfname + '.csv'))
 
-        plotting.plot_ts_line(combine_df)
-        plotting.plot_ts_line_monthly(combine_df)
-        plotting.plot_histogram(combine_df)
-        plotting.plot_histogram_monthly(combine_df)
-        plotting.plot_pair_scatter(combine_df)
-        plotting.plot_pair_scatter_monthly(combine_df)
+        # plotting.plot_ts_line(combine_df)
+        # plotting.plot_ts_line_monthly(combine_df)
+        # plotting.plot_histogram(combine_df)
+        # plotting.plot_histogram_monthly(combine_df)
+        # plotting.plot_pair_scatter(combine_df)
+        # plotting.plot_pair_scatter_monthly(combine_df)
 
 if __name__ == '__main__':
     compare(config = config)
