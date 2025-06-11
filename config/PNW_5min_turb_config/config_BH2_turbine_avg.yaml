@@ -44,7 +44,10 @@ output:
   save_figs: True
   # show figures?
   show_figs: True
+  # print results?
   print_results : True
+  # print time steps with NaN values?
+  print_NaN_values: False
 
 # baseline dataset
 base:

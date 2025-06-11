@@ -4,7 +4,7 @@
 }
 
 img {
-    max-width: 70%;         /* Ensure images scale correctly */
+    max-width: 100%;         /* Ensure images scale correctly */
     height: auto;            /* Maintain aspect ratio */
     display: block;          /* Center plots */
     margin: 0 ;          /* Center horizontally */

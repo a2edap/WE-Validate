@@ -8,7 +8,7 @@ import pandas as pd
 import inspect
 
 
-def remove_na(combine_df, ramp_txt=False):
+def remove_na(combine_df, conf, ramp_txt=False):
 
     compute_df = combine_df.dropna()
 
@@ -18,14 +18,14 @@ def remove_na(combine_df, ramp_txt=False):
         print_txt = 'ramp skill scores'
     else:
         print_txt = 'metrics'
-
-    print()
-    print('to calculate '+print_txt+', removing the following time steps ')
-    print('that contain NaN values:')
-    print(only_na.index.strftime('%Y-%m-%d %H:%M:%S').values)
-    print()
-    print('hence, only use '+str(len(compute_df))
-          + ' time steps in data to calculate '+print_txt)
+    if conf['output']['print_NaN_values'] is True: 
+        print()
+        print('to calculate '+print_txt+', removing the following time steps ')
+        print('that contain NaN values:')
+        print(only_na.index.strftime('%Y-%m-%d %H:%M:%S').values)
+        print()
+        print('hence, only use '+str(len(compute_df))
+            + ' time steps in data to calculate '+print_txt)
 
     return compute_df
 
@@ -49,7 +49,7 @@ def run(combine_df, metrics, results, ind, c, conf, base, aggregations, analysis
     Calculate and print metrics, as listed in the yaml file.
     """
 
-    compute_df = remove_na(combine_df)
+    compute_df = remove_na(combine_df, conf)
 
     # For future purposes,
     # In case of reading in multiple compare data columns
