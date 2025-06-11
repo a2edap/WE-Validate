@@ -9,6 +9,8 @@ import os
 import pathlib
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import calendar 
 
 from tools import eval_tools, cal_print_metrics_csv
 
@@ -34,22 +36,22 @@ def compare(config=None):
     #multiply by number of turbines if specified in config file
     # This section will read the comparison datasets and multiply the specified column by the number of turbines
     # This is useful for datasets that are not already normalized by the number of turbines, such as WRF data.
-    # for dataset in conf['comp']:  # Loop through comparison datasets
-    #     csv_path = dataset["path"]                
-    #     column_name = dataset["var"]            
-    #     turbines = dataset.get("turbines", 1)  #default to 1 if not specified  
+    for dataset in conf['comp']:  # Loop through comparison datasets
+        csv_path = dataset["path"]                
+        column_name = dataset["var"]            
+        turbines = dataset.get("turbines", 1)  #default to 1 if not specified  
 
-    #     df = pd.read_csv(csv_path)
+        df = pd.read_csv(csv_path)
 
-    #     #Multiply comparison data by # of turbines 
-    #     df[column_name] = (df[column_name] * turbines)
+        #Multiply comparison data by # of turbines 
+        df[column_name] = (df[column_name] * turbines)
 
-    #     # Save transformed data back to a new CSV
-    #     transformed_csv_path = f"data/transformed_csv/updated_{csv_path.split('/')[-1]}" 
-    #     df.to_csv(transformed_csv_path, index=False)  
+        # Save transformed data back to a new CSV
+        transformed_csv_path = f"data/transformed_csv/updated_{csv_path.split('/')[-1]}" 
+        df.to_csv(transformed_csv_path, index=False)  
 
-    #     # Update path 
-    #     dataset["path"] = transformed_csv_path 
+        # Update path 
+        dataset["path"] = transformed_csv_path 
 
     # define swingdoor functions
     def swingdoor_func(x, thresh):
@@ -57,6 +59,7 @@ def compare(config=None):
         gp = np.array(x)
         timestamp_gp = np.array(x.index)
         # dev = max(.1*x.max(),.1*y.max())
+
         dev = thresh * gp.max()
 
         len_gp = len(gp)
@@ -96,7 +99,7 @@ def compare(config=None):
                 else:
                     j += 1
             # when searching reaches the end of gp, store the rate value
-            # for data points from i to i+j-2 (2nd to laast data point).
+            # for data points from i to i+j-2 (2nd to last data point).
             # rate and duration of the last data point can not be determined
             if j == len_gp - i:
                 newrate = (magnitude[i + j - 1] - magnitude[i]) / (j)
@@ -114,10 +117,10 @@ def compare(config=None):
         timestamp_c = timestamp_c[:len_c]
 
         return magnitude_c, rate_c, duration_c, timestamp_c
-
     def compute_sd(x, y):
-        base_mag, base_rate, base_dur, base_t = swingdoor_func(x, .2)
-        comp_mag, comp_rate, comp_dur, comp_t = swingdoor_func(y, .2)
+        thresh = conf.get('threshold', 0.1)  # Default 0.1 if threshold not specified
+        base_mag, base_rate, base_dur, base_t = swingdoor_func(x, thresh)
+        comp_mag, comp_rate, comp_dur, comp_t = swingdoor_func(y, thresh)
         joined_mag = pd.DataFrame(base_mag, index=base_t).merge(pd.DataFrame(comp_mag, index=comp_t), how='outer',
                                                                 left_index=True, right_index=True).ffill().resample(
             '1h').ffill()
@@ -137,11 +140,11 @@ def compare(config=None):
         joined_dur = b_dur.merge(c_dur, how='outer', left_index=True, right_index=True)
         joined_mag, joined_rate, joined_dur = [df.rename(columns={'0_x': base['name'], '0_y': c['name']}) for df in
                                                [joined_mag, joined_rate, joined_dur]]
-        print(joined_mag)
+        # print(joined_mag)
         return joined_mag, joined_rate, joined_dur
 
     
-    # set base and comparaison configurations from config file
+    # set base and comparison configurations from config file
     base = conf['base']
     comp = conf['comp']
 
@@ -157,7 +160,7 @@ def compare(config=None):
 
     # loads plotting module
     plotting = eval_tools.get_module_class('plotting', 'plot_data_csv')(conf)
-
+    ramp_plotting = eval_tools.get_module_class('plotting', 'plot_ramp')(conf)
     # For data storage and metrics computation
     results = []
 
@@ -192,10 +195,12 @@ def compare(config=None):
                             'swingdoor-ramp':ramprate,
                             'swingdoor-dur':duration
                             }
+            ramp_plotting.plot_ramp_ts(swingdoor_ts,combine_df)
+            ramp_plotting.plot_ramp_ts_monthly(swingdoor_ts,combine_df)
         results = eval_tools.append_results(results, base, c, analysis[0])
 
         for a_ind, analysis_type in enumerate(analysis):
-
+            # print(swingdoor_ts.keys())
             # Crosscheck between datasets
 
             if 'swingdoor' in analysis_type:
@@ -215,7 +220,10 @@ def compare(config=None):
                 metricstat_dict = {key: results[ind][analysis_type][a][key]
                                 for key in conf['metrics']}
                 metricstat_df = pd.DataFrame.from_dict(metricstat_dict, orient='columns')
-
+                if conf['output']['print_results'] is True:
+                    if a == "MS" or a == "D":
+                        print(f"Metrics for {dfname}:")
+                        print(metricstat_df)  
                 globals()[dfname] = metricstat_df
 
                 if 'output' in conf:
@@ -229,7 +237,6 @@ def compare(config=None):
 
                     if conf['output']['save_metrics'] is True:
                         globals()[dfname].to_csv(os.path.join(output_path, conf['output']['org'] + '_' + dfname + '.csv'))
-
 
         plotting.plot_ts_line(combine_df)
         plotting.plot_ts_line_monthly(combine_df)

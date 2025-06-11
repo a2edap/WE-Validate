@@ -41,7 +41,7 @@ output:
   # save metrics?
   save_metrics: True
   # save figures?
-  save_figs: True
+  save_figs: False
   # show figures?
   show_figs: False
   print_results : True

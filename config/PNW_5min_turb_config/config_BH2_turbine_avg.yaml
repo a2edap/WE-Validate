@@ -43,7 +43,7 @@ output:
   # save figures?
   save_figs: True
   # show figures?
-  show_figs: False
+  show_figs: True
   print_results : True
 
 # baseline dataset

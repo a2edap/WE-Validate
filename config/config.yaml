@@ -4,7 +4,7 @@ time:
     # validation period start time
     start: 2018-07-01 00:00:00
     # validation period end time
-    end: 2019-1-1 00:00:00
+    end: 2018-12-31 23:55:00
 
 # validation metrics to be calculated and plotted
 metrics:
@@ -20,8 +20,11 @@ metrics:
 analysis:
   - base_analysis
   - swingdoor-mag
-  # - swingdoor-ramp
-  # - swingdoor-dur
+  - swingdoor-ramp
+  - swingdoor-dur
+
+threshold: .2
+
 
 aggregation:
   - MS
@@ -36,7 +39,7 @@ capacity: 104
 # output
 output:
   # output folder path
-  path: output
+  path: output/palouse_HRRR_PLUSWIND
   # name of the run
   org: palouse
   # save metrics?
@@ -44,7 +47,7 @@ output:
   # save figures?
   save_figs: True
   # show figures?
-  show_figs: False
+  show_figs: True
   # print results?
   print_results : True
 
@@ -66,7 +69,7 @@ base:
 # data input to be compared with the baseline dataset
 comp:
   # name of dataset
-  - name: NREL 2018 (2032 ADS) - HRRR
+  - name: NWPDB HRRR
     # data directory
     path: data/example/nwpdb-HRRR.csv
     # name of data processing function

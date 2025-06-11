@@ -52,7 +52,7 @@ class csv:
 
         if len(time_diff[1:].unique()) == 1:
 
-            if self.freq > time_diff[1].components.minutes:
+            if self.freq > time_diff.iloc[1].components.minutes:
 
                 df = df.resample(
                     str(self.freq) + 'min', label='right',
