@@ -23,6 +23,9 @@ class plot_ramp:
 
         self.org = conf['output']['org']
 
+        self.freq = conf['base']['freq']
+        self.freq_str = f"{self.freq}min" if self.freq < 60 else f"{self.freq // 60}h"
+
         if conf['reference']['units'] == 'ms-1':
             self.units = r'm $s^{-1}$'
         else:
@@ -71,13 +74,13 @@ class plot_ramp:
             # Plot ramp rate 
             axes[1].plot(rate_df.index, rate_df.iloc[:, 0])
             axes[1].plot(rate_df.index, rate_df.iloc[:, 1])
-            axes[1].set_ylabel(f"Rate({self.units}/hr)")
+            axes[1].set_ylabel(f"Rate({self.units}/{self.freq_str})")
             axes[1].grid()
 
             # Plot duration
             axes[2].plot(dur_df.index, dur_df.iloc[:, 0], label=df.columns[0])
             axes[2].plot(dur_df.index, dur_df.iloc[:, 1], label=df.columns[1])
-            axes[2].set_ylabel("Duration (hr)")
+            axes[2].set_ylabel(f"Duration ({self.freq_str})")
             axes[2].legend()
             axes[2].grid()
 
@@ -113,13 +116,13 @@ class plot_ramp:
                 # Plot ramp rate 
                 axes[1].plot(rate_df.index, rate_df.iloc[:, 0])
                 axes[1].plot(rate_df.index, rate_df.iloc[:, 1])
-                axes[1].set_ylabel(f"Rate({self.units}/hr)")
+                axes[1].set_ylabel(f"Rate({self.units}/{self.freq_str})")
                 axes[1].grid()
 
                 # Plot duration
                 axes[2].plot(dur_df.index, dur_df.iloc[:, 0], label=df.columns[0])
                 axes[2].plot(dur_df.index, dur_df.iloc[:, 1], label=df.columns[1])
-                axes[2].set_ylabel("Duration (hr)")
+                axes[2].set_ylabel(f"Duration ({self.freq_str})")
                 axes[2].set_xlabel("Date")
                 axes[2].legend()
                 axes[2].grid()
@@ -174,13 +177,13 @@ class plot_ramp:
                 # Plot ramp rate 
                 axes[1].plot(selected_month_rate.index, selected_month_rate.iloc[:, 0])
                 axes[1].plot(selected_month_rate.index, selected_month_rate.iloc[:, 1])
-                axes[1].set_ylabel(f"Rate({self.units}/hr)")
+                axes[1].set_ylabel(f"Rate({self.units}/{self.freq_str})")
                 axes[1].grid()
 
                 # Plot duration
                 axes[2].plot(selected_month_dur.index, selected_month_dur.iloc[:, 0], label=df.columns[0])
                 axes[2].plot(selected_month_dur.index, selected_month_dur.iloc[:, 1], label=df.columns[1])
-                axes[2].set_ylabel("Duration (hr)")
+                axes[2].set_ylabel(f"Duration ({self.freq_str})")
                 axes[2].set_xlabel("Date")
                 axes[2].set_xlim(selected_month_dur.index.min(), selected_month_dur.index.max())
                 axes[2].legend()

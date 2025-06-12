@@ -14,7 +14,7 @@ import calendar
 
 from tools import eval_tools, cal_print_metrics_csv
 
-config = 'PNW_1min_centr_config/config_BH1.yaml'
+config = 'PNW_5min_centr_config/config_BH1_avg.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -117,26 +117,26 @@ def compare(config=None):
         timestamp_c = timestamp_c[:len_c]
 
         return magnitude_c, rate_c, duration_c, timestamp_c
-    def compute_sd(x, y):
+    def compute_sd(x, y, freq):
         thresh = conf.get('threshold', 0.1)  # Default 0.1 if threshold not specified
         base_mag, base_rate, base_dur, base_t = swingdoor_func(x, thresh)
         comp_mag, comp_rate, comp_dur, comp_t = swingdoor_func(y, thresh)
         joined_mag = pd.DataFrame(base_mag, index=base_t).merge(pd.DataFrame(comp_mag, index=comp_t), how='outer',
                                                                 left_index=True, right_index=True).ffill().resample(
-            '1h').ffill()
+            freq).ffill()
         if len(base_rate) < len(base_t):
             base_rate = np.append(base_rate, 0)
         if len(comp_rate) < len(comp_t):
             comp_rate = np.append(comp_rate, 0)
         joined_rate = pd.DataFrame(base_rate[:len(base_t)], index=base_t).merge(
             pd.DataFrame(comp_rate[:len(comp_t)], index=comp_t), how='outer', left_index=True,
-            right_index=True).ffill().resample('1h').ffill()
+            right_index=True).ffill().resample(freq).ffill()
         df = pd.DataFrame(base_dur, index=base_t)
-        df = pd.concat([df, pd.DataFrame({0: 0}, index=df.index[1:] - pd.Timedelta('1h'))])
-        b_dur = df[~df.index.duplicated(keep='first')].sort_index().resample('1h').interpolate()
+        df = pd.concat([df, pd.DataFrame({0: 0}, index=df.index[1:] - pd.Timedelta(freq))])
+        b_dur = df[~df.index.duplicated(keep='first')].sort_index().resample(freq).interpolate()
         df = pd.DataFrame(comp_dur[:len(comp_t)], index=comp_t)
-        df = pd.concat([df, pd.DataFrame({0: 0}, index=df.index[1:] - pd.Timedelta('1h'))])
-        c_dur = df[~df.index.duplicated(keep='first')].sort_index().resample('1h').interpolate()
+        df = pd.concat([df, pd.DataFrame({0: 0}, index=df.index[1:] - pd.Timedelta(freq))])
+        c_dur = df[~df.index.duplicated(keep='first')].sort_index().resample(freq).interpolate()
         joined_dur = b_dur.merge(c_dur, how='outer', left_index=True, right_index=True)
         joined_mag, joined_rate, joined_dur = [df.rename(columns={'0_x': base['name'], '0_y': c['name']}) for df in
                                                [joined_mag, joined_rate, joined_dur]]
@@ -189,7 +189,9 @@ def compare(config=None):
 
         combine_df = crosscheck_ts.align_time(base, c)
         if any('swingdoor' in i for i in analysis):
-            magnitude, ramprate, duration = compute_sd(combine_df[base['name']], combine_df[c['name']])
+            min_freq = min(c['freq'], base['freq'])
+            convert_freq_to_str = f"{min_freq}min" if min_freq < 60 else f"{min_freq // 60}h"
+            magnitude, ramprate, duration = compute_sd(combine_df[base['name']], combine_df[c['name']],convert_freq_to_str)
             swingdoor_ts = {
                             'swingdoor-mag':magnitude,
                             'swingdoor-ramp':ramprate,
