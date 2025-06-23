@@ -1,10 +1,9 @@
-
 time:
   window:
     # validation period start time
-    start: 2018-07-01 00:00:00
+    start: 2016-08-01 00:00:00
     # validation period end time
-    end: 2018-12-31 23:55:00
+    end: 2016-08-31 23:55:00
 
 # validation metrics to be calculated and plotted
 metrics:
@@ -16,7 +15,7 @@ metrics:
   - mae_pct
   - cross_correlation
 
-# analysis type (base or swingdoor)
+  # analysis type (base or swingdoor)
 analysis:
   - base_analysis
   # - swingdoor-mag
@@ -24,7 +23,6 @@ analysis:
   # - swingdoor-dur
 
 threshold: .2
-
 
 aggregation:
   - MS
@@ -34,67 +32,93 @@ aggregation:
 # power plant capacity. should have same units as reference.Add commentMore actions
 # used to normalize average percent bias (bias_pct) and mean average percent error (mae_pct)
 # If left blank, will be calculated from the max of the baseline dataset
-capacity: 104
+capacity: 50
 
 # output
 output:
   # output folder path
-  path: output/palouse_HRRR_PLUSWIND
+  path: output/pnw_turbine/BH2_turb
   # name of the run
-  org: palouse
+  org: BH2_turb
   # save metrics?
   save_metrics: True
   # save figures?
-  save_figs: True
+  save_figs: False
   # show figures?
   show_figs: False
   # print results?
   print_results : True
-  # print time steps with NaN values 
-  print_NaN_values: True
-  #write to a pdf?
-  save_to_pdf: True
+  # print time steps with NaN values?
+  print_NaN_values: False
+  # save results to pdf? 
+  save_to_pdf: False 
 
 # baseline dataset
 base:
   # name of dataset
-  name: EIA 930
+  name: PNW_BH2
   # data directory
-  path: data/example/EIA_930.csv
+  path: data/PNW_obs/wind_power_data.BH2.csv
   # name of data processing function
-  function: csv
+  function: csv_pnw
   # variable name
-  var: power
+  var: Value
   # data frequency in minutes
-  freq: 60
+  freq: 1
   # flag value
   flag: 999
 
 # data input to be compared with the baseline dataset
 comp:
   # name of dataset
-  - name: NWPDB HRRR
+  - name: WRF Centroid Actual
     # data directory
-    path: data/example/nwpdb-HRRR.csv
+    path: data/PNW_turbine/wind_wrf_turbine.201608.BH2.actual.csv
     # name of data processing function
-    function: csv
+    function: csv_pnw
     # variable name
-    var: power
+    var: capacity
     # data frequency in minutes
-    freq: 60
+    freq: 5
     # flag value
     flag: 999
 
   # name of dataset
-  - name: PLUSWIND HRRR
+  - name: WRF Centroid A1
     # data directory
-    path: data/example/pluswind-HRRR.csv
+    path: data/PNW_turbine/wind_wrf_turbine.201608.BH2.A1.csv
     # name of data processing function
-    function: csv
+    function: csv_pnw
     # variable name
-    var: power
+    var: capacity
     # data frequency in minutes
-    freq: 60
+    freq: 5
+    # flag value
+    flag: 999
+
+  # name of dataset
+  - name: WRF Centroid A2
+    # data directory
+    path: data/PNW_turbine/wind_wrf_turbine.201608.BH2.A2.csv
+    # name of data processing function
+    function: csv_pnw
+    # variable name
+    var: capacity
+    # data frequency in minutes
+    freq: 5
+    # flag value
+    flag: 999
+
+  # name of dataset
+  - name: WRF Centroid A3
+    # data directory
+    path: data/PNW_turbine/wind_wrf_turbine.201608.BH2.A3.csv
+    # name of data processing function
+    function: csv_pnw
+    # variable name
+    var: capacity
+    # data frequency in minutes
+    freq: 5
     # flag value
     flag: 999
 
@@ -105,7 +129,5 @@ reference:
   var: Power
   # variable units
   units: MW
-  #instance or average sampling if frequencies not the same 
-  select_method: instance 
-
-
+  # Method for selecting data points when frequencies differ between datasets. ("instance" or "average")
+  select_method: average

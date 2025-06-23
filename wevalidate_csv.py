@@ -11,10 +11,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import calendar 
+import subprocess
+from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 
-from tools import eval_tools, cal_print_metrics_csv
-
-config = 'PNW_5min_centr_config/config_BH1_avg.yaml'
+config = 'PNW_turb_config/config_SP1_turb.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -175,6 +175,7 @@ def compare(config=None):
     base['data'] = base['input'].get_ts()
     # For each specified comparison dataset
     analysis = conf['analysis']
+    method = conf['reference']['select_method']
 
     for ind, c in enumerate(comp):
 
@@ -200,9 +201,8 @@ def compare(config=None):
             ramp_plotting.plot_ramp_ts(swingdoor_ts,combine_df)
             ramp_plotting.plot_ramp_ts_monthly(swingdoor_ts,combine_df)
         results = eval_tools.append_results(results, base, c, analysis[0])
-
+        all_latex_tables = []
         for a_ind, analysis_type in enumerate(analysis):
-            # print(swingdoor_ts.keys())
             # Crosscheck between datasets
 
             if 'swingdoor' in analysis_type:
@@ -213,11 +213,9 @@ def compare(config=None):
             cal_print_metrics_csv.run(
                 full_df, metrics, results, ind, c, conf, base, aggregations, analysis_type
                 )
-
-
             for a in aggregations:
 
-                dfname = 'metrics_' + analysis_type +'_' + c['name'] + '_' + a
+                dfname = 'metrics_' + analysis_type +'_' + c['name'] + '_' + a + '_' + method 
 
                 metricstat_dict = {key: results[ind][analysis_type][a][key]
                                 for key in conf['metrics']}
@@ -239,13 +237,73 @@ def compare(config=None):
 
                     if conf['output']['save_metrics'] is True:
                         globals()[dfname].to_csv(os.path.join(output_path, conf['output']['org'] + '_' + dfname + '.csv'))
+                    if conf['output']['save_to_pdf'] is True:
+                        latex_table = csv_to_pdf.add_df_to_latex(metricstat_df, dfname)
+                        all_latex_tables.append(latex_table)
+        if conf['output']['save_to_pdf'] is True and all_latex_tables:
+            final_latex = r"""
+            \documentclass[11pt]{article}
+            \usepackage{booktabs}
+            \usepackage{longtable}
+            \usepackage{geometry}
+            \usepackage{adjustbox}
+            \geometry{margin=1in}
 
-        # plotting.plot_ts_line(combine_df)
-        # plotting.plot_ts_line_monthly(combine_df)
-        # plotting.plot_histogram(combine_df)
-        # plotting.plot_histogram_monthly(combine_df)
-        # plotting.plot_pair_scatter(combine_df)
-        # plotting.plot_pair_scatter_monthly(combine_df)
+            \begin{document}
+            \title{Data Analysis Report}
+            \date{\today}
+            \maketitle
+
+            """ + "".join(all_latex_tables) + r"""
+            \end{document}"""
+            # Write LaTeX file to the correct output path
+            tex_filepath = os.path.join(output_path, "report.tex")
+            with open(tex_filepath, 'w', encoding='utf-8') as f:
+                f.write(final_latex)
+        
+            print(f"✓ LaTeX file saved: {tex_filepath}")
+            print(f"File size: {os.path.getsize(tex_filepath)} bytes")
+            print(f"Output directory contents: {os.listdir(output_path)}")
+
+            # Compile to PDF
+            try:
+                original_dir = os.getcwd()
+                os.chdir(output_path)
+                
+                # Run pdflatex twice for proper references
+                subprocess.run(['pdflatex', 'report.tex'], 
+                            check=True, capture_output=True, text=True)
+                subprocess.run(['pdflatex', 'report.tex'], 
+                            check=True, capture_output=True, text=True)
+                
+                os.chdir(original_dir)
+                
+                pdf_filepath = os.path.join(output_path, "report.pdf")
+                print(f"✓ PDF successfully created: {pdf_filepath}")
+                
+                # Clean up auxiliary files
+                for ext in ['.aux', '.log', '.out', '.toc']:
+                    aux_file = os.path.join(output_path, f"report{ext}")
+                    if os.path.exists(aux_file):
+                        os.remove(aux_file)
+            except subprocess.CalledProcessError as e:
+                if 'original_dir' in locals():
+                    os.chdir(original_dir)
+                print(f"✗ Error compiling LaTeX: {e}")
+            except FileNotFoundError:
+                if 'original_dir' in locals():
+                    os.chdir(original_dir)
+                print("✗ pdflatex not found. Please install LaTeX distribution.")
+       
+
+
+        plotting.plot_ts_line(combine_df)
+        plotting.plot_ts_line_monthly(combine_df)
+        plotting.plot_histogram(combine_df)
+        plotting.plot_histogram_monthly(combine_df)
+        plotting.plot_pair_scatter(combine_df)
+        plotting.plot_pair_scatter_monthly(combine_df)
 
 if __name__ == '__main__':
     compare(config = config)
+

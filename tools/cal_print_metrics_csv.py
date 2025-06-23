@@ -29,7 +29,7 @@ def remove_na(combine_df, conf, ramp_txt=False):
 
     return compute_df
 
-def calc_metrics(x, y, freq, func=None, z=None): #'MS','W','A','D','H'Add commentMore actions
+def calc_metrics(x, y, freq, func=None, z=None): #'MS','W','A','D','H'
     if freq=='H':
         x_list = list(x.groupby([x.index.hour]))
         y_list = list(y.groupby([y.index.hour]))

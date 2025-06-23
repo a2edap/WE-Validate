@@ -14,9 +14,12 @@ class crosscheck_ts_csv:
 
         try:
             self.select_data = conf['reference']['select_data']
-            self.select_method = conf['reference']['select_method']
         except KeyError:
             self.select_data = 'end'
+        
+        try:
+            self.select_method = conf['reference']['select_method']
+        except KeyError:
             self.select_method = 'instance'
 
     def trim_ts(self, ts):
@@ -53,7 +56,6 @@ class crosscheck_ts_csv:
         t_max = ts.index.max()
         ideal_index = pd.date_range(start=t_min, end=t_max, freq=f'{freq}min')
         missing_time_steps = ideal_index.difference(ts.index)
-
         #insert NaN for missing time steps
         if len(missing_time_steps) > 0:
             print('')
@@ -65,17 +67,12 @@ class crosscheck_ts_csv:
         if len(time_diff[1:].unique()) == 1:
             if (freq > time_diff.iloc[1].components.minutes)\
                and (self.select_data == 'end'):
-
-                ts = ts.resample(str(freq)+'min', label='right', closed='right')
-
+                ts = ts.resample(str(freq)+'min', label='left', closed='left')
                 ts = self.run_select_method(ts)
-
                 print()
                 print('resampling '+ts.columns.values[0]+' every '+str(freq)
                       + ' minutes using the '+self.select_method+' method')
-
         else:
-
             print()
             print(time_diff[1:].unique())
             sys.exit('ERROR: TIME SERIES DOES NOT HAVE CONSTANT TIME STEPS')
@@ -116,9 +113,9 @@ class crosscheck_ts_csv:
             if base['freq'] < c['freq']:
 
                 base_data = base_data.resample(
-                    str(c['freq'])+'min', label='right', closed='right',
+                    str(c['freq'])+'min', label='left', closed='left',
                     origin=comp_data.index.min())
-
+                
                 base_data = self.run_select_method(base_data)
 
                 print()
