@@ -26,7 +26,7 @@ threshold: .2
 
 aggregation:
   - MS
-  - D
+  # - D
   # - H
 
 # power plant capacity. should have same units as reference.Add commentMore actions
@@ -43,7 +43,7 @@ output:
   # save metrics?
   save_metrics: True
   # save figures?
-  save_figs: False
+  save_figs: True
   # show figures?
   show_figs: False 
   # print results

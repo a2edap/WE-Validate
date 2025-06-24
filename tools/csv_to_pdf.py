@@ -52,11 +52,33 @@ def add_df_to_latex(df, section, aggregation):
     
     return latex_section
 
-def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summary"):
+def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summary", plot_files = None):
 
     org = conf['output']['org']
     select_method = conf['reference']['select_method']
     filename = f"{org}_report_{select_method}"
+
+        # Create plots section if plots are provided
+    plots_latex = ""
+    if plot_files:
+        plots_latex = r"""
+    \newpage
+    \section*{Plots}
+    """
+        for i, plot_file in enumerate(plot_files):
+            if plot_file and os.path.exists(plot_file):
+                # Get relative path for LaTeX
+                plot_name = os.path.basename(plot_file)
+                plot_title = plot_name.replace('_', ' ').replace('.png', '').title()
+                
+                plots_latex += rf"""
+    \begin{{figure}}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{{{plot_name}}}
+        \caption{{{plot_title}}}
+    \end{{figure}}
+    """
+                
     # Create LaTeX document
     final_latex = rf"""
     \documentclass[11pt]{{article}}
@@ -67,13 +89,14 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
     \usepackage{{adjustbox}}
     \usepackage{{array}}
     \usepackage{{float}}
+    \usepackage{{graphicx}}
     \geometry{{margin=1in}}
     \floatplacement{{table}}{{H}}
     \begin{{document}}
     \begin{{center}}
     \Large \textbf{{{conf['output']['org']+ ' ' + title}}}
     \end{{center}}
-    """ + "".join(latex_tables) + r"""
+        """ + "".join(latex_tables) + plots_latex + r"""
     \end{document}"""
         
     # Write LaTeX file

@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import calendar 
 import subprocess
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
+import glob
 
 config = 'PNW_centr_config/config_BH1.yaml'
 
@@ -247,10 +248,6 @@ def compare(config=None):
                     if conf['output']['save_to_pdf'] is True:
                         latex_table = csv_to_pdf.add_df_to_latex(metricstat_df, dfname, a)
                         all_latex_tables.append(latex_table)
-
-
-    if conf['output']['save_to_pdf'] is True and all_latex_tables:
-        csv_to_pdf.generate_pdf_report(all_latex_tables, output_path, conf, title="WE-Validate Report")
     
 
     plotting.plot_ts_line(combine_df)
@@ -259,6 +256,19 @@ def compare(config=None):
     plotting.plot_histogram_monthly(combine_df)
     plotting.plot_pair_scatter(combine_df)
     plotting.plot_pair_scatter_monthly(combine_df)
+
+    if conf['output']['save_to_pdf'] is True:
+        if conf['output']['save_figs'] is True: 
+
+            # Get all PNG files 
+            png_files = glob.glob(os.path.join(output_path, "*.png"))
+            plot_files = [f for f in png_files if conf['output']['org'] in os.path.basename(f)]
+            
+            # Generate PDF with plots
+            csv_to_pdf.generate_pdf_report(all_latex_tables, output_path, conf, 
+                                        title="WE-Validate Summary", plot_files=plot_files)
+        else: 
+            csv_to_pdf.generate_pdf_report(all_latex_tables, output_path, conf, title="WE-Validate Summary")
 
 if __name__ == '__main__':
     compare(config = config)
