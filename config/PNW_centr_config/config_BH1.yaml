@@ -26,7 +26,7 @@ threshold: .2
 
 aggregation:
   - MS
-  # - D
+  - D
   # - H
 
 # power plant capacity. should have same units as reference.Add commentMore actions
@@ -51,7 +51,7 @@ output:
   # print time steps with NaN values 
   print_NaN_values: False
   # save results to pdf? 
-  save_to_pdf: False 
+  save_to_pdf: True
 
 # baseline dataset
 base:
@@ -138,4 +138,4 @@ reference:
   # variable units
   units: MW
   # Method for selecting data points when frequencies differ between datasets. ("instance" or "average")
-  select_method: average
+  select_method: instance
