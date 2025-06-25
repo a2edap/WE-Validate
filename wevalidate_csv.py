@@ -10,7 +10,7 @@ import pathlib
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import calendar 
+import datetime 
 import subprocess
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
@@ -34,7 +34,6 @@ def compare(config=None):
 
     conf = yaml.load(open(config_file), Loader=yaml.FullLoader)
 
-    #multiply by number of turbines if specified in config file
     # This section will read the comparison datasets and multiply the specified column by the number of turbines
     # This is useful for datasets that are not already normalized by the number of turbines, such as WRF data.
     for dataset in conf['comp']:  # Loop through comparison datasets
@@ -57,8 +56,12 @@ def compare(config=None):
     # define swingdoor functions
     def swingdoor_func(x, thresh):
         # Process data with swinging door method.
-        gp = np.array(x)
-        timestamp_gp = np.array(x.index)
+
+        # Remove NaN values but keep timestamp alignment
+        valid_mask = ~x.isna()
+        x_clean = x[valid_mask]
+        gp = np.array(x_clean)
+        timestamp_gp = np.array(x_clean.index)
         # dev = max(.1*x.max(),.1*y.max())
 
         dev = thresh * gp.max()
@@ -66,7 +69,7 @@ def compare(config=None):
         len_gp = len(gp)
         # len_gp = 200
         magnitude, rate, duration = np.zeros(len_gp), np.zeros(len_gp), np.zeros(len_gp)
-        # Temperary arrays used for swinging door method
+        # Temporary arrays used for swinging door method
         ratemin, ratemax = np.zeros(len_gp), np.zeros(len_gp)
         magnitude_c, rate_c, duration_c, timestamp_c = np.zeros(len_gp), np.zeros(len_gp), np.zeros(
             len_gp), np.zeros(len_gp, dtype='datetime64[ns]')
@@ -75,9 +78,11 @@ def compare(config=None):
         i = 0  # index of this group, gp
         m = 0  # index of compressed data set
         while i < len_gp:
+        
             magnitude[i] = gp[i]
             magnitude_c[m] = magnitude[i]
             timestamp_c[m] = timestamp_gp[i]
+       
             j = 0
             while j < len_gp - i:
                 # print(j)
@@ -114,34 +119,35 @@ def compare(config=None):
         magnitude_c = np.trim_zeros(magnitude_c, 'b')
         rate_c = np.trim_zeros(rate_c, 'b')
         duration_c = np.trim_zeros(duration_c, 'b')
+
         len_c = len(magnitude_c)
         timestamp_c = timestamp_c[:len_c]
 
         return magnitude_c, rate_c, duration_c, timestamp_c
     def compute_sd(x, y, freq):
         thresh = conf.get('threshold', 0.1)  # Default 0.1 if threshold not specified
+        freq_str = f"{freq}min" if freq < 60 else f"{freq // 60}h"
         base_mag, base_rate, base_dur, base_t = swingdoor_func(x, thresh)
         comp_mag, comp_rate, comp_dur, comp_t = swingdoor_func(y, thresh)
         joined_mag = pd.DataFrame(base_mag, index=base_t).merge(pd.DataFrame(comp_mag, index=comp_t), how='outer',
                                                                 left_index=True, right_index=True).ffill().resample(
-            freq).ffill()
+            freq_str).ffill()
         if len(base_rate) < len(base_t):
             base_rate = np.append(base_rate, 0)
         if len(comp_rate) < len(comp_t):
             comp_rate = np.append(comp_rate, 0)
         joined_rate = pd.DataFrame(base_rate[:len(base_t)], index=base_t).merge(
             pd.DataFrame(comp_rate[:len(comp_t)], index=comp_t), how='outer', left_index=True,
-            right_index=True).ffill().resample(freq).ffill()
+            right_index=True).ffill().resample(freq_str).ffill()
         df = pd.DataFrame(base_dur, index=base_t)
-        df = pd.concat([df, pd.DataFrame({0: 0}, index=df.index[1:] - pd.Timedelta(freq))])
-        b_dur = df[~df.index.duplicated(keep='first')].sort_index().resample(freq).interpolate()
+        df = pd.concat([df, pd.DataFrame({0: 0}, index=df.index[1:] - pd.Timedelta(minutes=freq))])
+        b_dur = df[~df.index.duplicated(keep='first')].sort_index().resample(freq_str).interpolate()
         df = pd.DataFrame(comp_dur[:len(comp_t)], index=comp_t)
-        df = pd.concat([df, pd.DataFrame({0: 0}, index=df.index[1:] - pd.Timedelta(freq))])
-        c_dur = df[~df.index.duplicated(keep='first')].sort_index().resample(freq).interpolate()
+        df = pd.concat([df, pd.DataFrame({0: 0}, index=df.index[1:] - pd.Timedelta(minutes=freq))])
+        c_dur = df[~df.index.duplicated(keep='first')].sort_index().resample(freq_str).interpolate()
         joined_dur = b_dur.merge(c_dur, how='outer', left_index=True, right_index=True)
         joined_mag, joined_rate, joined_dur = [df.rename(columns={'0_x': base['name'], '0_y': c['name']}) for df in
                                                [joined_mag, joined_rate, joined_dur]]
-        # print(joined_mag)
         return joined_mag, joined_rate, joined_dur
 
     
@@ -193,17 +199,17 @@ def compare(config=None):
         c['data'] = c['input'].get_ts()
 
         combine_df = crosscheck_ts.align_time(base, c)
+
         if any('swingdoor' in i for i in analysis):
-            min_freq = min(c['freq'], base['freq'])
-            convert_freq_to_str = f"{min_freq}min" if min_freq < 60 else f"{min_freq // 60}h"
-            magnitude, ramprate, duration = compute_sd(combine_df[base['name']], combine_df[c['name']],convert_freq_to_str)
+            max_freq = max(c['freq'], base['freq'])
+            magnitude, ramprate, duration = compute_sd(combine_df[base['name']], combine_df[c['name']], max_freq)
             swingdoor_ts = {
                             'swingdoor-mag':magnitude,
                             'swingdoor-ramp':ramprate,
                             'swingdoor-dur':duration
                             }
             ramp_plotting.plot_ramp_ts(swingdoor_ts,combine_df)
-            ramp_plotting.plot_ramp_ts_monthly(swingdoor_ts,combine_df)
+            # ramp_plotting.plot_ramp_ts_monthly(swingdoor_ts,combine_df)
         results = eval_tools.append_results(results, base, c, analysis[0])
         
         for a_ind, analysis_type in enumerate(analysis):

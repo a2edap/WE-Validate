@@ -18,11 +18,11 @@ metrics:
 # analysis type (base or swingdoor)
 analysis:
   - base_analysis
-  # - swingdoor-mag
+  - swingdoor-mag
   # - swingdoor-ramp
   # - swingdoor-dur
 
-threshold: .2
+threshold: .02
 
 aggregation:
   - MS
@@ -138,4 +138,4 @@ reference:
   # variable units
   units: MW
   # Method for selecting data points when frequencies differ between datasets. ("instance" or "average")
-  select_method: instance
+  select_method: average

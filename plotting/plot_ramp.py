@@ -23,8 +23,11 @@ class plot_ramp:
 
         self.org = conf['output']['org']
 
-        self.freq = conf['base']['freq']
-        self.freq_str = f"{self.freq}min" if self.freq < 60 else f"{self.freq // 60}h"
+        self.freq = max(conf['base']['freq'], conf['comp'][1]['freq'])
+        if self.freq >= 60:
+            self.freq_str = f"{self.freq // 60}h"
+        else:
+            self.freq_str = f"{self.freq}min"
 
         if conf['reference']['units'] == 'ms-1':
             self.units = r'm $s^{-1}$'
@@ -130,6 +133,7 @@ class plot_ramp:
                 plt.show()
 
         plt.rcParams.update(plt.rcParamsDefault)
+
     def plot_ramp_ts_monthly(self, sd, df):
         
         output_path = os.path.join(
