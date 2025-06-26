@@ -11,7 +11,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import datetime 
-import subprocess
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
@@ -256,12 +255,12 @@ def compare(config=None):
                         all_latex_tables.append(latex_table)
     
 
-    plotting.plot_ts_line(combine_df)
-    plotting.plot_ts_line_monthly(combine_df)
-    plotting.plot_histogram(combine_df)
-    plotting.plot_histogram_monthly(combine_df)
-    plotting.plot_pair_scatter(combine_df)
-    plotting.plot_pair_scatter_monthly(combine_df)
+        plotting.plot_ts_line(combine_df)
+        plotting.plot_ts_line_monthly(combine_df)
+        plotting.plot_histogram(combine_df)
+        plotting.plot_histogram_monthly(combine_df)
+        plotting.plot_pair_scatter(combine_df)
+        plotting.plot_pair_scatter_monthly(combine_df)
 
     if conf['output']['save_to_pdf'] is True:
         if conf['output']['save_figs'] is True: 

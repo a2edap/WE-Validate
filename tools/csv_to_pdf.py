@@ -69,7 +69,8 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
             if plot_file and os.path.exists(plot_file):
                 # Get relative path for LaTeX
                 plot_name = os.path.basename(plot_file)
-                plot_title = plot_name.replace('_', ' ').replace('.png', '').title()
+                plot_title = plot_name.replace('_', ' ').replace('.png', '')
+                # plot_title = ' '.join(word.capitalize() for word in plot_title.split())s
                 
                 plots_latex += rf"""
     \begin{{figure}}[H]

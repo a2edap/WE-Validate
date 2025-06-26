@@ -66,7 +66,7 @@ class plot_ramp:
             # Create figure and axes with shared x-axis
             fig, axes = plt.subplots(3, 1, sharex=True)
             for ax in axes:
-                ax.tick_params(axis='x', labelrotation=45)  # Rotate x-axis labels
+                ax.tick_params(axis='x', labelrotation=45) 
 
             # Plot magnitude
             axes[0].plot(mag_df.index, mag_df.iloc[:, 0])
@@ -90,7 +90,7 @@ class plot_ramp:
             # Adjust layout
             fig.tight_layout(rect=[0, 0, 1, 0.95])
 
-            plt.savefig(os.path.join(self.path, f'ramp_timeseries_{df.columns[0]}-{df.columns[1]}_{self.org}.png'), dpi=300,bbox_inches="tight")
+            plt.savefig(os.path.join(self.path, f'Ramp_Timeseries_{df.columns[0]}-{df.columns[1]}_{self.org}.png'), dpi=300,bbox_inches="tight")
             if self.showfig is True:
                 plt.show()
             else:
@@ -162,15 +162,16 @@ class plot_ramp:
         if self.savefig is True:
 
             for month in months:
+                selected_month = sd['swingdoor-mag'][sd['swingdoor-mag'].index.month == month]
                 selected_month_mag = sd['swingdoor-mag'][sd['swingdoor-mag'].index.month == month]
                 selected_month_rate = sd['swingdoor-ramp'][sd['swingdoor-ramp'].index.month == month]
                 selected_month_dur = sd['swingdoor-dur'][sd['swingdoor-dur'].index.month == month]
 
-                fig, axes = plt.subplots(3, 1, sharex=True, figsize=(10, 8))
+                # Create figure and axes with shared x-axis
+                fig, axes = plt.subplots(3, 1, sharex=True)
                 for ax in axes:
-                    # ax.xaxis.set_major_locator(mdates.DayLocator(interval=3))  # Tick every 3 days
-                    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))  # Format: 'YYYY-MM-DD'
-                    ax.tick_params(axis='x', labelrotation=45)  # Rotate x-axis labels
+                    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))  
+                    ax.tick_params(axis='x', labelrotation=45) 
 
                 # Plot magnitude
                 axes[0].plot(selected_month_mag.index, selected_month_mag.iloc[:, 0])
@@ -195,13 +196,57 @@ class plot_ramp:
 
                 # Adjust layout
                 fig.tight_layout(rect=[0, 0, 1, 0.95])
-
-                plt.savefig(os.path.join(self.path, f'ramp_timeseries_monthly{month}_{df.columns[0]}-{df.columns[1]}_{self.org}.png'), bbox_inches='tight')
+                plt.title(selected_month.index.strftime("%B")[0] )
+                plt.savefig(os.path.join(self.path, f'Ramp_Timeseries_Monthly_{selected_month.index.strftime("%B")[0]}_{df.columns[0]}-{df.columns[1]}_{self.org}.png'), dpi=300, bbox_inches='tight')
 
             if self.showfig is True:
                 plt.show()
             else:
                 plt.close()
+        if self.savefig is False: 
+            if self.showfig is True: 
+                for month in months:
+                    selected_month = sd[sd.index.month == month]
+                    selected_month_mag = sd['swingdoor-mag'][sd['swingdoor-mag'].index.month == month]
+                    selected_month_rate = sd['swingdoor-ramp'][sd['swingdoor-ramp'].index.month == month]
+                    selected_month_dur = sd['swingdoor-dur'][sd['swingdoor-dur'].index.month == month]
+
+                    # Create figure and axes with shared x-axis
+                    fig, axes = plt.subplots(3, 1, sharex=True)
+                    for ax in axes:
+                        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))  
+                        ax.tick_params(axis='x', labelrotation=45) 
+
+                    # Plot magnitude
+                    axes[0].plot(selected_month_mag.index, selected_month_mag.iloc[:, 0])
+                    axes[0].plot(selected_month_mag.index, selected_month_mag.iloc[:, 1])
+                    axes[0].set_ylabel(f"Magnitude ({self.units})")
+                    axes[0].grid()
+
+                    # Plot ramp rate 
+                    axes[1].plot(selected_month_rate.index, selected_month_rate.iloc[:, 0])
+                    axes[1].plot(selected_month_rate.index, selected_month_rate.iloc[:, 1])
+                    axes[1].set_ylabel(f"Rate({self.units}/{self.freq_str})")
+                    axes[1].grid()
+
+                    # Plot duration
+                    axes[2].plot(selected_month_dur.index, selected_month_dur.iloc[:, 0], label=df.columns[0])
+                    axes[2].plot(selected_month_dur.index, selected_month_dur.iloc[:, 1], label=df.columns[1])
+                    axes[2].set_ylabel(f"Duration ({self.freq_str})")
+                    axes[2].set_xlabel("Date")
+                    axes[2].set_xlim(selected_month_dur.index.min(), selected_month_dur.index.max())
+                    axes[2].legend()
+                    axes[2].grid()
+
+                    # Adjust layout
+                    fig.tight_layout(rect=[0, 0, 1, 0.95])
+                    plt.title(selected_month.index.strftime("%B")[0] )
+
+                    plt.show()
+
+        plt.rcParams.update(plt.rcParamsDefault)
+
+
 
 
     
