@@ -14,7 +14,7 @@ import datetime
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'PNW_centr_config/config_BH1.yaml'
+config = 'PNW_turb_config/config_SP1_turb.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -198,9 +198,12 @@ def compare(config=None):
         c['data'] = c['input'].get_ts()
 
         combine_df = crosscheck_ts.align_time(base, c)
-
+        max_freq = max(c['freq'], base['freq'])
+        if max_freq >= 60:
+            max_freq_str = f"{max_freq // 60}h"
+        else:
+            max_freq_str = f"{max_freq}min"
         if any('swingdoor' in i for i in analysis):
-            max_freq = max(c['freq'], base['freq'])
             magnitude, ramprate, duration = compute_sd(combine_df[base['name']], combine_df[c['name']], max_freq)
             swingdoor_ts = {
                             'swingdoor-mag':magnitude,
@@ -224,7 +227,7 @@ def compare(config=None):
                 )
             for a in aggregations:
 
-                dfname = 'metrics_' + analysis_type +'_' + c['name'] + '_' + a + '_' + method 
+                dfname = 'metrics_' + analysis_type +'_' + c['name'] + '_' + a + '_' + method + '_' + max_freq_str
 
                 metricstat_dict = {key: results[ind][analysis_type][a][key]
                                 for key in conf['metrics']}

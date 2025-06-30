@@ -129,7 +129,7 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
         os.chdir(original_dir)
     
     # Clean up auxiliary files
-    for ext in ['.aux', '.log', '.out', '.toc', '.tex']:
+    for ext in ['.aux', '.log', '.out', '.toc', ]:
         aux_file = os.path.join(output_path, f'{filename}{ext}')
         if os.path.exists(aux_file):
             os.remove(aux_file)

@@ -10,15 +10,15 @@ metrics:
   - rmse
   - crmse
   - bias
-  - bias_pct
   - mae
+  - bias_pct
   - mae_pct
   - cross_correlation
 
 # analysis type (base or swingdoor)
 analysis:
   - base_analysis
-  - swingdoor-mag
+  # - swingdoor-mag
   # - swingdoor-ramp
   # - swingdoor-dur
 
@@ -43,7 +43,7 @@ output:
   # save metrics?
   save_metrics: True
   # save figures?
-  save_figs: True
+  save_figs: False
   # show figures?
   show_figs: False 
   # print results
@@ -51,7 +51,7 @@ output:
   # print time steps with NaN values 
   print_NaN_values: False
   # save results to pdf? 
-  save_to_pdf: True
+  save_to_pdf: False
 
 # baseline dataset
 base:
@@ -64,7 +64,7 @@ base:
   # variable name
   var: Value
   # data frequency in minutes
-  freq: 1
+  freq: 60
   # flag value
   flag: 999
 
@@ -74,61 +74,61 @@ comp:
   - name: WRF Centroid Actual
     # data directory
     path: data/PNW_centr/wind_wrf_centroid.201608.56361.actual.csv
-    # name of data processing function
+    # name of data processing functioncc
     function: csv_pnw
     # variable name
     var: capacity
     # data frequency in minutes
-    freq: 5
+    freq: 60
     # flag value
     flag: 999
     # number of turbines
     turbines: 133
 
-  # name of dataset
-  - name: WRF Centroid A1
-    # data directory
-    path: data/PNW_centr/wind_wrf_centroid.201608.56361.A1.csv
-    # name of data processing function
-    function: csv_pnw
-    # variable name
-    var: capacity
-    # data frequency in minutes
-    freq: 5
-    # flag value
-    flag: 999
-    # number of turbines
-    turbines: 133
+  # # name of dataset
+  # - name: WRF Centroid A1
+  #   # data directory
+  #   path: data/PNW_centr/wind_wrf_centroid.201608.56361.A1.csv
+  #   # name of data processing function
+  #   function: csv_pnw
+  #   # variable name
+  #   var: capacity
+  #   # data frequency in minutes
+  #   freq: 5
+  #   # flag value
+  #   flag: 999
+  #   # number of turbines
+  #   turbines: 133
 
-  # name of dataset
-  - name: WRF Centroid A2
-    # data directory
-    path: data/PNW_centr/wind_wrf_centroid.201608.56361.A2.csv
-    # name of data processing function
-    function: csv_pnw
-    # variable name
-    var: capacity
-    # data frequency in minutes
-    freq: 5
-    # flag value
-    flag: 999
-    # number of turbines
-    turbines: 133
+  # # name of dataset
+  # - name: WRF Centroid A2
+  #   # data directory
+  #   path: data/PNW_centr/wind_wrf_centroid.201608.56361.A2.csv
+  #   # name of data processing function
+  #   function: csv_pnw
+  #   # variable name
+  #   var: capacity
+  #   # data frequency in minutes
+  #   freq: 5
+  #   # flag value
+  #   flag: 999
+  #   # number of turbines
+  #   turbines: 133
 
-  # name of dataset
-  - name: WRF Centroid A3
-    # data directory
-    path: data/PNW_centr/wind_wrf_centroid.201608.56361.A3.csv
-    # name of data processing function
-    function: csv_pnw
-    # variable name
-    var: capacity
-    # data frequency in minutes
-    freq: 5
-    # flag value
-    flag: 999
-    # number of turbines
-    turbines: 133
+  # # name of dataset
+  # - name: WRF Centroid A3
+  #   # data directory
+  #   path: data/PNW_centr/wind_wrf_centroid.201608.56361.A3.csv
+  #   # name of data processing function
+  #   function: csv_pnw
+  #   # variable name
+  #   var: capacity
+  #   # data frequency in minutes
+  #   freq: 5
+  #   # flag value
+  #   flag: 999
+  #   # number of turbines
+  #   turbines: 133
 
 
 # reference

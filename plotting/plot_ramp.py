@@ -23,7 +23,7 @@ class plot_ramp:
 
         self.org = conf['output']['org']
 
-        self.freq = max(conf['base']['freq'], conf['comp'][1]['freq'])
+        self.freq = max(conf['base']['freq'], conf['comp'][0]['freq'])
         if self.freq >= 60:
             self.freq_str = f"{self.freq // 60}h"
         else:
