@@ -23,10 +23,13 @@ class csv_pnw:
         self.path = os.path.join(
             (pathlib.Path(os.getcwd())), str(info['path'])
         )
+
         self.var = info['var']
         self.name = info['name']
         self.freq = info['freq']
         self.flag = info['flag']
+        self.turbines = info.get('turbines', 1)
+
         if 'df' in info:
             self.df = info['df'][info['path']]
 
@@ -52,16 +55,18 @@ class csv_pnw:
         if len(time_diff[1:].unique()) == 1:
 
             if self.freq > time_diff.iloc[1].components.minutes:
-
                 df = df.resample(
-                    str(self.freq) + 'T', label='right',
-                    closed='right')
+                    str(self.freq) + 'min', label='left',
+                    closed='left')
 
                 if self.select_method == 'average':
                     df = df.mean()
                 if self.select_method == 'instance':
                     df = df.asfreq()
 
+        #Normalize data set by mutliplying by the number of turbines, if not defined defaults to 1
+        if self.turbines is not None:
+            df = df * self.turbines 
         return df
 
     def get_ts_gui(self):

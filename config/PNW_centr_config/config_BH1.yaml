@@ -43,7 +43,7 @@ output:
   # save metrics?
   save_metrics: True
   # save figures?
-  save_figs: False
+  save_figs: True
   # show figures?
   show_figs: False 
   # print results
@@ -51,7 +51,7 @@ output:
   # print time steps with NaN values 
   print_NaN_values: False
   # save results to pdf? 
-  save_to_pdf: False
+  save_to_pdf: True
 
 # baseline dataset
 base:
@@ -67,6 +67,8 @@ base:
   freq: 60
   # flag value
   flag: 999
+  #Fix negative values (auxiliary load) to 0?
+  fix_negatives: True 
 
 # data input to be compared with the baseline dataset
 comp:

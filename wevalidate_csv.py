@@ -14,7 +14,7 @@ import datetime
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'PNW_turb_config/config_SP1_turb.yaml'
+config = 'PNW_centr_config/config_BH1.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -33,24 +33,6 @@ def compare(config=None):
 
     conf = yaml.load(open(config_file), Loader=yaml.FullLoader)
 
-    # This section will read the comparison datasets and multiply the specified column by the number of turbines
-    # This is useful for datasets that are not already normalized by the number of turbines, such as WRF data.
-    for dataset in conf['comp']:  # Loop through comparison datasets
-        csv_path = dataset["path"]                
-        column_name = dataset["var"]            
-        turbines = dataset.get("turbines", 1)  #default to 1 if not specified  
-
-        df = pd.read_csv(csv_path)
-
-        #Multiply comparison data by # of turbines 
-        df[column_name] = (df[column_name] * turbines)
-
-        # Save transformed data back to a new CSV
-        transformed_csv_path = f"data/transformed_csv/updated_{csv_path.split('/')[-1]}" 
-        df.to_csv(transformed_csv_path, index=False)  
-
-        # Update path 
-        dataset["path"] = transformed_csv_path 
 
     # define swingdoor functions
     def swingdoor_func(x, thresh):
@@ -180,6 +162,7 @@ def compare(config=None):
         'inputs', base['function'])(base, conf)
 
     base['data'] = base['input'].get_ts()
+
     # For each specified comparison dataset
     analysis = conf['analysis']
     start = conf['time']['window']['start']
@@ -190,7 +173,7 @@ def compare(config=None):
 
         print()
         print('********** for '+c['name']+': **********')
-
+        
         # Run __init__
         c['input'] = eval_tools.get_module_class(
             'inputs', c['function'])(c, conf)
@@ -198,6 +181,7 @@ def compare(config=None):
         c['data'] = c['input'].get_ts()
 
         combine_df = crosscheck_ts.align_time(base, c)
+        
         max_freq = max(c['freq'], base['freq'])
         if max_freq >= 60:
             max_freq_str = f"{max_freq // 60}h"
@@ -225,6 +209,7 @@ def compare(config=None):
             cal_print_metrics_csv.run(
                 full_df, metrics, results, ind, c, conf, base, aggregations, analysis_type
                 )
+            full_df.to_csv("full_df_output_hourly.csv", index=True)
             for a in aggregations:
 
                 dfname = 'metrics_' + analysis_type +'_' + c['name'] + '_' + a + '_' + method + '_' + max_freq_str

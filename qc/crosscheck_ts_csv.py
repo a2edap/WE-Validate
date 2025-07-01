@@ -22,6 +22,20 @@ class crosscheck_ts_csv:
         except KeyError:
             self.select_method = 'instance'
 
+    def negative_value_check(self, input):
+        """Check for negative values in the observed data
+        if turned on, will be changed to 0 to ensure accurate calculations
+        """
+    
+        negative_count = (input[input.columns[0]] < 0).sum()
+        if negative_count > 0:
+            print(f"Warning: {negative_count} negative values found.")
+
+            input[input.columns[0]] = input[input.columns[0]].clip(lower=0)
+            print(f"Negative values have been set to 0.")
+
+        return input
+    
     def trim_ts(self, ts):
         """Trim time series to within upper and lower limits,
         as declared by users.
@@ -31,6 +45,7 @@ class crosscheck_ts_csv:
         ts = ts.loc[ts.index <= self.upper]
 
         return ts
+    
 
     def run_select_method(self, input):
         """Select data from the resampler according to the declared method.
@@ -38,7 +53,6 @@ class crosscheck_ts_csv:
         :param str average: arithmetic mean
         :param str instance: sample instance at the resampled time step
         """
-
         if self.select_method == 'average':
             output = input.mean()
         if self.select_method == 'instance':
@@ -52,23 +66,34 @@ class crosscheck_ts_csv:
         than the existing data frequency, and then derive new time series based
         on :func:`~crosscheck_ts.crosscheck_ts.run_select_method`.
         """
+
         t_min = ts.index.min()
         t_max = ts.index.max()
-        ideal_index = pd.date_range(start=t_min, end=t_max, freq=f'{freq}min')
-        missing_time_steps = ideal_index.difference(ts.index)
+        time_diff = ts.index.to_series().diff()
+
+        #get current frequency to add NaN values BEFORE resampling 
+        current_freq_seconds = time_diff.iloc[1].total_seconds()
+        current_freq_minutes = int(current_freq_seconds / 60)
+ 
+        orig_index = pd.date_range(start=t_min, end=t_max, freq=f'{current_freq_minutes}min')
+        missing_time_steps = orig_index.difference(ts.index)
+
         #insert NaN for missing time steps
         if len(missing_time_steps) > 0:
             print('')
             print(f'DETECTED {len(missing_time_steps)} MISSING TIME STEPS.')
             print('THEY WILL BE HANDLED AUTOMATICALLY.')
-            ts = ts.reindex(ideal_index)
+            
+            ts = ts.reindex(orig_index)
 
         time_diff = ts.index.to_series().diff()
         if len(time_diff[1:].unique()) == 1:
             if (freq > time_diff.iloc[1].components.minutes)\
                and (self.select_data == 'end'):
+
                 ts = ts.resample(str(freq)+'min', label='left', closed='left')
                 ts = self.run_select_method(ts)
+
                 print()
                 print('resampling '+ts.columns.values[0]+' every '+str(freq)
                       + ' minutes using the '+self.select_method+' method')
@@ -84,9 +109,13 @@ class crosscheck_ts_csv:
         When the length of the resultant combine data frame does not match
         the user-defined, desired data length, print error messages.
         """
-
+    
         base_data = self.trim_ts(base['data'])
         comp_data = self.trim_ts(c['data'])
+
+        # Check for negative values before resampling
+        base_data = self.negative_value_check(base_data)
+        comp_data = self.negative_value_check(comp_data)
 
         base_data = self.resample_to_freq(base_data, base['freq'])
         comp_data = self.resample_to_freq(comp_data, c['freq'])

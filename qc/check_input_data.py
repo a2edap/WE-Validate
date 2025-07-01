@@ -43,7 +43,6 @@ def convert_flag_to_nan(var, flag, t):
 
     return var
 
-
 def check_duplicate_ind_remove(df):
     """When the data contain duplicated values.
     Keep the first entry.
@@ -185,25 +184,6 @@ def verify_data_file_count(df, var, path, freq, updated_len=None):
 
         return df
 
-# def detect_missing_time_steps_add_nan(df, time_column, t_min, t_max, freq):
-#     """Aligns time column in input dataframe to an ideal date-time index.
-#     Detects and replaces missing time steps (based on specified frequency) with NaNs.
-#     """
-#     df[time_column] = pd.to_datetime(df[time_column])
-#     df = df.set_index(time_column)
+
+
     
-#     # Create an ideal date-time index based on the specified frequency
-#     ideal_index = pd.date_range(start=t_min, end=t_max, freq=f'{freq}min')
-#     df = df.reindex(ideal_index)
-#     missing_time_steps = ideal_index.difference(df.index)
-
-
-#     if len(missing_time_steps) > 0:
-#         print('')
-#         print(f'DETECTED {len(missing_time_steps)} MISSING TIME STEPS IN THE DATAFRAME')
-#         print('THEY ARE:')
-#         print(missing_time_steps.strftime('%Y-%m-%d %H:%M:%S').values)
-#         print('')
-#         print('Missing time steps updated with NaN values.')
-
-#     return df
