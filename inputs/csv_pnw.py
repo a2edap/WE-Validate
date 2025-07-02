@@ -60,7 +60,12 @@ class csv_pnw:
                     closed='left')
 
                 if self.select_method == 'average':
+                    #add back if standard deviation is needed 
+                    # std_output = df.std()
+                    # std_filename = f'{self.name}_standard_deviation.csv'
+                    # std_output.to_csv(std_filename)
                     df = df.mean()
+        
                 if self.select_method == 'instance':
                     df = df.asfreq()
 

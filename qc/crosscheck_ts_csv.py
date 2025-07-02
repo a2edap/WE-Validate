@@ -47,14 +47,28 @@ class crosscheck_ts_csv:
         return ts
     
 
-    def run_select_method(self, input):
+    def run_select_method(self, input, data_name=None):
         """Select data from the resampler according to the declared method.
 
         :param str average: arithmetic mean
         :param str instance: sample instance at the resampled time step
         """
         if self.select_method == 'average':
+
+
+            # If standard deviation is needed, uncomment the following lines to get for base data
+            # if data_name:
+            #     if isinstance(data_name, dict):
+            #         clean_name = data_name.get('name', 'unknown')
+            #     else:
+            #         clean_name = str(data_name).replace('/', '_').replace('\\', '_').replace(':', '_')
+            #     std_output = input.std()
+
+            #     std_filename = f'{clean_name}_standard_deviation.csv'
+            #     std_output.to_csv(std_filename)
+
             output = input.mean()
+            
         if self.select_method == 'instance':
             output = input.asfreq()
 
@@ -145,6 +159,9 @@ class crosscheck_ts_csv:
                     str(c['freq'])+'min', label='left', closed='left',
                     origin=comp_data.index.min())
                 
+                #use if need standard deviation csv file 
+                # base_data = self.run_select_method(base_data, base)
+                
                 base_data = self.run_select_method(base_data)
 
                 print()
@@ -189,8 +206,7 @@ class crosscheck_ts_csv:
 
         # data_len = (diff_minute + freq) / freq
 
-        desired_period_minute = (self.upper - self.lower).total_seconds()\
-            / 60.0
+        desired_period_minute = (self.upper - self.lower).total_seconds()/ 60.0
 
         desired_len = (desired_period_minute + freq) / freq
 

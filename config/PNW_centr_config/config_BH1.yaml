@@ -3,7 +3,7 @@ time:
     # validation period start time
     start: 2016-08-02 00:00:00
     # validation period end time
-    end: 2016-08-31 23:55:00
+    end: 2016-08-29 23:00:00
 
 # validation metrics to be calculated and plotted
 metrics:
@@ -18,9 +18,9 @@ metrics:
 # analysis type (base or swingdoor)
 analysis:
   - base_analysis
-  # - swingdoor-mag
-  # - swingdoor-ramp
-  # - swingdoor-dur
+  - swingdoor-mag
+  - swingdoor-ramp
+  - swingdoor-dur
 
 threshold: .02
 
@@ -64,7 +64,7 @@ base:
   # variable name
   var: Value
   # data frequency in minutes
-  freq: 60
+  freq: 1
   # flag value
   flag: 999
   #Fix negative values (auxiliary load) to 0?
@@ -81,7 +81,7 @@ comp:
     # variable name
     var: capacity
     # data frequency in minutes
-    freq: 60
+    freq: 5
     # flag value
     flag: 999
     # number of turbines
