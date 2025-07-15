@@ -3,7 +3,7 @@ time:
     # validation period start time
     start: 2016-08-02 00:00:00
     # validation period end time
-    end: 2016-08-29 23:00:00
+    end: 2016-08-29 22:55:00
 
 # validation metrics to be calculated and plotted
 metrics:
@@ -22,7 +22,7 @@ analysis:
   - swingdoor-ramp
   - swingdoor-dur
 
-threshold: .02
+threshold: .1
 
 aggregation:
   - MS

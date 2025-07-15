@@ -46,9 +46,10 @@ def compare(config=None):
         # dev = max(.1*x.max(),.1*y.max())
 
         dev = thresh * gp.max()
+        # print(f"Using threshold: {thresh}, dev: {dev}")
 
         len_gp = len(gp)
-        # len_gp = 200
+        # print(f"Length of group: {len_gp}")
         magnitude, rate, duration = np.zeros(len_gp), np.zeros(len_gp), np.zeros(len_gp)
         # Temporary arrays used for swinging door method
         ratemin, ratemax = np.zeros(len_gp), np.zeros(len_gp)
@@ -58,52 +59,51 @@ def compare(config=None):
         magnitude[0] = gp[0]
         i = 0  # index of this group, gp
         m = 0  # index of compressed data set
-        while i < len_gp:
-        
+        while i < len_gp - 1:
             magnitude[i] = gp[i]
+
             magnitude_c[m] = magnitude[i]
             timestamp_c[m] = timestamp_gp[i]
-       
-            j = 0
+            j = 1
             while j < len_gp - i:
                 # print(j)
                 magnitude[i + j] = gp[i + j]
-                rate[i + j] = (magnitude[i + j] - magnitude[i]) / (j + 1)
-                ratemax[i + j] = (magnitude[i + j] - magnitude[i] + dev) / (j + 1)
-                ratemin[i + j] = (magnitude[i + j] - magnitude[i] - dev) / (j + 1)
+                rate[i + j] = (magnitude[i + j] - magnitude[i]) / (j)
+                ratemax[i + j] = (magnitude[i + j] - magnitude[i] + dev) / (j)
+                ratemin[i + j] = (magnitude[i + j] - magnitude[i] - dev) / (j)
                 flag = 0
-                for k in range(j):
+                for k in range(1, j+1):
                     if (ratemax[i + k] < rate[i + j]) | (ratemin[i + k] > rate[i + j]):
                         flag = 1
                         break
                 if flag == 1:
                     # set rate value for data points from i to i+j-2
-                    newrate = (magnitude[i + j - 1] - magnitude[i]) / (j)
-                    for k in range(j - 1):
+                    newrate = (magnitude[i + j - 1] - magnitude[i]) / (j-1)
+                    for k in range(1, j):
                         rate[i + k - 1] = newrate
-                        duration[i + k - 1] = j - k
+                        duration[i + k - 1] = j - k - 1
                     break
                 else:
                     j += 1
             # when searching reaches the end of gp, store the rate value
-            # for data points from i to i+j-2 (2nd to last data point).
+            # for data points from i to i+j-2 (2nd to laast data point).
             # rate and duration of the last data point can not be determined
             if j == len_gp - i:
-                newrate = (magnitude[i + j - 1] - magnitude[i]) / (j)
-                for k in range(j - 1):
+                newrate = (magnitude[i + j - 1] - magnitude[i]) / (j-1)
+                for k in range(1, j):
                     rate[i + k - 1] = newrate
-                    duration[i + k - 1] = j - k
+                    duration[i + k - 1] = j - k - 1
             rate_c[m], duration_c[m] = rate[i], duration[i]
-            i = i + j
+            i = i + j - 1
             m += 1
+        # set rate and duration for the last data point
 
         magnitude_c = np.trim_zeros(magnitude_c, 'b')
         rate_c = np.trim_zeros(rate_c, 'b')
         duration_c = np.trim_zeros(duration_c, 'b')
-
         len_c = len(magnitude_c)
         timestamp_c = timestamp_c[:len_c]
-
+        print("duration_c", duration_c)
         return magnitude_c, rate_c, duration_c, timestamp_c
     def compute_sd(x, y, freq):
         thresh = conf.get('threshold', 0.1)  # Default 0.1 if threshold not specified
@@ -163,6 +163,23 @@ def compare(config=None):
 
     base['data'] = base['input'].get_ts()
 
+    #Uncomment if need to check for outliers in the base data 
+    # base_diff = base['data'].diff()
+    # base_diff.to_csv('base_data_diff.csv', index=True)
+    # summary = {
+    # 'max': base_diff.max(),
+    # 'min': base_diff.min(),
+    # 'mean': base_diff.mean(),
+    # 'median': base_diff.median(),
+    # 'std': base_diff.std()
+    # }
+    # print(summary)
+    # max_index = base_diff.idxmax()  # timestamp of maximum value
+    # min_index = base_diff.idxmin()  # timestamp of minimum value
+
+    # print(f"Max value occurred at {max_index}")
+    # print(f"Min value occurred at {min_index}")
+
     # For each specified comparison dataset
     analysis = conf['analysis']
     start = conf['time']['window']['start']
@@ -181,6 +198,7 @@ def compare(config=None):
         c['data'] = c['input'].get_ts()
 
         combine_df = crosscheck_ts.align_time(base, c)
+        # print(combine_df.tail())
         
         max_freq = max(c['freq'], base['freq'])
         if max_freq >= 60:
@@ -189,6 +207,7 @@ def compare(config=None):
             max_freq_str = f"{max_freq}min"
         if any('swingdoor' in i for i in analysis):
             magnitude, ramprate, duration = compute_sd(combine_df[base['name']], combine_df[c['name']], max_freq)
+
             swingdoor_ts = {
                             'swingdoor-mag':magnitude,
                             'swingdoor-ramp':ramprate,
@@ -203,13 +222,15 @@ def compare(config=None):
 
             if 'swingdoor' in analysis_type:
                 full_df = swingdoor_ts[analysis_type].copy(deep=True)
+                full_df.to_csv(f'{analysis_type}_full_df_output_5min.csv', index=True)
             else:
                 full_df = combine_df.copy(deep=True)
+                full_df.to_csv(f'{analysis_type}_full_df_output_5min.csv', index=True)
             
             cal_print_metrics_csv.run(
                 full_df, metrics, results, ind, c, conf, base, aggregations, analysis_type
                 )
-            full_df.to_csv("full_df_output_hourly.csv", index=True)
+        
             for a in aggregations:
 
                 dfname = 'metrics_' + analysis_type +'_' + c['name'] + '_' + a + '_' + method + '_' + max_freq_str
