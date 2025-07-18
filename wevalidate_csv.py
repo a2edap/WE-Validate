@@ -14,7 +14,7 @@ import datetime
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'PNW_turb_config/config_BH1_turb.yaml'
+config = 'PNW_turb_config/config_KL3_merged_turb.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -103,14 +103,16 @@ def compare(config=None):
         magnitude_c = np.trim_zeros(magnitude_c, 'b')
         rate_c = np.trim_zeros(rate_c, 'b')
         duration_c = np.trim_zeros(duration_c, 'b')
+   
         len_c = len(magnitude_c)
         timestamp_c = timestamp_c[:len_c]
-        print("duration_c", duration_c)
+
         return magnitude_c, rate_c, duration_c, timestamp_c
     def compute_sd(x, y, freq):
         freq_str = f"{freq}min" if freq < 60 else f"{freq // 60}h"
         base_mag, base_rate, base_dur, base_t = swingdoor_func(x, thresh)
         comp_mag, comp_rate, comp_dur, comp_t = swingdoor_func(y, thresh)
+        print(f"Base data length: {len(base_t)}, Comparison data length: {len(comp_t)}")
         joined_mag = pd.DataFrame(base_mag, index=base_t).merge(pd.DataFrame(comp_mag, index=comp_t), how='outer',
                                                                 left_index=True, right_index=True).ffill().resample(
             freq_str).ffill()
@@ -121,6 +123,10 @@ def compare(config=None):
         joined_rate = pd.DataFrame(base_rate[:len(base_t)], index=base_t).merge(
             pd.DataFrame(comp_rate[:len(comp_t)], index=comp_t), how='outer', left_index=True,
             right_index=True).ffill().resample(freq_str).ffill()
+        if len(base_dur) < len(base_t):
+            base_dur = np.append(base_dur, 0)
+        if len(comp_dur) < len(comp_t):
+            comp_dur = np.append(comp_dur, 0)
         df = pd.DataFrame(base_dur, index=base_t)
         df = pd.concat([df, pd.DataFrame({0: 0}, index=df.index[1:] - pd.Timedelta(minutes=freq))])
         b_dur = df[~df.index.duplicated(keep='first')].sort_index().resample(freq_str).interpolate()

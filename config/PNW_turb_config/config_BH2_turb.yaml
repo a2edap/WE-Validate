@@ -22,7 +22,7 @@ analysis:
   - swingdoor-ramp
   - swingdoor-dur
 
-threshold: .05
+threshold: .4
 
 aggregation:
   - MS
@@ -51,7 +51,7 @@ output:
   # print time steps with NaN values?
   print_NaN_values: False
   # save results to pdf? 
-  save_to_pdf: False 
+  save_to_pdf: True
 
 # baseline dataset
 base:
