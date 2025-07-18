@@ -18,11 +18,11 @@ metrics:
   # analysis type (base or swingdoor)
 analysis:
   - base_analysis
-  # - swingdoor-mag
-  # - swingdoor-ramp
-  # - swingdoor-dur
+  - swingdoor-mag
+  - swingdoor-ramp
+  - swingdoor-dur
 
-threshold: .2
+threshold: .4
 
 aggregation:
   - MS
@@ -43,7 +43,7 @@ output:
   # save metrics?
   save_metrics: True
   # save figures?
-  save_figs: False
+  save_figs: True
   # show figures?
   show_figs: False
   # print results?
@@ -51,7 +51,7 @@ output:
   # print time steps with NaN values?
   print_NaN_values: False
   # save results to pdf? 
-  save_to_pdf: False 
+  save_to_pdf: True
 
 # baseline dataset
 base:
@@ -64,7 +64,7 @@ base:
   # variable name
   var: Value
   # data frequency in minutes
-  freq: 60
+  freq: 1
   # flag value
   flag: 999
 
@@ -79,7 +79,7 @@ comp:
     # variable name
     var: capacity
     # data frequency in minutes
-    freq: 60
+    freq: 5
     # flag value
     flag: 999
 

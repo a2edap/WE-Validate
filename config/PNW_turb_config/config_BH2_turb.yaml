@@ -18,11 +18,11 @@ metrics:
   # analysis type (base or swingdoor)
 analysis:
   - base_analysis
-  # - swingdoor-mag
-  # - swingdoor-ramp
-  # - swingdoor-dur
+  - swingdoor-mag
+  - swingdoor-ramp
+  - swingdoor-dur
 
-threshold: .2
+threshold: .05
 
 aggregation:
   - MS
@@ -64,7 +64,7 @@ base:
   # variable name
   var: Value
   # data frequency in minutes
-  freq: 60
+  freq: 1
   # flag value
   flag: 999
 
@@ -79,7 +79,7 @@ comp:
     # variable name
     var: capacity
     # data frequency in minutes
-    freq: 60
+    freq: 5
     # flag value
     flag: 999
 
@@ -130,4 +130,4 @@ reference:
   # variable units
   units: MW
   # Method for selecting data points when frequencies differ between datasets. ("instance" or "average")
-  select_method: instance
+  select_method: average

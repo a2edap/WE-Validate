@@ -55,8 +55,9 @@ def add_df_to_latex(df, section, aggregation):
 def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summary", plot_files = None):
 
     org = conf['output']['org']
+    thresh = conf.get('threshold', 0.1)  # Default threshold if not specified
     select_method = conf['reference']['select_method']
-    filename = f"{org}_report_{select_method}"
+    filename = f"{org}_report_{select_method}_{thresh:.2f}"
 
         # Create plots section if plots are provided
     plots_latex = ""
@@ -79,7 +80,7 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
         \caption{{{plot_title}}}
     \end{{figure}}
     """
-                
+    org_title = org.replace('_', ' ')
     # Create LaTeX document
     final_latex = rf"""
     \documentclass[11pt]{{article}}
@@ -95,7 +96,7 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
     \floatplacement{{table}}{{H}}
     \begin{{document}}
     \begin{{center}}
-    \Large \textbf{{{conf['output']['org']+ ' ' + title}}}
+    \Large \textbf{{{org_title + ' ' + title}}}
     \end{{center}}
         """ + "".join(latex_tables) + plots_latex + r"""
     \end{document}"""

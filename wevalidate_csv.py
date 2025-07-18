@@ -14,7 +14,7 @@ import datetime
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'PNW_centr_config/config_BH1.yaml'
+config = 'PNW_turb_config/config_BH1_turb.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -32,7 +32,8 @@ def compare(config=None):
     sys.path.append('.')
 
     conf = yaml.load(open(config_file), Loader=yaml.FullLoader)
-
+    thresh = conf.get('threshold', 0.1)  # Default 0.1 if threshold not specified
+    thresh_str = f"{thresh:.2f}" 
 
     # define swingdoor functions
     def swingdoor_func(x, thresh):
@@ -46,7 +47,8 @@ def compare(config=None):
         # dev = max(.1*x.max(),.1*y.max())
 
         dev = thresh * gp.max()
-        # print(f"Using threshold: {thresh}, dev: {dev}")
+        # dev = 2.5
+        print(f"Using threshold: {thresh}, dev: {dev}")
 
         len_gp = len(gp)
         # print(f"Length of group: {len_gp}")
@@ -106,7 +108,6 @@ def compare(config=None):
         print("duration_c", duration_c)
         return magnitude_c, rate_c, duration_c, timestamp_c
     def compute_sd(x, y, freq):
-        thresh = conf.get('threshold', 0.1)  # Default 0.1 if threshold not specified
         freq_str = f"{freq}min" if freq < 60 else f"{freq // 60}h"
         base_mag, base_rate, base_dur, base_t = swingdoor_func(x, thresh)
         comp_mag, comp_rate, comp_dur, comp_t = swingdoor_func(y, thresh)
@@ -233,7 +234,7 @@ def compare(config=None):
         
             for a in aggregations:
 
-                dfname = 'metrics_' + analysis_type +'_' + c['name'] + '_' + a + '_' + method + '_' + max_freq_str
+                dfname = 'metrics_' + analysis_type +'_' + c['name'] + '_' + a + '_' + method + '_' + max_freq_str + '_' + thresh_str
 
                 metricstat_dict = {key: results[ind][analysis_type][a][key]
                                 for key in conf['metrics']}
