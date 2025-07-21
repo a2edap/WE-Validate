@@ -125,6 +125,9 @@ def compare(config=None):
             right_index=True).ffill().resample(freq_str).ffill()
         if len(base_dur) < len(base_t):
             base_dur = np.append(base_dur, 0)
+        if len(base_dur) > len(base_t): 
+            base_dur = base_dur[:len(base_t)]
+
         if len(comp_dur) < len(comp_t):
             comp_dur = np.append(comp_dur, 0)
         df = pd.DataFrame(base_dur, index=base_t)

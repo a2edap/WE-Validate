@@ -22,7 +22,7 @@ analysis:
   - swingdoor-ramp
   - swingdoor-dur
 
-threshold: .4
+threshold: .1
 
 aggregation:
   - MS
