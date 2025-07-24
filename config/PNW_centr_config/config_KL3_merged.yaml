@@ -51,7 +51,7 @@ output:
   # print time steps with NaN values 
   print_NaN_values: False
   # save results to pdf? 
-  save_to_pdf: False 
+  save_to_pdf: True
 
 # baseline dataset
 base:
@@ -64,7 +64,7 @@ base:
   # variable name
   var: Value
   # data frequency in minutes
-  freq: 60
+  freq: 1
   # flag value
   flag: 999
 
@@ -79,56 +79,56 @@ comp:
     # variable name
     var: capacity
     # data frequency in minutes
-    freq: 60
+    freq: 5
     # flag value
     flag: 999
     # number of turbines
     turbines: 175
 
-  # # name of dataset
-  # - name: WRF Centroid A1
-  #   # data directory
-  #   path: data/PNW_centr/wind_wrf_centroid.201608.56468.A1.csv
-  #   # name of data processing function
-  #   function: csv_pnw
-  #   # variable name
-  #   var: capacity
-  #   # data frequency in minutes
-  #   freq: 5
-  #   # flag value
-  #   flag: 999
-  #   # number of turbines
-  #   turbines: 175
+  # name of dataset
+  - name: WRF Centroid A1
+    # data directory
+    path: data/PNW_centr/wind_wrf_centroid.201608.56468.A1.csv
+    # name of data processing function
+    function: csv_pnw
+    # variable name
+    var: capacity
+    # data frequency in minutes
+    freq: 5
+    # flag value
+    flag: 999
+    # number of turbines
+    turbines: 175
 
-  # # name of dataset
-  # - name: WRF Centroid A2
-  #   # data directory
-  #   path: data/PNW_centr/wind_wrf_centroid.201608.56468.A2.csv
-  #   # name of data processing function
-  #   function: csv_pnw
-  #   # variable name
-  #   var: capacity
-  #   # data frequency in minutes
-  #   freq: 5
-  #   # flag value
-  #   flag: 999
-  #   # number of turbines
-  #   turbines: 175
+  # name of dataset
+  - name: WRF Centroid A2
+    # data directory
+    path: data/PNW_centr/wind_wrf_centroid.201608.56468.A2.csv
+    # name of data processing function
+    function: csv_pnw
+    # variable name
+    var: capacity
+    # data frequency in minutes
+    freq: 5
+    # flag value
+    flag: 999
+    # number of turbines
+    turbines: 175
 
-  # # name of dataset
-  # - name: WRF Centroid A3
-  #   # data directory
-  #   path: data/PNW_centr/wind_wrf_centroid.201608.56468.A3.csv
-  #   # name of data processing function
-  #   function: csv_pnw
-  #   # variable name
-  #   var: capacity
-  #   # data frequency in minutes
-  #   freq: 5
-  #   # flag value
-  #   flag: 999
-  #   # number of turbines
-  #   turbines: 175
+  # name of dataset
+  - name: WRF Centroid A3
+    # data directory
+    path: data/PNW_centr/wind_wrf_centroid.201608.56468.A3.csv
+    # name of data processing function
+    function: csv_pnw
+    # variable name
+    var: capacity
+    # data frequency in minutes
+    freq: 5
+    # flag value
+    flag: 999
+    # number of turbines
+    turbines: 175
 
 
 # reference
@@ -138,4 +138,4 @@ reference:
   # variable units
   units: MW
   # Method for selecting data points when frequencies differ between datasets. ("instance" or "average")
-  select_method: instance
+  select_method: average

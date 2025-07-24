@@ -22,7 +22,7 @@ analysis:
   - swingdoor-ramp
   - swingdoor-dur
 
-threshold: .4
+threshold: 0.1
 
 aggregation:
   - MS
@@ -43,7 +43,7 @@ output:
   # save metrics?
   save_metrics: True
   # save figures?
-  save_figs: True
+  save_figs: False
   # show figures?
   show_figs: False
   # print results?
@@ -71,7 +71,7 @@ base:
 # data input to be compared with the baseline dataset
 comp:
   # name of dataset
-  - name: WRF Centroid Actual
+  - name: WRF Turbine Actual
     # data directory
     path: data/PNW_turbine/wind_wrf_turbine.201608.BH1.actual.csv
     # name of data processing function
@@ -84,7 +84,7 @@ comp:
     flag: 999
 
   # # name of dataset
-  # - name: WRF Centroid A1
+  # - name: WRF Turbine A1
   #   # data directory
   #   path: data/PNW_turbine/wind_wrf_turbine.201608.BH1.A1.csv
   #   # name of data processing function
@@ -97,7 +97,7 @@ comp:
   #   flag: 999
 
   # # name of dataset
-  # - name: WRF Centroid A2
+  # - name: WRF Turbine A2
   #   # data directory
   #   path: data/PNW_turbine/wind_wrf_turbine.201608.BH1.A2.csv
   #   # name of data processing function
@@ -110,7 +110,7 @@ comp:
   #   flag: 999
 
   # # name of dataset
-  # - name: WRF Centroid A3
+  # - name: WRF Turbine A3
   #   # data directory
   #   path: data/PNW_turbine/wind_wrf_turbine.201608.BH1.A3.csv
   #   # name of data processing function

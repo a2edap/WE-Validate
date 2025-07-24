@@ -14,7 +14,7 @@ import datetime
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'PNW_turb_config/config_KL3_merged_turb.yaml'
+config = 'PNW_turb_config/config_LJ2_merged_turb.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -48,7 +48,7 @@ def compare(config=None):
 
         dev = thresh * gp.max()
         # dev = 2.5
-        print(f"Using threshold: {thresh}, dev: {dev}")
+        # print(f"Using threshold: {thresh}, dev: {dev}")
 
         len_gp = len(gp)
         # print(f"Length of group: {len_gp}")
@@ -112,7 +112,7 @@ def compare(config=None):
         freq_str = f"{freq}min" if freq < 60 else f"{freq // 60}h"
         base_mag, base_rate, base_dur, base_t = swingdoor_func(x, thresh)
         comp_mag, comp_rate, comp_dur, comp_t = swingdoor_func(y, thresh)
-        print(f"Base data length: {len(base_t)}, Comparison data length: {len(comp_t)}")
+        # print(f"Base data length: {len(base_t)}, Comparison data length: {len(comp_t)}")
         joined_mag = pd.DataFrame(base_mag, index=base_t).merge(pd.DataFrame(comp_mag, index=comp_t), how='outer',
                                                                 left_index=True, right_index=True).ffill().resample(
             freq_str).ffill()
