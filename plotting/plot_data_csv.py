@@ -101,7 +101,7 @@ class plot_data_csv:
         num_figures = len(months)
         grid_size = math.ceil(math.sqrt(num_figures))
 
-        plt.rcParams["figure.figsize"] = (30, 15)
+        plt.rcParams["figure.figsize"] = (40, 20)
         # Set the default text font size
         plt.rc('font', size=16)
         # Set the axes title font size
@@ -306,7 +306,7 @@ class plot_data_csv:
         num_figures = len(months)
         grid_size = math.ceil(math.sqrt(num_figures))
 
-        plt.rcParams["figure.figsize"] = (30, 15)
+        plt.rcParams["figure.figsize"] = (40, 20)
         # Set the default text font size
         plt.rc('font', size=16)
         # Set the axes title font size
@@ -505,7 +505,7 @@ class plot_data_csv:
         num_figures = len(months)
         grid_size = math.ceil(math.sqrt(num_figures))
 
-        plt.rcParams["figure.figsize"] = (30, 15)
+        plt.rcParams["figure.figsize"] = (40, 20)
         # Set the default text font size
         plt.rc('font', size=16)
         # Set the axes title font size
@@ -585,7 +585,7 @@ class plot_data_csv:
         num_plots = sum(isinstance(val, pd.Series) for val in monthly_dict.values())
         grid_size = math.ceil(math.sqrt(num_plots))
 
-        plt.rcParams["figure.figsize"] = (10, 5)
+        plt.rcParams["figure.figsize"] = (15, 10)
 
         if self.savefig is True:
 
