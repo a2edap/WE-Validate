@@ -14,6 +14,7 @@ metrics:
   - bias_pct
   - mae_pct
   - cross_correlation
+  - ovl
 
 # analysis type (base or swingdoor)
 analysis:
