@@ -22,7 +22,13 @@ analysis:
   - swingdoor-ramp
   - swingdoor-dur
 
-threshold: .2
+ramping: #turn on save_ramping_comparison in output 
+    #specify threshold value for maximum deviation 
+    threshold: .1
+    # comparison period start time
+    start: 2016-08-02 02:50:00
+    # comparison period end time
+    end: 2016-08-02 06:20:00
 
 
 aggregation:
@@ -53,6 +59,8 @@ output:
   print_NaN_values: True
   #write to a pdf?
   save_to_pdf: True
+  # save ramping comparison to pdf?
+  save_ramping_comparison: True
 
 # baseline dataset
 base:

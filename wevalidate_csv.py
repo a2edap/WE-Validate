@@ -14,7 +14,7 @@ import datetime
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'ERCOT_config/54979_2018.yaml'
+config = 'PNW_centr_config/config_BH1.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -32,7 +32,7 @@ def compare(config=None):
     sys.path.append('.')
 
     conf = yaml.load(open(config_file), Loader=yaml.FullLoader)
-    thresh = conf.get('threshold', 0.1)  # Default 0.1 if threshold not specified
+    thresh = conf['ramping'].get('threshold', 0.1)
     thresh_str = f"{thresh:.2f}" 
 
     # define swingdoor functions
@@ -209,6 +209,7 @@ def compare(config=None):
 
         combine_df = crosscheck_ts.align_time(base, c)
         # print(combine_df.tail())
+        # print(combine_df.index)
         
         max_freq = max(c['freq'], base['freq'])
         if max_freq >= 60:
@@ -223,19 +224,24 @@ def compare(config=None):
                             'swingdoor-ramp':ramprate,
                             'swingdoor-dur':duration
                             }
-            ramp_plotting.plot_ramp_ts(swingdoor_ts,combine_df)
+            ramp_plotting.plot_ramp_ts(swingdoor_ts, combine_df)
             # ramp_plotting.plot_ramp_ts_monthly(swingdoor_ts,combine_df)
+            
         results = eval_tools.append_results(results, base, c, analysis[0])
+
+       
         
         for a_ind, analysis_type in enumerate(analysis):
             # Crosscheck between datasets
 
             if 'swingdoor' in analysis_type:
                 full_df = swingdoor_ts[analysis_type].copy(deep=True)
-                full_df.to_csv(f'{analysis_type}_full_df_output_5min.csv', index=True)
+                # full_df.to_csv(f'{analysis_type}_full_df_output_5min.csv', index=True)
+                # print("full_df_head:", full_df.head())
             else:
                 full_df = combine_df.copy(deep=True)
-                full_df.to_csv(f'{analysis_type}_full_df_output_5min.csv', index=True)
+                # full_df.to_csv(f'{analysis_type}_full_df_output_5min.csv', index=True)
+                # print("full_df_head:", full_df.head())
             
             cal_print_metrics_csv.run(
                 full_df, metrics, results, ind, c, conf, base, aggregations, analysis_type
@@ -272,8 +278,14 @@ def compare(config=None):
                     if conf['output']['save_to_pdf'] is True:
                         latex_table = csv_to_pdf.add_df_to_latex(metricstat_df, dfname, a)
                         all_latex_tables.append(latex_table)
-    
+                        if conf['output']['save_ramping_comparison'] is True:
+                            ramp_start = conf['ramping']['start']
+                            ramp_end = conf['ramping']['end']
+                            ramp_latex = csv_to_pdf.create_ramping_tables( swingdoor_ts, combine_df, conf, max_freq_str, c, ramp_start, ramp_end)
+                            csv_to_pdf.save_ramping_to_pdf(ramp_latex, output_path, conf, title="WE-Validate Ramping Analysis")
 
+
+        # latex_table = csv_to_pdf.create_ramping_tables()
         plotting.plot_ts_line(combine_df)
         plotting.plot_ts_line_monthly(combine_df)
         plotting.plot_histogram(combine_df)
