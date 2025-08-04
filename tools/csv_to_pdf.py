@@ -59,7 +59,7 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
     select_method = conf['reference']['select_method']
     filename = f"{org}_report_{select_method}_{thresh:.2f}"
 
-        # Create plots section if plots are provided
+     # Create plots section if plots are provided
     plots_latex = ""
     if plot_files:
         plots_latex = r"""

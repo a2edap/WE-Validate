@@ -33,6 +33,7 @@ ramping: #turn on save_ramping_comparison in output
 
 aggregation:
   - MS
+  - QS-DEC #meteorological seasons (DJF, MAM, JJA, SON)
   # - D
   # - H
 

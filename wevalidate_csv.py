@@ -14,7 +14,7 @@ import datetime
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'PNW_centr_config/config_BH1.yaml'
+config = 'ERCOT_config/56483_2018.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -22,13 +22,10 @@ config = 'PNW_centr_config/config_BH1.yaml'
 def compare(config=None):
 
     config_dir = os.path.join(pathlib.Path(os.getcwd()), 'config')
-    #print(config_dir)
     if config is None:
         config_file = os.path.join(config_dir, 'config.yaml')
     else:
         config_file = os.path.join(config_dir, config)
-    #print(config_dir)
-    #print(config_file)
     sys.path.append('.')
 
     conf = yaml.load(open(config_file), Loader=yaml.FullLoader)
@@ -44,19 +41,16 @@ def compare(config=None):
         x_clean = x[valid_mask]
         gp = np.array(x_clean)
         timestamp_gp = np.array(x_clean.index)
-        # dev = max(.1*x.max(),.1*y.max())
 
         dev = thresh * gp.max()
-        # dev = 2.5
-        # print(f"Using threshold: {thresh}, dev: {dev}")
 
         len_gp = len(gp)
-        # print(f"Length of group: {len_gp}")
         magnitude, rate, duration = np.zeros(len_gp), np.zeros(len_gp), np.zeros(len_gp)
         # Temporary arrays used for swinging door method
         ratemin, ratemax = np.zeros(len_gp), np.zeros(len_gp)
         magnitude_c, rate_c, duration_c, timestamp_c = np.zeros(len_gp), np.zeros(len_gp), np.zeros(
             len_gp), np.zeros(len_gp, dtype='datetime64[ns]')
+        
         # swinging door algorithm
         magnitude[0] = gp[0]
         i = 0  # index of this group, gp
@@ -112,7 +106,6 @@ def compare(config=None):
         freq_str = f"{freq}min" if freq < 60 else f"{freq // 60}h"
         base_mag, base_rate, base_dur, base_t = swingdoor_func(x, thresh)
         comp_mag, comp_rate, comp_dur, comp_t = swingdoor_func(y, thresh)
-        # print(f"Base data length: {len(base_t)}, Comparison data length: {len(comp_t)}")
         joined_mag = pd.DataFrame(base_mag, index=base_t).merge(pd.DataFrame(comp_mag, index=comp_t), how='outer',
                                                                 left_index=True, right_index=True).ffill().resample(
             freq_str).ffill()
@@ -208,8 +201,6 @@ def compare(config=None):
         c['data'] = c['input'].get_ts()
 
         combine_df = crosscheck_ts.align_time(base, c)
-        # print(combine_df.tail())
-        # print(combine_df.index)
         
         max_freq = max(c['freq'], base['freq'])
         if max_freq >= 60:
@@ -225,7 +216,6 @@ def compare(config=None):
                             'swingdoor-dur':duration
                             }
             ramp_plotting.plot_ramp_ts(swingdoor_ts, combine_df)
-            # ramp_plotting.plot_ramp_ts_monthly(swingdoor_ts,combine_df)
             
         results = eval_tools.append_results(results, base, c, analysis[0])
 
@@ -236,12 +226,8 @@ def compare(config=None):
 
             if 'swingdoor' in analysis_type:
                 full_df = swingdoor_ts[analysis_type].copy(deep=True)
-                # full_df.to_csv(f'{analysis_type}_full_df_output_5min.csv', index=True)
-                # print("full_df_head:", full_df.head())
             else:
                 full_df = combine_df.copy(deep=True)
-                # full_df.to_csv(f'{analysis_type}_full_df_output_5min.csv', index=True)
-                # print("full_df_head:", full_df.head())
             
             cal_print_metrics_csv.run(
                 full_df, metrics, results, ind, c, conf, base, aggregations, analysis_type
@@ -254,7 +240,7 @@ def compare(config=None):
                 metricstat_dict = {key: results[ind][analysis_type][a][key]
                                 for key in conf['metrics']}
                 metricstat_df = pd.DataFrame.from_dict(metricstat_dict, orient='columns')
-                #Create hourly index for PDF row labels 
+ 
                 if a == 'H' and hasattr(metricstat_df.index, '__iter__'):
                     if any(isinstance(idx, tuple) for idx in metricstat_df.index):
                         metricstat_df.index = pd.date_range(start, periods=len(metricstat_df), freq='h')
