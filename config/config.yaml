@@ -19,17 +19,31 @@ metrics:
 # analysis type (base or swingdoor)
 analysis:
   - base_analysis
-  - swingdoor-mag
-  - swingdoor-ramp
-  - swingdoor-dur
+  # - swingdoor-mag
+  # - swingdoor-ramp
+  # - swingdoor-dur
 
-threshold: .2
+ramping: #turn on save_ramping_comparison in output 
+    #specify threshold value for maximum deviation 
+    threshold: .1
+    # comparison period start time
+    start: 2018-08-02 02:50:00
+    # comparison period end time
+    end: 2018-08-02 06:20:00
 
 
 aggregation:
   - MS
   # - D
   # - H
+
+daynight:
+  # classify timestamps as day/night using sunrise/sunset from specified location
+  classify: False
+  # latitude of the location
+  latitude: 
+  # longitude of the location
+  longitude: 
 
 # power plant capacity. should have same units as reference.Add commentMore actions
 # used to normalize average percent bias (bias_pct) and mean average percent error (mae_pct)

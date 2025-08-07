@@ -16,6 +16,8 @@ def add_df_to_latex(df, section, aggregation):
     if pd.api.types.is_datetime64_any_dtype(df_latex.index):
         if aggregation == 'MS':
             date_format = '%b %Y'
+        elif aggregation == 'YE':
+            date_format = '%Y'
         elif aggregation == 'D':
             date_format = '%m/%d/%Y'
         elif aggregation == 'H':
@@ -220,7 +222,7 @@ def create_ramping_tables(swingdoor_ts, df, conf, max_freq_str, c, start_time=No
         longtable=True,
         caption=f'Ramping Analysis Comparison{time_range_info}',
         label='tab:ramping_analysis_long',
-        column_format='|p{2.2cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|'
+        column_format='p{2.2cm}p{1.8cm}p{1.8cm}p{1.8cm}p{1.8cm}p{1.8cm}p{1.8cm}'
         )
 
 
@@ -231,7 +233,7 @@ def create_ramping_tables(swingdoor_ts, df, conf, max_freq_str, c, start_time=No
 def save_ramping_to_pdf(latex_tables, output_path, conf, title="WE-Validate Ramping Analysis"):
 
     org = conf['output']['org']
-    thresh = conf.get('threshold', 1.0)
+    thresh = conf.get('threshold', 0.1)
     select_method = conf['reference']['select_method']
     filename = f"{org}_ramping_analysis_{select_method}_{thresh:.2f}"
 

@@ -14,7 +14,7 @@ import datetime
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'ERCOT_config/56483_2018.yaml'
+config = 'PNW_centr_config/config_BH1.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -233,9 +233,13 @@ def compare(config=None):
                 full_df, metrics, results, ind, c, conf, base, aggregations, analysis_type
                 )
         
-            for a in aggregations:
+            for a in results[ind][analysis_type].keys():
 
-                dfname = 'metrics_' + analysis_type +'_' + c['name'] + '_' + a + '_' + method + '_' + max_freq_str + '_' + thresh_str
+
+                if any('swingdoor' in i for i in analysis):
+                    dfname = 'metrics_' + analysis_type +'_' + c['name'] + '_' + a + '_' + method + '_' + max_freq_str + '_' + thresh_str
+                else: 
+                    dfname = 'metrics_' + analysis_type +'_' + c['name'] + '_' + a + '_' + method + '_' + max_freq_str 
 
                 metricstat_dict = {key: results[ind][analysis_type][a][key]
                                 for key in conf['metrics']}
@@ -264,7 +268,7 @@ def compare(config=None):
                     if conf['output']['save_to_pdf'] is True:
                         latex_table = csv_to_pdf.add_df_to_latex(metricstat_df, dfname, a)
                         all_latex_tables.append(latex_table)
-                        if conf['output']['save_ramping_comparison'] is True:
+                        if 'swingdoor' in analysis_type and conf['output']['save_ramping_comparison'] is True:
                             ramp_start = conf['ramping']['start']
                             ramp_end = conf['ramping']['end']
                             ramp_latex = csv_to_pdf.create_ramping_tables( swingdoor_ts, combine_df, conf, max_freq_str, c, ramp_start, ramp_end)
