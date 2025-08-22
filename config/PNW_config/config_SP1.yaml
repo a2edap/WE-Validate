@@ -15,7 +15,7 @@ metrics:
   - mae_pct
   - cross_correlation
 
-  # analysis type (base or swingdoor)
+# analysis type (base or swingdoor)
 analysis:
   - base_analysis
   # - swingdoor-mag
@@ -32,20 +32,32 @@ ramping: #turn on save_ramping_comparison in output
 
 aggregation:
   - MS
+  # - QS-DEC #meteorological seasons (DJF, MAM, JJA, SON)
+  - W
   # - D
   # - H
 
-# power plant capacity. should have same units as reference.Add commentMore actions
+daynight:
+  # classify timestamps as day/night using sunrise/sunset from specified location
+  classify: False
+  # latitude of the location
+  latitude: 45.96
+  # longitude of the location
+  longitude: -120.31
+  #specify timezone of the location
+  timezone: America/Los_Angeles
+
+# power plant capacity. should have same units as reference.
 # used to normalize average percent bias (bias_pct) and mean average percent error (mae_pct)
 # If left blank, will be calculated from the max of the baseline dataset
-capacity: 50
+capacity: 98.7
 
 # output
 output:
   # output folder path
-  path: output/pnw_turbine/BH2_turb
+  path: output/pnw/SP1
   # name of the run
-  org: BH2_turb
+  org: SP1
   # save metrics?
   save_metrics: True
   # save figures?
@@ -54,7 +66,7 @@ output:
   show_figs: False
   # print results?
   print_results : True
-  # print time steps with NaN values?
+  # print time steps with NaN values 
   print_NaN_values: False
   # save results to pdf? 
   save_to_pdf: True
@@ -64,9 +76,9 @@ output:
 # baseline dataset
 base:
   # name of dataset
-  name: PNW_BH2
+  name: PNW_SP1
   # data directory
-  path: data/PNW_obs/wind_power_data.BH2.csv
+  path: data/PNW_obs/wind_power_data.SP1.csv
   # name of data processing function
   function: csv_pnw
   # variable name
@@ -79,9 +91,69 @@ base:
 # data input to be compared with the baseline dataset
 comp:
   # name of dataset
+  - name: WRF Centroid Actual
+    # data directory
+    path: data/PNW_centr/wind_wrf_centroid.201608.57096.actual.csv
+    # name of data processing function
+    function: csv_pnw
+    # variable name
+    var: capacity
+    # data frequency in minutes
+    freq: 5
+    # flag value
+    flag: 999
+    # number of turbines
+    turbines: 47
+
+  # # name of dataset
+  # - name: WRF Centroid A1
+  #   # data directory
+  #   path: data/PNW_centr/wind_wrf_centroid.201608.57096.A1.csv
+  #   # name of data processing function
+  #   function: csv_pnw
+  #   # variable name
+  #   var: capacity
+  #   # data frequency in minutes
+  #   freq: 5
+  #   # flag value
+  #   flag: 999
+  #   # number of turbines
+  #   turbines: 47
+
+  # # name of dataset
+  # - name: WRF Centroid A2
+  #   # data directory
+  #   path: data/PNW_centr/wind_wrf_centroid.201608.57096.A2.csv
+  #   # name of data processing function
+  #   function: csv_pnw
+  #   # variable name
+  #   var: capacity
+  #   # data frequency in minutes
+  #   freq: 5
+  #   # flag value
+  #   flag: 999
+  #   # number of turbines
+  #   turbines: 47
+
+  # # name of dataset
+  # - name: WRF Centroid A3
+  #   # data directory
+  #   path: data/PNW_centr/wind_wrf_centroid.201608.57096.A3.csv
+  #   # name of data processing function
+  #   function: csv_pnw
+  #   # variable name
+  #   var: capacity
+  #   # data frequency in minutes
+  #   freq: 5
+  #   # flag value
+  #   flag: 999
+  #   # number of turbines
+  #   turbines: 47
+
+  # name of dataset
   - name: WRF Turbine Actual
     # data directory
-    path: data/PNW_turbine/wind_wrf_turbine.201608.BH2.actual.csv
+    path: data/PNW_turbine/wind_wrf_turbine.201608.SP1.actual.csv
     # name of data processing function
     function: csv_pnw
     # variable name
@@ -94,7 +166,7 @@ comp:
   # # name of dataset
   # - name: WRF Turbine A1
   #   # data directory
-  #   path: data/PNW_turbine/wind_wrf_turbine.201608.BH2.A1.csv
+  #   path: data/PNW_turbine/wind_wrf_turbine.201608.SP1.A1.csv
   #   # name of data processing function
   #   function: csv_pnw
   #   # variable name
@@ -107,7 +179,7 @@ comp:
   # # name of dataset
   # - name: WRF Turbine A2
   #   # data directory
-  #   path: data/PNW_turbine/wind_wrf_turbine.201608.BH2.A2.csv
+  #   path: data/PNW_turbine/wind_wrf_turbine.201608.SP1.A2.csv
   #   # name of data processing function
   #   function: csv_pnw
   #   # variable name
@@ -120,7 +192,7 @@ comp:
   # # name of dataset
   # - name: WRF Turbine A3
   #   # data directory
-  #   path: data/PNW_turbine/wind_wrf_turbine.201608.BH2.A3.csv
+  #   path: data/PNW_turbine/wind_wrf_turbine.201608.SP1.A3.csv
   #   # name of data processing function
   #   function: csv_pnw
   #   # variable name

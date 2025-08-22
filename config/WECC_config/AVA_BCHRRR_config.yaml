@@ -1,9 +1,9 @@
 time:
   window:
     # validation period start time
-    start: 2016-08-01 00:00:00
+    start: 2018-07-01 00:00:00
     # validation period end time
-    end: 2016-08-31 23:55:00
+    end: 2018-12-31 00:00:00
 
 # validation metrics to be calculated and plotted
 metrics:
@@ -11,8 +11,6 @@ metrics:
   - crmse
   - bias
   - mae
-  - bias_pct
-  - mae_pct
   - cross_correlation
 
 # analysis type (base or swingdoor)
@@ -31,119 +29,98 @@ ramping: #turn on save_ramping_comparison in output
     end: 2016-08-02 06:20:00
 
 aggregation:
+  - YE
   - MS
+  # - QS-DEC #meteorological seasons (DJF, MAM, JJA, SON)
+  # - W
   # - D
   # - H
 
-# power plant capacity. should have same units as reference.
+daynight:
+  # classify timestamps as day/night using sunrise/sunset from specified location
+  classify: False
+  # latitude of the location
+  latitude: 45.87
+  # longitude of the location
+  longitude: -120.27
+  #specify timezone of the location
+  timezone: America/Los_Angeles
+
+
+# power plant capacity. should have same units as reference.Add commentMore actions
 # used to normalize average percent bias (bias_pct) and mean average percent error (mae_pct)
 # If left blank, will be calculated from the max of the baseline dataset
-capacity: 201.3
+capacity: 
 
 # output
 output:
   # output folder path
-  path: output/pnw_centroid/LJ2
+  path: output/AVA/BC-HRRR
   # name of the run
-  org: LJ2
+  org: AVA-BCHRRR
   # save metrics?
   save_metrics: True
   # save figures?
-  save_figs: False
+  save_figs: True
   # show figures?
-  show_figs: False
-  # print results?
+  show_figs: False 
+  # print results
   print_results : True
   # print time steps with NaN values 
   print_NaN_values: False
   # save results to pdf? 
   save_to_pdf: True
   # save ramping comparison to pdf?
-  save_ramping_comparison: True
+  save_ramping_comparison: False
 
 # baseline dataset
 base:
   # name of dataset
-  name: PNW_LJ2
+  name: EIA 930 AVA
   # data directory
-  path: data/PNW_obs/wind_power_data.LJ2.merged.csv
+  path: data/WECC_wind_data/EIA_AVA_cleaned.csv
   # name of data processing function
-  function: csv_pnw
+  function: csv
   # variable name
-  var: Value
+  var: cf_measured
   # data frequency in minutes
-  freq: 1
+  freq: 60
   # flag value
-  flag: 999
+  flag: -94.957264957265
 
 # data input to be compared with the baseline dataset
 comp:
   # name of dataset
-  - name: WRF Centroid Actual
+  - name: AVA BCHRRR A1
     # data directory
-    path: data/PNW_centr/wind_wrf_centroid.201608.57333.actual.csv
-    # name of data processing function
-    function: csv_pnw
-    # variable name
-    var: capacity
+    path: data/WECC_wind_data/Palouse_CF_BCHRRR_losses.csv
+    # name of data processing functioncc
+    function: csv
+    # variable names
+    var: capacity_factor
     # data frequency in minutes
-    freq: 5
+    freq: 60
     # flag value
     flag: 999
-    # number of turbines
-    turbines: 117
 
   # name of dataset
-  - name: WRF Centroid A1
+  - name: AVA BCHRRR A1 Array 
     # data directory
-    path: data/PNW_centr/wind_wrf_centroid.201608.57333.A1.csv
+    path: data/WECC_wind_data/Palouse_array_CF_BCHRRR.csv
     # name of data processing function
-    function: csv_pnw
+    function: csv
     # variable name
-    var: capacity
+    var: capacity_factor
     # data frequency in minutes
-    freq: 5
+    freq: 60 
     # flag value
     flag: 999
-    # number of turbines
-    turbines: 117
-
-  # name of dataset
-  - name: WRF Centroid A2
-    # data directory
-    path: data/PNW_centr/wind_wrf_centroid.201608.57333.A2.csv
-    # name of data processing function
-    function: csv_pnw
-    # variable name
-    var: capacity
-    # data frequency in minutes
-    freq: 5
-    # flag value
-    flag: 999
-    # number of turbines
-    turbines: 117
-
-  # name of dataset
-  - name: WRF Centroid A3
-    # data directory
-    path: data/PNW_centr/wind_wrf_centroid.201608.57333.A3.csv
-    # name of data processing function
-    function: csv_pnw
-    # variable name
-    var: capacity
-    # data frequency in minutes
-    freq: 5
-    # flag value
-    flag: 999
-    # number of turbines
-    turbines: 117
-
 
 # reference
 reference: 
   # variable name to be displayed
-  var: Power
+  var: Capacity Factor
   # variable units
-  units: MW
+  units: percent
   # Method for selecting data points when frequencies differ between datasets. ("instance" or "average")
-  select_method: average
+  select_method: instance
