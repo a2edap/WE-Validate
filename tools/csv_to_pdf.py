@@ -59,7 +59,10 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
     org = conf['output']['org']
     thresh = conf.get('threshold', 0.1)  # Default threshold if not specified
     select_method = conf['reference']['select_method']
-    filename = f"{org}_report_{select_method}_{thresh:.2f}"
+    if any('swingdoor' in i for i in conf['analysis']):
+        filename = f"{org}_report_{select_method}_{thresh:.2f}"
+    else:
+        filename = f"{org}_report_{select_method}"
 
      # Create plots section if plots are provided
     plots_latex = ""

@@ -101,7 +101,7 @@ def run(combine_df, metrics, results, ind, c, conf, base, aggregations, analysis
                     aggregation_results[a][m.__class__.__name__] = calc_metrics(x, y, freq=a, func=m.compute, z=z)
                 else:
                     aggregation_results[a][m.__class__.__name__] = calc_metrics(x, y, freq=a, func=m.compute, z=None)
-            if conf['daynight'].get('classify', False):
+            if 'daynight' in conf and conf['daynight'].get('classify', False):
                 daynight_labels = classify_daynight(conf['daynight']['latitude'], conf['daynight']['longitude'], conf['daynight']['timezone'], compute_df.index)
 
                 # Uncomment the following lines if you want to verify the day/night classification

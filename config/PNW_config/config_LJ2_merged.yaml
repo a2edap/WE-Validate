@@ -41,9 +41,9 @@ daynight:
   # classify timestamps as day/night using sunrise/sunset from specified location
   classify: False
   # latitude of the location
-  latitude: 45.96
+  latitude: 45.651
   # longitude of the location
-  longitude: -120.31
+  longitude: -120.2598
   #specify timezone of the location
   timezone: America/Los_Angeles
 
