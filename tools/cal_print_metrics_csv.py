@@ -11,11 +11,17 @@ import pvlib
 import pandas as pd
 import pytz
 
-def classify_daynight(latitude, longitude, timezone, timestamps):
+def classify_daynight(latitude, longitude, timezone, timestamps, data_timezone = None):
     """Classify timestamps as day/night using sunrise/sunset from specified location"""
     labels = []
     for timestamp in timestamps:
-        date_time = pd.Timestamp(timestamp, tz=pytz.timezone(timezone))
+        date_time = pd.Timestamp(timestamp)
+        #handles the case where the data timezone is different from the location timezone
+        if data_timezone is not None:
+            date_time = date_time.tz_localize(data_timezone, ambiguous='NaT', nonexistent='shift_forward')
+            date_time = date_time.tz_convert(timezone)
+        else:
+            date_time = date_time.tz_localize(timezone, ambiguous='NaT', nonexistent='shift_forward')
         location = pvlib.location.Location(latitude, longitude, tz=timezone)
         solar_position = location.get_solarposition(date_time)
         altitude = solar_position['apparent_elevation'].iloc[0]
@@ -25,7 +31,6 @@ def classify_daynight(latitude, longitude, timezone, timestamps):
         else:
             labels.append('night')
             # print(f"It's nighttime. Solar altitude: {altitude:.2f} degrees")
-
     return labels
 
 def remove_na(combine_df, conf, ramp_txt=False):
@@ -102,7 +107,11 @@ def run(combine_df, metrics, results, ind, c, conf, base, aggregations, analysis
                 else:
                     aggregation_results[a][m.__class__.__name__] = calc_metrics(x, y, freq=a, func=m.compute, z=None)
             if 'daynight' in conf and conf['daynight'].get('classify', False):
-                daynight_labels = classify_daynight(conf['daynight']['latitude'], conf['daynight']['longitude'], conf['daynight']['timezone'], compute_df.index)
+                if 'data_timezone' in conf['daynight']:
+                    data_timezone = conf['daynight']['data_timezone']
+                    daynight_labels = classify_daynight(conf['daynight']['latitude'], conf['daynight']['longitude'], conf['daynight']['timezone'], compute_df.index, data_timezone)
+                else:
+                    daynight_labels = classify_daynight(conf['daynight']['latitude'], conf['daynight']['longitude'], conf['daynight']['timezone'], compute_df.index)
 
                 # Uncomment the following lines if you want to verify the day/night classification
                 # verification_df = pd.DataFrame({

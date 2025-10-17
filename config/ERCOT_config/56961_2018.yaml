@@ -1,7 +1,7 @@
 time:
   window:
     # validation period start time
-    start: 2018-01-01 00:00:00
+    start: 2018-01-01 06:00:00
     # validation period end time
     end: 2018-12-31 23:45:00
 
@@ -14,6 +14,7 @@ metrics:
   - bias_pct
   - mae_pct
   - cross_correlation
+  - ovl 
 
 # analysis type (base or swingdoor)
 analysis:
@@ -34,31 +35,43 @@ ramping: #turn on save_ramping_comparison in output
 aggregation:
   - YE
   - MS
-  - QS-DEC #meteorological seasons (DJF, MAM, JJA, SON)
+  # - QS-DEC #meteorological seasons (DJF, MAM, JJA, SON)
   # - D
   # - H
+
+daynight:
+  # classify timestamps as day/night using sunrise/sunset from specified location
+  classify: True
+  # latitude of the location
+  latitude: 31.995
+  # longitude of the location
+  longitude: -102.828333
+  #specify timezone of the location
+  timezone: US/Central
+  #specify timezone of the data if different from location timezone
+  data_timezone: UTC
 
 # power plant capacity. should have same units as reference.Add commentMore actions
 # used to normalize average percent bias (bias_pct) and mean average percent error (mae_pct)
 # If left blank, will be calculated from the max of the baseline dataset
-capacity: 188.5
+capacity: 152.5
 
 # output
 output:
   # output folder path
-  path: output/ERCOT_PLUSWIND_yearly/56961
+  path: output/ERCOT_PLUSWIND_yearly_hsl/56961
   # name of the run
   org: ERCOT 56961 2018
   # save metrics?
   save_metrics: True
   # save figures?
-  save_figs: True
+  save_figs: False
   # show figures?
   show_figs: False
   # print results?
   print_results : True
   # print time steps with NaN values 
-  print_NaN_values: True
+  print_NaN_values: False
   #write to a pdf?
   save_to_pdf: True
   # save ramping comparison to pdf?
@@ -69,7 +82,7 @@ base:
   # name of dataset
   name: ERCOT 56961
   # data directory
-  path: data/ERCOT_yearly_data/ercot_timeseries_56961_2018.csv
+  path: data/ERCOT_yearly_data/ercot_timeseries_56961_2018_hsl.csv
   # name of data processing function
   function: csv
   # variable name
