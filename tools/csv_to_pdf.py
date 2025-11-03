@@ -79,7 +79,7 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
                 # plot_title = ' '.join(word.capitalize() for word in plot_title.split())s
                 
                 plots_latex += rf"""
-    \begin{{figure}}[H]
+    \begin{{figure}}[!htbp]
         \centering
         \includegraphics[width=0.8\textwidth]{{{plot_name}}}
         \caption{{{plot_title}}}

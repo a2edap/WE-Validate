@@ -131,8 +131,8 @@ class plot_data_csv:
                 plt.title(selected_month.index[0].strftime("%B"))
                 plt.tight_layout(rect=[0,0,1,0.95])
                 plt.xticks(rotation=90)
-                plt.suptitle(self.var + ': ' + df.columns[0] + ' - ' + df.columns[1])
-
+                # plt.suptitle(self.var + ': ' + df.columns[0] + ' - ' + df.columns[1])
+                plt.suptitle(self.var + ': ' + df.columns[0])
                 if self_units is True:
                     plt.ylabel(self.var + ' (' + self.units + ')')
                 else:
@@ -140,7 +140,8 @@ class plot_data_csv:
 
             plt.legend()
 
-            plt.savefig(os.path.join(self.path, f'Timeseries_Monthly_{df.columns[0]}-{df.columns[1]}_{self.org}.png'), bbox_inches='tight')
+            # plt.savefig(os.path.join(self.path, f'Timeseries_Monthly_{df.columns[0]}-{df.columns[1]}_{self.org}.png'), bbox_inches='tight')
+            plt.savefig(os.path.join(self.path, f'Timeseries_Monthly_{df.columns[0]}_{self.org}.png'), bbox_inches='tight')
 
             if self.showfig is True:
                 plt.show()
@@ -462,9 +463,13 @@ class plot_data_csv:
             (pathlib.Path(os.getcwd())), self.path)
 
         if self.savefig is True:
-
+            columns = df.columns
+            all_values = df[columns].to_numpy().ravel()
+            all_values = all_values[~np.isnan(all_values)]
+                
+            bins = np.histogram_bin_edges(all_values, bins= 15)
             for col in df.columns:
-                plt.hist(df[col], bins=15, alpha=0.4, label=col)
+                plt.hist(df[col], bins=bins, alpha=0.4, label=col)
 
             plt.legend()
 
@@ -526,10 +531,15 @@ class plot_data_csv:
             count = 1
             for month in months:
                 selected_month = df[df.index.month == month]
+
                 plt.subplot(grid_size, grid_size, count)
+                all_values = selected_month[df.columns].to_numpy().ravel()
+                all_values = all_values[~np.isnan(all_values)]
+
+                bins = np.histogram_bin_edges(all_values, bins= 15)
 
                 for col in df.columns:
-                    plt.hist(selected_month[col], bins=15, alpha=0.4, label=col)
+                    plt.hist(selected_month[col], bins=bins, alpha=0.4, label=col)
                 count += 1
 
                 plt.xlabel(self.var + ' (' + self.units + ')')
@@ -540,7 +550,7 @@ class plot_data_csv:
                 plt.suptitle(suptitle)
                 plt.savefig(os.path.join(self.path, f'Histogram_Monthly_{df.columns[0]}-{df.columns[1]}_{self.org}.png'))
 
-            plt.legend()
+                plt.legend()
 
             if self.showfig is True:
                 plt.show()
@@ -557,7 +567,7 @@ class plot_data_csv:
                     plt.subplot(grid_size, grid_size, count)
 
                     for col in df.columns:
-                        plt.hist(selected_month[col], bins=15, alpha=0.4, label=col)
+                        plt.hist(selected_month[col], bins=10, alpha=0.4, label=col)
                     count += 1
 
                     plt.xlabel(self.var + ' (' + self.units + ')')
