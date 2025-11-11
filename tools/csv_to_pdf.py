@@ -5,18 +5,16 @@ import subprocess
 import numpy as np
 
 def add_df_to_latex(df, section, aggregation):    
-    # Create a copy for escaping
     df_latex = df.copy()
 
-    #Round numerical data to 2 decimal places 
     numeric_columns = df_latex.select_dtypes(include=[np.number]).columns
     for col in numeric_columns:
         df_latex[col] = df_latex[col].apply(lambda x: f"{x:.{2}f}")
 
     if pd.api.types.is_datetime64_any_dtype(df_latex.index):
-        if aggregation == 'MS':
+        if aggregation == 'MS'or aggregation == 'MS_day' or aggregation == 'MS_night':
             date_format = '%b %Y'
-        elif aggregation == 'YE':
+        elif aggregation == 'YE' or aggregation == 'YE_day' or aggregation == 'YE_night':
             date_format = '%Y'
         elif aggregation == 'D':
             date_format = '%m/%d/%Y'
@@ -27,7 +25,6 @@ def add_df_to_latex(df, section, aggregation):
 
         df_latex.index = df_latex.index.strftime(date_format)
 
-    # Escape underscores
     df_latex.columns = [col.replace('_', '\\_') for col in df_latex.columns]
     for col in df_latex.columns:
         if df_latex[col].dtype == 'object':
@@ -105,8 +102,7 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
     \end{{center}}
         """ + "".join(latex_tables) + plots_latex + r"""
     \end{document}"""
-        
-    # Write LaTeX file
+
     tex_filepath = os.path.join(output_path, f'{filename}.tex')
     try:
         with open(tex_filepath, 'w', encoding='utf-8') as f:

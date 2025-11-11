@@ -153,5 +153,5 @@ def run(combine_df, metrics, results, ind, c, conf, base, aggregations, analysis
                             )
 
     
-        print("Keys in aggregation_results:", list(aggregation_results.keys()))
+        # print("Keys in aggregation_results:", list(aggregation_results.keys()))
         results[ind][analysis_type] = aggregation_results

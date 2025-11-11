@@ -94,6 +94,10 @@ class plot_data_csv:
         """Represent time series for each data column as a line,
         combine the lines in one plot per month.
         """
+        print(f"DataFrame shape: {df.shape}")
+        print(f"Index dtype: {df.index.dtype}")
+        print(f"Index range: {df.index.min()} to {df.index.max()}")
+        print(f"Sample index values: {df.index[:3].tolist()}")
         output_path = os.path.join(
             (pathlib.Path(os.getcwd())), self.path)
 
@@ -132,12 +136,12 @@ class plot_data_csv:
                 plt.tight_layout(rect=[0,0,1,0.95])
                 plt.xticks(rotation=90)
                 # plt.suptitle(self.var + ': ' + df.columns[0] + ' - ' + df.columns[1])
-                plt.suptitle(self.var + ': ' + df.columns[0])
+                
                 if self_units is True:
                     plt.ylabel(self.var + ' (' + self.units + ')')
                 else:
                     plt.ylabel(self.var)
-
+            plt.suptitle(self.var + ': ' + df.columns[0])
             plt.legend()
 
             # plt.savefig(os.path.join(self.path, f'Timeseries_Monthly_{df.columns[0]}-{df.columns[1]}_{self.org}.png'), bbox_inches='tight')

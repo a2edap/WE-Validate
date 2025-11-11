@@ -14,7 +14,7 @@ import datetime
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'ERCOT_config/56673_2018.yaml'
+config = 'ERCOT_config/ERCOT_2018/55796_2018.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -283,7 +283,10 @@ def compare(config=None):
         plotting.plot_histogram(combine_df)
         plotting.plot_histogram_monthly(combine_df)
         # plotting.plot_pair_scatter(combine_df)
-        plotting.plot_pair_scatter_monthly(combine_df)
+        try:
+            plotting.plot_pair_scatter_monthly(combine_df)
+        except np.linalg.LinAlgError:
+            print("Skipping scatter plot due to insufficient data for regression analysis")
 
     if conf['output']['save_to_pdf'] is True:
         if conf['output']['save_figs'] is True: 
