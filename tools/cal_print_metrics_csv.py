@@ -13,24 +13,35 @@ import pytz
 
 def classify_daynight(latitude, longitude, timezone, timestamps, data_timezone = None):
     """Classify timestamps as day/night using sunrise/sunset from specified location"""
-    labels = []
-    for timestamp in timestamps:
-        date_time = pd.Timestamp(timestamp)
-        #handles the case where the data timezone is different from the location timezone
-        if data_timezone is not None:
-            date_time = date_time.tz_localize(data_timezone, ambiguous='NaT', nonexistent='shift_forward')
-            date_time = date_time.tz_convert(timezone)
-        else:
-            date_time = date_time.tz_localize(timezone, ambiguous='NaT', nonexistent='shift_forward')
-        location = pvlib.location.Location(latitude, longitude, tz=timezone)
-        solar_position = location.get_solarposition(date_time)
-        altitude = solar_position['apparent_elevation'].iloc[0]
-        if altitude > 0:
-            labels.append('day')
-            # print(f"It's daytime. Solar altitude: {altitude:.2f} degrees")
-        else:
-            labels.append('night')
-            # print(f"It's nighttime. Solar altitude: {altitude:.2f} degrees")
+    # labels = []
+    # for timestamp in timestamps:
+    #     date_time = pd.Timestamp(timestamp)
+    #     #handles the case where the data timezone is different from the location timezone
+    #     if data_timezone is not None:
+    #         date_time = date_time.tz_localize(data_timezone, ambiguous='NaT', nonexistent='shift_forward')
+    #         date_time = date_time.tz_convert(timezone)
+    #     else:
+    #         date_time = date_time.tz_localize(timezone, ambiguous='NaT', nonexistent='shift_forward')
+    #     location = pvlib.location.Location(latitude, longitude, tz=timezone)
+    #     solar_position = location.get_solarposition(date_time)
+    #     altitude = solar_position['apparent_elevation'].iloc[0]
+    #     if altitude > 0:
+    #         labels.append('day')
+    #     else:
+    #         labels.append('night')
+
+    date_times = pd.to_datetime(timestamps)
+    if data_timezone is not None:
+        date_times = date_times.tz_localize(data_timezone, ambiguous='NaT', nonexistent='shift_forward')
+        date_times = date_times.tz_convert(timezone)
+    else:
+        date_times = date_times.tz_localize(timezone, ambiguous='NaT', nonexistent='shift_forward')
+
+    location = pvlib.location.Location(latitude, longitude, tz=timezone)
+    solar_positions = location.get_solarposition(date_times)
+    altitudes = solar_positions['apparent_elevation'].values
+    labels = np.where(altitudes > 0, 'day', 'night').tolist()
+    
     return labels
 
 def remove_na(combine_df, conf, ramp_txt=False):

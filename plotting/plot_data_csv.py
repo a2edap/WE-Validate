@@ -94,10 +94,6 @@ class plot_data_csv:
         """Represent time series for each data column as a line,
         combine the lines in one plot per month.
         """
-        print(f"DataFrame shape: {df.shape}")
-        print(f"Index dtype: {df.index.dtype}")
-        print(f"Index range: {df.index.min()} to {df.index.max()}")
-        print(f"Sample index values: {df.index[:3].tolist()}")
         output_path = os.path.join(
             (pathlib.Path(os.getcwd())), self.path)
 
