@@ -14,7 +14,7 @@ import datetime
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'ERCOT_config/ERCOT_2018/55796_2018.yaml'
+config = 'ERCOT_config/ERCOT_2018/55747_2018.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -200,7 +200,7 @@ def compare(config=None):
 
         c['data'] = c['input'].get_ts()
         # c['data'].columns = [c['name']]
-        plotting.plot_ts_line_monthly(c['data'])
+        plotting.plot_ts_line_monthly_compare_only(c['data'])
 
         combine_df = crosscheck_ts.align_time(base, c)
         

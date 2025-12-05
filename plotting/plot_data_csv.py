@@ -88,8 +88,6 @@ class plot_data_csv:
 
                 plt.show()
 
-
-
     def plot_ts_line_monthly(self, df, self_units=True):
         """Represent time series for each data column as a line,
         combine the lines in one plot per month.
@@ -131,7 +129,92 @@ class plot_data_csv:
                 plt.title(selected_month.index[0].strftime("%B"))
                 plt.tight_layout(rect=[0,0,1,0.95])
                 plt.xticks(rotation=90)
-                # plt.suptitle(self.var + ': ' + df.columns[0] + ' - ' + df.columns[1])
+                plt.suptitle(self.var + ': ' + df.columns[0] + ' - ' + df.columns[1])
+                
+                if self_units is True:
+                    plt.ylabel(self.var + ' (' + self.units + ')')
+                else:
+                    plt.ylabel(self.var)
+            plt.legend()
+
+            os.makedirs(self.path, exist_ok=True)
+            plt.savefig(os.path.join(self.path, f'Timeseries_Monthly_{df.columns[0]}-{df.columns[1]}_{self.org}.png'), bbox_inches='tight')
+
+            if self.showfig is True:
+                plt.show()
+
+            else:
+                plt.close()
+
+        if self.savefig is False:
+
+            if self.showfig is True:
+
+                count = 1
+                for month in months:
+                    selected_month = df[df.index.month == month]
+                    plt.subplot(grid_size, grid_size, count)
+
+                    for col in df.columns:
+                        plt.plot(selected_month.index, selected_month[col], label=col)
+                    count += 1
+                    plt.title(selected_month.index[0].strftime("%B"))
+                    plt.tight_layout(rect=[0, 0, 1, 0.95])
+                    plt.xticks(rotation=90)
+                    plt.suptitle(self.var + ': ' + df.columns[0] + ' - ' + df.columns[1])
+
+                    if self_units is True:
+                        plt.ylabel(self.var + ' (' + self.units + ')')
+                    else:
+                        plt.ylabel(self.var)
+
+                plt.legend()
+                plt.show()
+
+
+        plt.rcParams.update(plt.rcParamsDefault)
+
+    def plot_ts_line_monthly_compare_only(self, df, self_units=True):
+        """Represent time series for only the comparison data column as a line,
+        combine the lines in one plot per month.
+        """
+        output_path = os.path.join(
+            (pathlib.Path(os.getcwd())), self.path)
+
+        months = df.index.month.unique()
+        num_figures = len(months)
+        grid_size = math.ceil(math.sqrt(num_figures))
+
+        plt.rcParams["figure.figsize"] = (40, 20)
+        # Set the default text font size
+        plt.rc('font', size=16)
+        # Set the axes title font size
+        plt.rc('axes', titlesize=16)
+        # Set the axes labels font size
+        plt.rc('axes', labelsize=16)
+        # Set the font size for x tick labels
+        plt.rc('xtick', labelsize=16)
+        # Set the font size for y tick labels
+        plt.rc('ytick', labelsize=16)
+        # Set the legend font size
+        plt.rc('legend', fontsize=18)
+        # Set the font size of the figure title
+        plt.rc('figure', titlesize=20)
+
+        if self.savefig is True:
+
+            count = 1
+            for month in months:
+                selected_month = df[df.index.month == month]
+                plt.subplot(grid_size, grid_size, count)
+
+                for col in df.columns:
+                    plt.plot(selected_month.index, selected_month[col], label=col)
+
+                count += 1
+                plt.title(selected_month.index[0].strftime("%B"))
+                plt.tight_layout(rect=[0,0,1,0.95])
+                plt.xticks(rotation=90)
                 
                 if self_units is True:
                     plt.ylabel(self.var + ' (' + self.units + ')')
@@ -140,7 +223,7 @@ class plot_data_csv:
             plt.suptitle(self.var + ': ' + df.columns[0])
             plt.legend()
 
-            # plt.savefig(os.path.join(self.path, f'Timeseries_Monthly_{df.columns[0]}-{df.columns[1]}_{self.org}.png'), bbox_inches='tight')
+            os.makedirs(self.path, exist_ok=True)
             plt.savefig(os.path.join(self.path, f'Timeseries_Monthly_{df.columns[0]}_{self.org}.png'), bbox_inches='tight')
 
             if self.showfig is True:
@@ -498,7 +581,6 @@ class plot_data_csv:
                 plt.title(self.var + ': ' + df.columns[0] + ' - ' + df.columns[1])
 
                 plt.show()
-
 
     def plot_histogram_monthly(self, df):
         """Generate histogram for each data column for each month."""

@@ -43,7 +43,12 @@ class csv:
         """
 
         df = pd.read_csv(os.path.join(self.path))
-        df.index = pd.to_datetime(df['time_stamp'])
+        if 'time_stamp' in df.columns:
+            df.index = pd.to_datetime(df['time_stamp'])
+        elif 'datetime' in df.columns:
+            df.index = pd.to_datetime(df['datetime']) 
+        else:
+            raise KeyError("CSV file must contain 'time_stamp' or 'datetime' column for timestamps.")
         df = df[[self.var]]
         df = df.rename(columns={self.var: self.name})
 

@@ -14,7 +14,7 @@ directory = f'config/ERCOT_config/ERCOT_{YEAR}'
 yaml_files = [f for f in os.listdir(directory) if f.endswith('.yaml')]
 yaml_files_sorted = sorted(yaml_files)
 
-for yaml_file in yaml_files_sorted[52:]:
+for yaml_file in yaml_files_sorted:
     plant_id = yaml_file.split('_')[0] 
     
     output_dir = f'output/ERCOT_PLUSWIND_yearly_hsl/{plant_id}'

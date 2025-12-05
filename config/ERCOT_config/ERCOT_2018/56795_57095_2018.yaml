@@ -43,9 +43,9 @@ daynight:
   # classify timestamps as day/night using sunrise/sunset from specified location
   classify: True
   # latitude of the location
-  latitude: 30.931467
+  latitude: 27.022112
   # longitude of the location
-  longitude: -102.201433
+  longitude: -97.498478
   #specify timezone of the location
   timezone: US/Central
   #specify timezone of the data if different from location timezone
@@ -54,14 +54,14 @@ daynight:
 # power plant capacity. should have same units as reference.
 # used to normalize average percent bias (bias_pct) and mean average percent error (mae_pct)
 # If left blank, will be calculated from the max of the baseline dataset
-capacity:  82.5
+capacity:  403.2
 
 # output
 output:
   # output folder path
-  path: output/ERCOT_PLUSWIND_yearly_hsl/55747
+  path: output/ERCOT_PLUSWIND_yearly_hsl/56795_57095
   # name of the run
-  org: ERCOT 55747 2018
+  org: ERCOT 56795_57095 2018
   # save metrics?
   save_metrics: True
   # save figures?
@@ -80,9 +80,9 @@ output:
 # baseline dataset
 base:
   # name of dataset
-  name: ERCOT 55747
+  name: ERCOT 56795_57095
   # data directory
-  path: data/ERCOT_yearly_data_hsl_2018/ercot_timeseries_55747_split_2018_hsl.csv
+  path: data/ERCOT_yearly_data_hsl_2018/ercot_timeseries_56795_57095_2018_hsl.csv
   # name of data processing function
   function: csv
   # variable name
@@ -98,7 +98,7 @@ comp:
   # name of dataset
   - name: PLUSWIND
     # data directory
-    path: data/pluswind_data_yearly_2018/pluswind_timeseries_55747_split_2018.csv
+    path: data/pluswind_data_yearly_2018/pluswind_timeseries_56795_57095_2018.csv
     # name of data processing function
     function: csv
     # variable name
