@@ -24,7 +24,7 @@ for yaml_file in yaml_files_sorted:
     compare(config_path)
 
 DATA_FOLDER = f"output/ERCOT_PLUSWIND_yearly_hsl"
-PDF_OUTPUT = f"output/ERCOT_reports_{YEAR}"
+PDF_OUTPUT = f"output/ERCOT_reports_actual_{YEAR}"
 os.makedirs(PDF_OUTPUT, exist_ok=True)
 
 for folder in os.listdir(DATA_FOLDER):

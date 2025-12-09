@@ -61,7 +61,7 @@ output:
   # output folder path
   path: output/ERCOT_PLUSWIND_yearly_hsl/57415_56779
   # name of the run
-  org: ERCOT 57415 56779 2018
+  org: ERCOT 57415_56779 2018
   # save metrics?
   save_metrics: True
   # save figures?

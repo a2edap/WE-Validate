@@ -30,7 +30,7 @@ If `pip` is not installed on your machine, you can visit the [pip website](https
 
 We use the YAML format for configuration file. An example configuration is provided in `config/config.yaml`. Explanations are embedded in `config.yaml`, in which the comments started with `#`.
 
-In `config.yaml`, first, you need to specify the `location` (assumed to be the WGS84 latitude, `lat`, and longitude, `lon`, coordinates) as well as the evaluation duration in `time` (the `start` and `end` times).
+In `config.yaml`, first, you need to specify the evaluation duration in `time` (the `start` and `end` times).
 
 To do a comparison, you will need at least one baseline dataset (called `base`) and one or more datasets to make comparisons to (called `comp`). For each dataset, you need to declare the data directory (`path`), data parser (`function`), and variable of interest (`var`). The `function` string must match one of the classes in the `inputs` folder.
 
@@ -44,9 +44,8 @@ Currently, only local datasets are supported. Future versions will fetch data ov
 
 ## Use this code
 
-The main routine in this repo is the `compare` function in `ivalidate.py`. By calling `ivalidate.compare()`, it would run the default configuration listed in `config.yaml`. Users can choose a different YAML file for specific data and cases as well. For example, by calling `ivalidate.compare('config_test.yaml')`, it would use the configuration in `config_test.yaml`, which contains erroneous datasets for testing purposes.
+The main routine in this repo is the `compare` function in `validate.py`. By calling `validate.compare()`, it would run the default configuration listed in `config.yaml`. Users can choose a different YAML file for specific data and cases as well. For example, by calling `validate.compare('config_test.yaml')`, it would use the configuration in `config_test.yaml`, which contains erroneous datasets for testing purposes.
 
-Please refer to `/notebooks/demo_notebook.ipynb`, in which we summarize some example cases in the demo Jupyter Notebook.
 
 ## Community contribution
 
