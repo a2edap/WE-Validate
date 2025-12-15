@@ -2,6 +2,7 @@ import os
 import pathlib
 import sys 
 import shutil
+import matplotlib.pyplot as plt
 
 sys.path.append(str(pathlib.Path(os.getcwd()).parent))
 
@@ -14,17 +15,21 @@ directory = f'config/ERCOT_config/ERCOT_{YEAR}'
 yaml_files = [f for f in os.listdir(directory) if f.endswith('.yaml')]
 yaml_files_sorted = sorted(yaml_files)
 
-for yaml_file in yaml_files_sorted:
-    plant_id = yaml_file.split('_')[0] 
-    
-    output_dir = f'output/ERCOT_PLUSWIND_yearly_hsl/{plant_id}'
-    os.makedirs(output_dir, exist_ok=True)
-    config_path = f'ERCOT_config/ERCOT_{YEAR}/{yaml_file}'
-    print(f"Processing: {yaml_file}")
-    compare(config_path)
+# for yaml_file in yaml_files_sorted:
 
-DATA_FOLDER = f"output/ERCOT_PLUSWIND_yearly_hsl"
-PDF_OUTPUT = f"output/ERCOT_reports_actual_{YEAR}"
+#     plant_id = yaml_file.split('_')[0] 
+    
+#     output_dir = f'output/ERCOT_PLUSWIND_yearly_hsl/{plant_id}'
+#     os.makedirs(output_dir, exist_ok=True)
+#     config_path = f'ERCOT_config/ERCOT_{YEAR}/{yaml_file}'
+#     print(f"Processing: {yaml_file}")
+#     from pandas.plotting import register_matplotlib_converters
+#     register_matplotlib_converters()
+#     compare(config_path)
+
+
+DATA_FOLDER = f"output/2018/ERCOT_PLUSWIND_2018"
+PDF_OUTPUT = f"output/ERCOT_reports_{YEAR}"
 os.makedirs(PDF_OUTPUT, exist_ok=True)
 
 for folder in os.listdir(DATA_FOLDER):

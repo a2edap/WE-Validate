@@ -14,7 +14,7 @@ import datetime
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'ERCOT_config/ERCOT_2018/57415_2018.yaml'
+config = 'ERCOT_config/ERCOT_2018/55796_2018.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -286,6 +286,19 @@ def compare(config=None):
         try:
             plotting.plot_pair_scatter_monthly(combine_df)
         except np.linalg.LinAlgError:
+            plt.rcParams.update(plt.rcParamsDefault)
+            plt.close('all')
+            # plt.clf()         # Clear current figure 
+            # plt.cla()         # Clear current axes
+            # plt.rcParams.update(plt.rcParamsDefault)
+            
+            # # Reset matplotlib's date converters which might be corrupted
+            # import matplotlib.units as munits
+            # import matplotlib.dates as mdates
+            # munits.registry.clear()
+            # from pandas.plotting import register_matplotlib_converters
+            # register_matplotlib_converters(explicit=True)
+            
             print("Skipping scatter plot due to insufficient data for regression analysis")
 
     if conf['output']['save_to_pdf'] is True:

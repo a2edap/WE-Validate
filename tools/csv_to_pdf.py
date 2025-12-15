@@ -83,6 +83,7 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
     \end{{figure}}
     """
     org_title = org.replace('_', ' ')
+    plant_capacity = conf['capacity']
     # Create LaTeX document
     final_latex = rf"""
     \documentclass[11pt]{{article}}
@@ -98,7 +99,7 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
     \floatplacement{{table}}{{H}}
     \begin{{document}}
     \begin{{center}}
-    \Large \textbf{{{org_title + ' ' + title}}}
+    \Large \textbf{{{org_title + ' ' + '(' + str(plant_capacity) + ' ' +  'MW)' + ' ' + title}}}
     \end{{center}}
         """ + "".join(latex_tables) + plots_latex + r"""
     \end{document}"""
