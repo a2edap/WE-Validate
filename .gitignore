@@ -1,2 +1,22 @@
-data/
-output/
+
+# DS_Store
+.DS_Store
+
+# VSCode settings
+.vscode/
+
+# outputs
+/output
+
+# data files 
+/data
+
+# virtualenv
+.venv
+venv/
+ENV/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
