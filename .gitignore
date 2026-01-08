@@ -118,3 +118,4 @@ ENV/
 /data
 /config/PNW_config
 pnw_report.ipynb
+/config/old_config
