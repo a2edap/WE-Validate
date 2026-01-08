@@ -1,11 +1,11 @@
 
 # Byte-compiled / optimized / DLL files
-__pycache__/
+*__pycache__/
 *.py[cod]
 *$py.class
 
 # DS_Store
-.DS_Store
+*.DS_Store
 
 # VSCode settings
 .vscode/
@@ -117,3 +117,4 @@ ENV/
 # Protected files 
 /data
 /config/PNW_config
+pnw_report.ipynb
