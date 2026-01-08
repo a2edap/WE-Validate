@@ -116,3 +116,4 @@ ENV/
 
 # Protected files 
 /data
+/config/PNW_config
