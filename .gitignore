@@ -1,3 +1,4 @@
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -112,3 +113,14 @@ ENV/
 
 # outputs
 /output
+
+# data
+/data
+
+# Protected files 
+/config/PNW_config
+/config/HRRR_config 
+/data/PNW_centr 
+/data/PNW_obs
+/data/PNW_turbine
+/data/old

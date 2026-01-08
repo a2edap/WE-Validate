@@ -1,0 +1,119 @@
+time:
+  window:
+    # validation period start time
+    start: 2018-1-01 06:00:00
+    # validation period end time
+    end: 2018-12-31 23:45:00
+
+# validation metrics to be calculated and plotted
+metrics:
+  - rmse
+  - crmse
+  - bias
+  - mae
+  - bias_pct
+  - mae_pct
+  - cross_correlation
+  - ovl 
+
+# analysis type (base or swingdoor)
+analysis:
+  - base_analysis
+  # - swingdoor-mag
+  # - swingdoor-ramp
+  # - swingdoor-dur
+
+ramping: #turn on save_ramping_comparison in output 
+    #specify threshold value for maximum deviation 
+    threshold: .1
+    # comparison period start time
+    start: 2016-08-02 02:50:00
+    # comparison period end time
+    end: 2016-08-02 06:20:00
+
+
+aggregation:
+  - YE
+  - MS
+  # - QS-DEC #meteorological seasons (DJF, MAM, JJA, SON)
+  # - D
+  # - H
+
+daynight:
+  # classify timestamps as day/night using sunrise/sunset from specified location
+  classify: True
+  # latitude of the location
+  latitude: 27.18
+  # longitude of the location
+  longitude: -98.916667
+  #specify timezone of the location
+  timezone: US/Central
+  #specify timezone of the data if different from location timezone
+  data_timezone: UTC
+
+# power plant capacity. should have same units as reference.
+# used to normalize average percent bias (bias_pct) and mean average percent error (mae_pct)
+# If left blank, will be calculated from the max of the baseline dataset
+capacity:  78
+
+# output
+output:
+  # output folder path
+  path: output/ERCOT_PLUSWIND_yearly_hsl/59654
+  # name of the run
+  org: ERCOT 59654 2018
+  # save metrics?
+  save_metrics: True
+  # save figures?
+  save_figs: True
+  # show figures?
+  show_figs: False
+  # print results?
+  print_results : True
+  # print time steps with NaN values 
+  print_NaN_values: False
+  #write to a pdf?
+  save_to_pdf: True
+  # save ramping comparison to pdf?
+  save_ramping_comparison: False
+
+# baseline dataset
+base:
+  # name of dataset
+  name: ERCOT 59654
+  # data directory
+  path: data/ERCOT_yearly_data_hsl_2018/ercot_timeseries_59654_2018_hsl.csv
+  # name of data processing function
+  function: csv
+  # variable name
+  var: capacity
+  # data frequency in minutes
+  freq: 15
+  # flag value
+  flag: 999
+
+# data input to be compared with the baseline dataset
+comp:
+
+  # name of dataset
+  - name: PLUSWIND
+    # data directory
+    path: data/pluswind_data_yearly_2018/pluswind_timeseries_59654_2018.csv
+    # name of data processing function
+    function: csv
+    # variable name
+    var: capacity
+    # data frequency in minutes
+    freq: 15
+    # flag value
+    flag: -9999
+
+
+# reference
+reference: 
+  # variable name to be displayed
+  var: Power
+  # variable units
+  units: MW
+  #instance or average sampling if frequencies not the same 
+  select_method: average

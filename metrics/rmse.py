@@ -8,6 +8,6 @@ import numpy as np
 
 class rmse:
 
-    def compute(self, x, y):
+    def compute(self, x, y, z):
 
         return float(np.sqrt(np.mean((x - y)**2)))

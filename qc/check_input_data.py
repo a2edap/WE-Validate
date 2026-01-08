@@ -43,7 +43,6 @@ def convert_flag_to_nan(var, flag, t):
 
     return var
 
-
 def check_duplicate_ind_remove(df):
     """When the data contain duplicated values.
     Keep the first entry.
@@ -112,7 +111,7 @@ def verify_data_file_count(df, var, path, freq, updated_len=None):
     data_freq = (df.index[1] - t_min).total_seconds() / 60.0
 
     if data_freq != freq:
-
+    
         print()
         print('!!!!!!!!!!')
         print('WARNING: DATA FREQUENCY OF FIRST TWO DATA POINTS ')
@@ -184,3 +183,7 @@ def verify_data_file_count(df, var, path, freq, updated_len=None):
               + ' dataframe should have unique and continuous data ---')
 
         return df
+
+
+
+    

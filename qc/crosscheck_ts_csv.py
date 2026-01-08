@@ -14,11 +14,28 @@ class crosscheck_ts_csv:
 
         try:
             self.select_data = conf['reference']['select_data']
-            self.select_method = conf['reference']['select_method']
         except KeyError:
             self.select_data = 'end'
+        
+        try:
+            self.select_method = conf['reference']['select_method']
+        except KeyError:
             self.select_method = 'instance'
 
+    def negative_value_check(self, input):
+        """Check for negative values in the observed data
+        if turned on, will be changed to 0 to ensure accurate calculations
+        """
+    
+        negative_count = (input[input.columns[0]] < 0).sum()
+        if negative_count > 0:
+            print(f"Warning: {negative_count} negative values found.")
+
+            input[input.columns[0]] = input[input.columns[0]].clip(lower=0)
+            print(f"Negative values have been set to 0.")
+
+        return input
+    
     def trim_ts(self, ts):
         """Trim time series to within upper and lower limits,
         as declared by users.
@@ -28,16 +45,30 @@ class crosscheck_ts_csv:
         ts = ts.loc[ts.index <= self.upper]
 
         return ts
+    
 
-    def run_select_method(self, input):
+    def run_select_method(self, input, data_name=None):
         """Select data from the resampler according to the declared method.
 
         :param str average: arithmetic mean
         :param str instance: sample instance at the resampled time step
         """
-
         if self.select_method == 'average':
+
+
+            # If standard deviation is needed, uncomment the following lines to get for base data
+            # if data_name:
+            #     if isinstance(data_name, dict):
+            #         clean_name = data_name.get('name', 'unknown')
+            #     else:
+            #         clean_name = str(data_name).replace('/', '_').replace('\\', '_').replace(':', '_')
+            #     std_output = input.std()
+
+            #     std_filename = f'{clean_name}_standard_deviation.csv'
+            #     std_output.to_csv(std_filename)
+
             output = input.mean()
+            
         if self.select_method == 'instance':
             output = input.asfreq()
 
@@ -50,21 +81,37 @@ class crosscheck_ts_csv:
         on :func:`~crosscheck_ts.crosscheck_ts.run_select_method`.
         """
 
+        t_min = ts.index.min()
+        t_max = ts.index.max()
+        time_diff = ts.index.to_series().diff()
+
+        #get current frequency to add NaN values BEFORE resampling 
+        current_freq_seconds = time_diff.iloc[1].total_seconds()
+        current_freq_minutes = int(current_freq_seconds / 60)
+ 
+        orig_index = pd.date_range(start=t_min, end=t_max, freq=f'{current_freq_minutes}min')
+        missing_time_steps = orig_index.difference(ts.index)
+
+        #insert NaN for missing time steps
+        if len(missing_time_steps) > 0:
+            print('')
+            print(f'DETECTED {len(missing_time_steps)} MISSING TIME STEPS.')
+            print('THEY WILL BE HANDLED AUTOMATICALLY.')
+            
+            ts = ts.reindex(orig_index)
+
         time_diff = ts.index.to_series().diff()
         if len(time_diff[1:].unique()) == 1:
-            if (freq > time_diff[1].components.minutes)\
+            if (freq > time_diff.iloc[1].components.minutes)\
                and (self.select_data == 'end'):
 
-                ts = ts.resample(str(freq)+'T', label='right', closed='right')
-
+                ts = ts.resample(str(freq)+'min', label='left', closed='left')
                 ts = self.run_select_method(ts)
 
                 print()
                 print('resampling '+ts.columns.values[0]+' every '+str(freq)
                       + ' minutes using the '+self.select_method+' method')
-
         else:
-
             print()
             print(time_diff[1:].unique())
             sys.exit('ERROR: TIME SERIES DOES NOT HAVE CONSTANT TIME STEPS')
@@ -76,9 +123,13 @@ class crosscheck_ts_csv:
         When the length of the resultant combine data frame does not match
         the user-defined, desired data length, print error messages.
         """
-
+    
         base_data = self.trim_ts(base['data'])
         comp_data = self.trim_ts(c['data'])
+
+        # Check for negative values before resampling
+        base_data = self.negative_value_check(base_data)
+        comp_data = self.negative_value_check(comp_data)
 
         base_data = self.resample_to_freq(base_data, base['freq'])
         comp_data = self.resample_to_freq(comp_data, c['freq'])
@@ -105,13 +156,16 @@ class crosscheck_ts_csv:
             if base['freq'] < c['freq']:
 
                 base_data = base_data.resample(
-                    str(c['freq'])+'T', label='right', closed='right',
+                    str(c['freq'])+'min', label='left', closed='left',
                     origin=comp_data.index.min())
-
+                
+                #use if need standard deviation csv file 
+                # base_data = self.run_select_method(base_data, base)
+                
                 base_data = self.run_select_method(base_data)
 
                 print()
-                print('aligning the '+str(base['freq'])+'-miniute baseline '
+                print('aligning the '+str(base['freq'])+'-minute baseline '
                       + 'data ('+base_data.columns.values[0]+') to match the ')
                 print(str(c['freq'])+'-minute comparison data ('
                       + comp_data.columns.values[0]+'), at the end of the')
@@ -127,7 +181,7 @@ class crosscheck_ts_csv:
                 comp_data = self.run_select_method(comp_data)
 
                 print()
-                print('aligning the '+str(c['freq'])+'-miniute comparison '
+                print('aligning the '+str(c['freq'])+'-minute comparison '
                       + 'data ('+comp_data.columns.values[0]+') to match the ')
                 print(str(base['freq'])+'-minute baseline data ('
                       + base_data.columns.values[0]+'), at the end of the')
@@ -152,8 +206,7 @@ class crosscheck_ts_csv:
 
         # data_len = (diff_minute + freq) / freq
 
-        desired_period_minute = (self.upper - self.lower).total_seconds()\
-            / 60.0
+        desired_period_minute = (self.upper - self.lower).total_seconds()/ 60.0
 
         desired_len = (desired_period_minute + freq) / freq
 

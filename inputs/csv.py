@@ -8,7 +8,7 @@
 import os
 import pathlib
 from datetime import datetime
-from netCDF4 import Dataset
+# from netCDF4 import Dataset
 import numpy as np
 import pandas as pd
 
@@ -43,7 +43,12 @@ class csv:
         """
 
         df = pd.read_csv(os.path.join(self.path))
-        df.index = pd.to_datetime(df['time_stamp'])
+        if 'time_stamp' in df.columns:
+            df.index = pd.to_datetime(df['time_stamp'])
+        elif 'datetime' in df.columns:
+            df.index = pd.to_datetime(df['datetime']) 
+        else:
+            raise KeyError("CSV file must contain 'time_stamp' or 'datetime' column for timestamps.")
         df = df[[self.var]]
         df = df.rename(columns={self.var: self.name})
 
@@ -52,10 +57,10 @@ class csv:
 
         if len(time_diff[1:].unique()) == 1:
 
-            if self.freq > time_diff[1].components.minutes:
+            if self.freq > time_diff.iloc[1].components.minutes:
 
                 df = df.resample(
-                    str(self.freq) + 'T', label='right',
+                    str(self.freq) + 'min', label='right',
                     closed='right')
 
                 if self.select_method == 'average':

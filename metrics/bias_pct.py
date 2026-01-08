@@ -11,10 +11,10 @@ import numpy as np
 
 class bias_pct:
 
-    def compute(self, x, y):
+    def compute(self, x, y, z):
 
         # x is baseline
-        fraction_array = np.ma.masked_invalid((y - x) / x)
+        fraction_array = np.ma.masked_invalid((y - x) / z)
 
         invalid_num = fraction_array.mask.sum()
 
