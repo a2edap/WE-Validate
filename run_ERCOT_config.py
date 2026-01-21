@@ -28,8 +28,8 @@ yaml_files_sorted = sorted(yaml_files)
 #     compare(config_path)
 
 
-DATA_FOLDER = f"output/2018/ERCOT_PLUSWIND_2018"
-PDF_OUTPUT = f"output/ERCOT_reports_{YEAR}"
+DATA_FOLDER = f"output/ERCOT_PLUSWIND_yearly_hsl"
+PDF_OUTPUT = f"output/{YEAR}/ERCOT_reports_{YEAR}_updated"
 os.makedirs(PDF_OUTPUT, exist_ok=True)
 
 for folder in os.listdir(DATA_FOLDER):

@@ -281,25 +281,25 @@ def compare(config=None):
         # plotting.plot_ts_line(combine_df)
         plotting.plot_ts_line_monthly(combine_df)
         plotting.plot_histogram(combine_df)
-        plotting.plot_histogram_monthly(combine_df)
+        # plotting.plot_histogram_monthly(combine_df)
         # plotting.plot_pair_scatter(combine_df)
-        try:
-            plotting.plot_pair_scatter_monthly(combine_df)
-        except np.linalg.LinAlgError:
-            plt.rcParams.update(plt.rcParamsDefault)
-            plt.close('all')
-            # plt.clf()         # Clear current figure 
-            # plt.cla()         # Clear current axes
-            # plt.rcParams.update(plt.rcParamsDefault)
+        # try:
+        #     plotting.plot_pair_scatter_monthly(combine_df)
+        # except np.linalg.LinAlgError:
+        #     plt.rcParams.update(plt.rcParamsDefault)
+        #     plt.close('all')
+        #     # plt.clf()         # Clear current figure 
+        #     # plt.cla()         # Clear current axes
+        #     # plt.rcParams.update(plt.rcParamsDefault)
             
-            # # Reset matplotlib's date converters which might be corrupted
-            # import matplotlib.units as munits
-            # import matplotlib.dates as mdates
-            # munits.registry.clear()
-            # from pandas.plotting import register_matplotlib_converters
-            # register_matplotlib_converters(explicit=True)
+        #     # # Reset matplotlib's date converters which might be corrupted
+        #     # import matplotlib.units as munits
+        #     # import matplotlib.dates as mdates
+        #     # munits.registry.clear()
+        #     # from pandas.plotting import register_matplotlib_converters
+        #     # register_matplotlib_converters(explicit=True)
             
-            print("Skipping scatter plot due to insufficient data for regression analysis")
+        #     print("Skipping scatter plot due to insufficient data for regression analysis")
 
     if conf['output']['save_to_pdf'] is True:
         if conf['output']['save_figs'] is True: 
