@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 YEAR = 2018
-FOLDERS = f'output/{YEAR}/ERCOT_PLUSWIND_{YEAR}'
+FOLDERS = f'output/{YEAR}/ERCOT_PLUSWIND_yearly_hsl'
 OUTPUT_NAME = f'output/{YEAR}/ERCOT_plant_comparison_summary.csv'
 
 all_data = {}
