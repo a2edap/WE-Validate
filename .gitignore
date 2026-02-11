@@ -116,9 +116,9 @@ ENV/
 
 # Protected files 
 /data
-/config/PNW_config
+/config
 pnw_report.ipynb
-/config/old_config
+/config
 /inputs/csv_pnw.py
-/config/ERCOT_config/old
+
 
