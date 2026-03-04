@@ -163,6 +163,63 @@ class plot_data_csv:
 
         plt.rcParams.update(plt.rcParamsDefault)
 
+    def plot_ts_line_single_month(self, df, month, self_units=True):
+        """Represent time series for each data column as a line
+        for a specific month (month=1..12).
+        """
+        output_path = os.path.join((pathlib.Path(os.getcwd())), self.path)
+
+        selected_month = df[df.index.month == month]
+
+        month_name = selected_month.index[0].strftime("%B")
+
+        if self.savefig is True:
+
+            for col in df.columns:
+                plt.plot(selected_month.index, selected_month[col], label=col)
+
+            plt.xticks(rotation=90)
+            plt.legend()
+
+            plt.xlabel('time')
+
+            if self_units is True:
+                plt.ylabel(self.var + ' (' + self.units + ')')
+            else:
+                plt.ylabel(self.var)
+
+            # plt.title(self.var + ' (' + month_name + '): ' + df.columns[0] + ' - ' + df.columns[1])
+
+            os.makedirs(self.path, exist_ok=True)
+            plt.savefig(os.path.join(self.path, f'Timeseries_{month_name}_{df.columns[0]}-{df.columns[1]}_{self.org}.png'))
+
+            if self.showfig is True:
+                plt.show()
+
+            else:
+                plt.close()
+
+        if self.savefig is False:
+
+            if self.showfig is True:
+
+                for col in df.columns:
+                    plt.plot(selected_month.index, selected_month[col], label=col)
+
+                plt.xticks(rotation=90)
+                plt.legend()
+
+                plt.xlabel('time')
+
+                if self_units is True:
+                    plt.ylabel(self.var + ' (' + self.units + ')')
+                else:
+                    plt.ylabel(self.var)
+
+                # plt.title(self.var + ' (' + month_name + '): ' + df.columns[0] + ' - ' + df.columns[1])
+
+                plt.show()
+
     def plot_ts_line_monthly_compare_only(self, df, self_units=True):
         """Represent time series for only the comparison data column as a line,
         combine the lines in one plot per month.
