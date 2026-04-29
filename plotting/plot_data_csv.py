@@ -219,6 +219,87 @@ class plot_data_csv:
                 # plt.title(self.var + ' (' + month_name + '): ' + df.columns[0] + ' - ' + df.columns[1])
 
                 plt.show()
+    def plot_ts_line_seasonal(self, df, self_units=True):
+        """Represent time series for each data column as a line,
+        combine the lines in one 2x2 seasonal subplot figure
+        (DJF, MAM, JJA, SON = Winter, Spring, Summer, Fall).
+        """
+        output_path = os.path.join(
+            (pathlib.Path(os.getcwd())), self.path)
+
+        seasons = {'Winter': [12, 1, 2],
+                   'Spring': [3, 4, 5],
+                   'Summer': [6, 7, 8],
+                   'Fall': [9, 10, 11]}
+
+        plt.rcParams["figure.figsize"] = (24, 14)
+
+        if (self.savefig is False) and (self.showfig is False):
+            plt.rcParams.update(plt.rcParamsDefault)
+            return
+
+        plot_columns = list(df.columns[:2])
+        if len(plot_columns) < 2:
+            print('WARNING: plot_ts_line_seasonal requires at least two columns (base and comparison).')
+            plt.rcParams.update(plt.rcParamsDefault)
+            return
+
+        if len(df.columns) > 2:
+            print('NOTE: plot_ts_line_seasonal received more than two columns; plotting only the first two columns.')
+
+        fig, axes = plt.subplots(2, 2)
+        axes = axes.flatten()
+
+        for i, (season_name, season_months) in enumerate(seasons.items()):
+            ax = axes[i]
+            selected_season = df[df.index.month.isin(season_months)].sort_index()
+
+            if selected_season.empty:
+                ax.set_title(season_name + ' (no data)')
+                ax.set_axis_off()
+                continue
+
+            # Plot with a continuous seasonal axis to avoid visual gaps from skipped months.
+            x_vals = np.arange(len(selected_season))
+            for col in plot_columns:
+                ax.plot(x_vals, selected_season[col].to_numpy(), label=col)
+
+            tick_count = min(8, len(selected_season))
+            tick_positions = np.linspace(0, len(selected_season) - 1, tick_count, dtype=int)
+            tick_positions = np.unique(tick_positions)
+            tick_labels = selected_season.index[tick_positions].strftime('%Y-%m-%d %H:%M')
+
+            ax.set_xticks(tick_positions)
+            ax.set_xticklabels(tick_labels, rotation=90)
+            ax.set_xlabel('time')
+
+            if self_units is True:
+                ax.set_ylabel(self.var + ' (' + self.units + ')')
+            else:
+                ax.set_ylabel(self.var)
+
+            ax.set_title(season_name)
+            ax.legend()
+
+        fig.suptitle(self.var + ': ' + plot_columns[0] + ' - ' + plot_columns[1])
+        fig.tight_layout(rect=[0, 0, 1, 0.96])
+
+        if self.savefig is True:
+            os.makedirs(self.path, exist_ok=True)
+            fig.savefig(
+                os.path.join(
+                    self.path,
+                    f'Timeseries_Seasonal_{plot_columns[0]}-{plot_columns[1]}_{self.org}.png'
+                ),
+                bbox_inches='tight'
+            )
+
+        if self.showfig is True:
+            plt.show()
+        else:
+            plt.close(fig)
+
+        plt.rcParams.update(plt.rcParamsDefault)
 
     def plot_ts_line_monthly_compare_only(self, df, self_units=True):
         """Represent time series for only the comparison data column as a line,

@@ -14,7 +14,7 @@ import datetime
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'ERCOT_config/ERCOT_2018/54979_2018.yaml'
+config = 'HRRR_2018/56952_2018.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -281,6 +281,8 @@ def compare(config=None):
         # plotting.plot_ts_line(combine_df)
         plotting.plot_ts_line_monthly(combine_df)
         plotting.plot_histogram(combine_df)
+        plotting.plot_ts_line_seasonal(combine_df)
+        # plotting.plot_ts_line_single_month(combine_df, month = 12, self_units=True)
         # plotting.plot_histogram_monthly(combine_df)
         # plotting.plot_pair_scatter(combine_df)
         # try:
