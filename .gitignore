@@ -121,5 +121,6 @@ pnw_report.ipynb
 /config
 /inputs/csv_pnw.py
 /actual_data_run_and_plot
+.git-old/
 
 
