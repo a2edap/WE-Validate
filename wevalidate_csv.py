@@ -14,7 +14,7 @@ import datetime
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'HRRR_2018/56952_2018.yaml'
+config = 'southern_co_config/2025_actual/58766_2025.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -102,6 +102,21 @@ def compare(config=None):
         timestamp_c = timestamp_c[:len_c]
 
         return magnitude_c, rate_c, duration_c, timestamp_c
+
+    def compute_sd_single(x):
+        """Run swinging door on a single series using its native timestamps."""
+        mag, rate, dur, t = swingdoor_func(x, thresh)
+        if len(rate) < len(t):
+            rate = np.append(rate, 0)
+        if len(dur) < len(t):
+            dur = np.append(dur, 0)
+        rate = rate[:len(t)]
+        dur = dur[:len(t)]
+        mag_df = pd.DataFrame({x.name: mag}, index=t)
+        rate_df = pd.DataFrame({x.name: rate}, index=t)
+        dur_df = pd.DataFrame({x.name: dur}, index=t)
+        return mag_df, rate_df, dur_df
+
     def compute_sd(x, y, freq):
         freq_str = f"{freq}min" if freq < 60 else f"{freq // 60}h"
         base_mag, base_rate, base_dur, base_t = swingdoor_func(x, thresh)
@@ -165,6 +180,38 @@ def compare(config=None):
         'inputs', base['function'])(base, conf)
 
     base['data'] = base['input'].get_ts()
+
+    # Optional: run swingdoor on only the base dataset at native timestamps.
+    if conf.get('ramping', {}).get('run_base_only', False):
+        val_start = conf['time']['window']['start']
+        val_end = conf['time']['window']['end']
+        base_ts = base['data'].loc[(base['data'].index >= val_start) & (base['data'].index <= val_end)]
+
+        if isinstance(base_ts, pd.DataFrame):
+            base_series = base_ts.iloc[:, 0].copy()
+            base_series.name = base['name']
+        else:
+            base_series = base_ts.copy()
+            base_series.name = base['name']
+
+        base_mag_df, base_rate_df, base_dur_df = compute_sd_single(base_series)
+
+        if 'output' in conf:
+            output_path = os.path.join((pathlib.Path(os.getcwd())), conf['output']['path'])
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
+
+            if conf['output'].get('save_metrics', False):
+                base_mag_df.to_csv(os.path.join(output_path, f"{conf['output']['org']}_swingdoor_base_native_mag.csv"))
+                base_rate_df.to_csv(os.path.join(output_path, f"{conf['output']['org']}_swingdoor_base_native_ramp.csv"))
+                base_dur_df.to_csv(os.path.join(output_path, f"{conf['output']['org']}_swingdoor_base_native_dur.csv"))
+
+            if conf['output'].get('save_figs', False) or conf['output'].get('show_figs', False):
+                ramp_plotting.plot_ramp_ts_single(base_mag_df, base_rate_df, base_dur_df, base['name'])
+
+                ramp_plotting.plot_ramp_ts_single_diagnostic(base_series, base_mag_df, base_rate_df, base_dur_df, base['name'])
+
+        print(f"Base-only swingdoor computed at native timestamps for {base['name']} ({len(base_mag_df)} points).")
 
     #Uncomment if need to check for outliers in the base data 
     # base_diff = base['data'].diff()
@@ -281,7 +328,7 @@ def compare(config=None):
         # plotting.plot_ts_line(combine_df)
         plotting.plot_ts_line_monthly(combine_df)
         plotting.plot_histogram(combine_df)
-        plotting.plot_ts_line_seasonal(combine_df)
+        # plotting.plot_ts_line_seasonal(combine_df)
         # plotting.plot_ts_line_single_month(combine_df, month = 12, self_units=True)
         # plotting.plot_histogram_monthly(combine_df)
         # plotting.plot_pair_scatter(combine_df)
