@@ -2,6 +2,8 @@
 # capacity factor = mean(y) / capacity
 #Assuming y is the comparison data set 
 
+#Lauren Henderson <lauren.henderson at pnnl.gov>
+
 import numpy as np
 
 

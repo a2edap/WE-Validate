@@ -42,7 +42,7 @@ class ovl:
 
         p = np.exp(kde_obs.score_samples(grid))
         q = np.exp(kde_pred.score_samples(grid))
-        return np.trapz (np.minimum(p, q), grid.ravel())
+        return np.trapezoid(np.minimum(p, q), grid.ravel())
 
     def compute(self, x, y):
         """Compute OVL.

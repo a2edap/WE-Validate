@@ -335,8 +335,8 @@ class plot_data_csv:
                 selected_month = df[df.index.month == month]
                 plt.subplot(grid_size, grid_size, count)
 
-                for col in df.columns:
-                    plt.plot(selected_month.index, selected_month[col], label=col)
+                comp_col = df.columns[1]
+                plt.plot(selected_month.index, selected_month[comp_col], label=comp_col)
 
                 count += 1
                 plt.title(selected_month.index[0].strftime("%B"))

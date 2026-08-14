@@ -14,21 +14,24 @@ import datetime
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'HRRR_2018/56952_2018.yaml'
+config = 'southern_co_config/2025_actual/58766_2025.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
 
-def compare(config=None):
+def compare(config=None, threshold=None):
 
     config_dir = os.path.join(pathlib.Path(os.getcwd()), 'config')
     if config is None:
         config_file = os.path.join(config_dir, 'config.yaml')
     else:
         config_file = os.path.join(config_dir, config)
-    sys.path.append('.')
+    sys.path.insert(0, str(pathlib.Path(__file__).parent))
 
     conf = yaml.load(open(config_file), Loader=yaml.FullLoader)
+    if threshold is not None:
+        conf['ramping']['threshold'] = threshold
+        conf['output']['path'] = conf['output']['path'] + f'/thresh_{threshold:.2f}'
     thresh = conf['ramping'].get('threshold', 0.1)
     thresh_str = f"{thresh:.2f}" 
 
@@ -98,10 +101,28 @@ def compare(config=None):
         rate_c = np.trim_zeros(rate_c, 'b')
         duration_c = np.trim_zeros(duration_c, 'b')
    
-        len_c = len(magnitude_c)
+        len_c = min(len(magnitude_c), len(rate_c), len(duration_c))
+        magnitude_c = magnitude_c[:len_c]
+        rate_c = rate_c[:len_c]
+        duration_c = duration_c[:len_c]
         timestamp_c = timestamp_c[:len_c]
 
         return magnitude_c, rate_c, duration_c, timestamp_c
+
+    def compute_sd_single(x):
+        """Run swinging door on a single series using its native timestamps."""
+        mag, rate, dur, t = swingdoor_func(x, thresh)
+        if len(rate) < len(t):
+            rate = np.append(rate, 0)
+        if len(dur) < len(t):
+            dur = np.append(dur, 0)
+        rate = rate[:len(t)]
+        dur = dur[:len(t)]
+        mag_df = pd.DataFrame({x.name: mag}, index=t)
+        rate_df = pd.DataFrame({x.name: rate}, index=t)
+        dur_df = pd.DataFrame({x.name: dur}, index=t)
+        return mag_df, rate_df, dur_df
+
     def compute_sd(x, y, freq):
         freq_str = f"{freq}min" if freq < 60 else f"{freq // 60}h"
         base_mag, base_rate, base_dur, base_t = swingdoor_func(x, thresh)
@@ -166,6 +187,39 @@ def compare(config=None):
 
     base['data'] = base['input'].get_ts()
 
+    # Optional: run swingdoor on only the base dataset at native timestamps.
+    if conf.get('ramping', {}).get('run_base_only', False) and conf.get('ramping', {}).get('run_comparison', True):
+        ramp_cfg = conf.get('ramping', {})
+        val_start = ramp_cfg.get('start', conf['time']['window']['start'])
+        val_end = ramp_cfg.get('end', conf['time']['window']['end'])
+        base_ts = base['data'].loc[(base['data'].index >= val_start) & (base['data'].index <= val_end)]
+
+        if isinstance(base_ts, pd.DataFrame):
+            base_series = base_ts.iloc[:, 0].copy()
+            base_series.name = base['name']
+        else:
+            base_series = base_ts.copy()
+            base_series.name = base['name']
+
+        base_mag_df, base_rate_df, base_dur_df = compute_sd_single(base_series)
+
+        if 'output' in conf:
+            output_path = os.path.join((pathlib.Path(os.getcwd())), conf['output']['path'])
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
+
+            if conf['output'].get('save_metrics', False):
+                base_mag_df.to_csv(os.path.join(output_path, f"{conf['output']['org']}_swingdoor_base_native_mag.csv"))
+                base_rate_df.to_csv(os.path.join(output_path, f"{conf['output']['org']}_swingdoor_base_native_ramp.csv"))
+                base_dur_df.to_csv(os.path.join(output_path, f"{conf['output']['org']}_swingdoor_base_native_dur.csv"))
+
+            if conf['output'].get('save_figs', False) or conf['output'].get('show_figs', False):
+                ramp_plotting.plot_ramp_ts_single(base_mag_df, base_rate_df, base_dur_df, base['name'])
+
+                ramp_plotting.plot_ramp_ts_single_diagnostic(base_series, base_mag_df, base_rate_df, base_dur_df, base['name'])
+
+        print(f"Base-only swingdoor computed at native timestamps for {base['name']} ({len(base_mag_df)} points).")
+
     #Uncomment if need to check for outliers in the base data 
     # base_diff = base['data'].diff()
     # base_diff.to_csv('base_data_diff.csv', index=True)
@@ -209,15 +263,22 @@ def compare(config=None):
             max_freq_str = f"{max_freq // 60}h"
         else:
             max_freq_str = f"{max_freq}min"
-        if any('swingdoor' in i for i in analysis):
-            magnitude, ramprate, duration = compute_sd(combine_df[base['name']], combine_df[c['name']], max_freq)
+        ramp_cfg = conf.get('ramping', {})
+        run_ramp_comparison = ramp_cfg.get('run_comparison', True)
+        if run_ramp_comparison and any('swingdoor' in i for i in analysis):
+            ramp_start = ramp_cfg.get('start', conf['time']['window']['start'])
+            ramp_end = ramp_cfg.get('end', conf['time']['window']['end'])
+            ramp_df = combine_df.loc[(combine_df.index >= ramp_start) & (combine_df.index <= ramp_end)]
+            magnitude, ramprate, duration = compute_sd(ramp_df[base['name']], ramp_df[c['name']], max_freq)
 
             swingdoor_ts = {
                             'swingdoor-mag':magnitude,
                             'swingdoor-ramp':ramprate,
                             'swingdoor-dur':duration
                             }
-            ramp_plotting.plot_ramp_ts(swingdoor_ts, combine_df)
+            ramp_plotting.plot_ramp_ts(swingdoor_ts, ramp_df)
+            if ramp_cfg.get('plot_compare_diagnostic', False):
+                ramp_plotting.plot_ramp_ts_compare_diagnostic(ramp_df, swingdoor_ts, base['name'], c['name'])
             
         results = eval_tools.append_results(results, base, c, analysis[0])
 
@@ -225,6 +286,10 @@ def compare(config=None):
         
         for a_ind, analysis_type in enumerate(analysis):
             # Crosscheck between datasets
+
+            # skip swingdoor comparison metrics if ramping comparison is disabled
+            if 'swingdoor' in analysis_type and not run_ramp_comparison:
+                continue
 
             if 'swingdoor' in analysis_type:
                 full_df = swingdoor_ts[analysis_type].copy(deep=True)
@@ -279,9 +344,10 @@ def compare(config=None):
 
         # latex_table = csv_to_pdf.create_ramping_tables()
         # plotting.plot_ts_line(combine_df)
-        plotting.plot_ts_line_monthly(combine_df)
+        # plotting.plot_ts_line_monthly(combine_df)
+        plotting.plot_ts_line_monthly_compare_only(combine_df)
         plotting.plot_histogram(combine_df)
-        plotting.plot_ts_line_seasonal(combine_df)
+        # plotting.plot_ts_line_seasonal(combine_df)
         # plotting.plot_ts_line_single_month(combine_df, month = 12, self_units=True)
         # plotting.plot_histogram_monthly(combine_df)
         # plotting.plot_pair_scatter(combine_df)

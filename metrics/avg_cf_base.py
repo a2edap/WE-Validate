@@ -2,6 +2,8 @@
 # capacity factor = mean(x) / capacity
 #Assuming x is the base data set 
 
+#Lauren Henderson <lauren.henderson at pnnl.gov>
+
 import numpy as np
 
 

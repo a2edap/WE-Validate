@@ -1,6 +1,8 @@
 # This is a simple average capacity factor difference calculation 
 # average capacity factor = mean(x-y)  / capacity
 
+#Lauren Henderson <lauren.henderson at pnnl.gov>
+
 import numpy as np
 
 

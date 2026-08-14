@@ -51,8 +51,10 @@ class csv:
             df.index = pd.to_datetime(df['TimestampUTC'])
         elif 'time' in df.columns:
             df.index = pd.to_datetime(df['time'])
+        elif 'timestamp' in df.columns:
+            df.index = pd.to_datetime(df['timestamp'])
         else:
-            raise KeyError("CSV file must contain 'time_stamp', 'datetime', 'TimestampUTC', or 'time' column for timestamps.")
+            raise KeyError("CSV file must contain 'time_stamp', 'datetime', 'TimestampUTC', 'time', or 'timestamp' column for timestamps.")
         #convert variable name to string if it is not already
         if not isinstance(self.var, str):
             self.var = str(self.var)
