@@ -15,6 +15,7 @@ from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
 config = 'southern_co_config/2025_actual/58766_2025.yaml'
+config = 'southern_co_config/2025_actual/58766_2025.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
@@ -108,6 +109,21 @@ def compare(config=None, threshold=None):
         timestamp_c = timestamp_c[:len_c]
 
         return magnitude_c, rate_c, duration_c, timestamp_c
+
+    def compute_sd_single(x):
+        """Run swinging door on a single series using its native timestamps."""
+        mag, rate, dur, t = swingdoor_func(x, thresh)
+        if len(rate) < len(t):
+            rate = np.append(rate, 0)
+        if len(dur) < len(t):
+            dur = np.append(dur, 0)
+        rate = rate[:len(t)]
+        dur = dur[:len(t)]
+        mag_df = pd.DataFrame({x.name: mag}, index=t)
+        rate_df = pd.DataFrame({x.name: rate}, index=t)
+        dur_df = pd.DataFrame({x.name: dur}, index=t)
+        return mag_df, rate_df, dur_df
+
 
     def compute_sd_single(x):
         """Run swinging door on a single series using its native timestamps."""
@@ -347,6 +363,7 @@ def compare(config=None, threshold=None):
         # plotting.plot_ts_line_monthly(combine_df)
         plotting.plot_ts_line_monthly_compare_only(combine_df)
         plotting.plot_histogram(combine_df)
+        # plotting.plot_ts_line_seasonal(combine_df)
         # plotting.plot_ts_line_seasonal(combine_df)
         # plotting.plot_ts_line_single_month(combine_df, month = 12, self_units=True)
         # plotting.plot_histogram_monthly(combine_df)

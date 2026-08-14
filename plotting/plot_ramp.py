@@ -57,6 +57,27 @@ class plot_ramp:
         minutes = int(round(diffs.dt.total_seconds().median() / 60.0))
         return self._format_freq_label(minutes)
 
+    def _format_freq_label(self, minutes):
+        """Format a frequency label from minutes."""
+        if minutes is None or minutes <= 0:
+            return self.freq_str
+        if minutes % 60 == 0:
+            hours = minutes // 60
+            return f"{hours}h"
+        return f"{minutes}min"
+
+    def _native_freq_label(self, index):
+        """Infer native frequency label from a datetime index."""
+        if len(index) < 2:
+            return self.freq_str
+
+        diffs = pd.Series(index).diff().dropna()
+        if diffs.empty:
+            return self.freq_str
+
+        minutes = int(round(diffs.dt.total_seconds().median() / 60.0))
+        return self._format_freq_label(minutes)
+
     def plot_ramp_ts(self, sd, df):
             
         output_path = os.path.join(
