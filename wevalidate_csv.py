@@ -258,6 +258,7 @@ def compare(config=None, threshold=None):
     start = conf['time']['window']['start']
     method = conf['reference']['select_method']
     all_latex_tables = []
+    all_comp_df = pd.DataFrame()
 
     for ind, c in enumerate(comp):
 
@@ -273,7 +274,14 @@ def compare(config=None, threshold=None):
         # plotting.plot_ts_line_monthly_compare_only(c['data'])
 
         combine_df = crosscheck_ts.align_time(base, c)
-        
+
+        if all_comp_df.empty:
+            all_comp_df = combine_df.copy()
+        else:
+            # keep the base's original timestamps; just align each comparison onto them
+            all_comp_df = all_comp_df.merge(
+                combine_df[[c['name']]], left_index=True, right_index=True, how='left')
+
         max_freq = max(c['freq'], base['freq'])
         if max_freq >= 60:
             max_freq_str = f"{max_freq // 60}h"
@@ -359,39 +367,40 @@ def compare(config=None, threshold=None):
 
 
         # latex_table = csv_to_pdf.create_ramping_tables()
-        # plotting.plot_ts_line(combine_df)
-        # plotting.plot_ts_line_monthly(combine_df)
-        plotting.plot_ts_line_monthly_compare_only(combine_df)
-        plotting.plot_histogram(combine_df)
-        # plotting.plot_ts_line_seasonal(combine_df)
-        # plotting.plot_ts_line_seasonal(combine_df)
-        # plotting.plot_ts_line_single_month(combine_df, month = 12, self_units=True)
-        # plotting.plot_histogram_monthly(combine_df)
-        # plotting.plot_pair_scatter(combine_df)
-        # try:
-        #     plotting.plot_pair_scatter_monthly(combine_df)
-        # except np.linalg.LinAlgError:
-        #     plt.rcParams.update(plt.rcParamsDefault)
-        #     plt.close('all')
-        #     # plt.clf()         # Clear current figure 
-        #     # plt.cla()         # Clear current axes
-        #     # plt.rcParams.update(plt.rcParamsDefault)
-            
-        #     # # Reset matplotlib's date converters which might be corrupted
-        #     # import matplotlib.units as munits
-        #     # import matplotlib.dates as mdates
-        #     # munits.registry.clear()
-        #     # from pandas.plotting import register_matplotlib_converters
-        #     # register_matplotlib_converters(explicit=True)
-            
-        #     print("Skipping scatter plot due to insufficient data for regression analysis")
+
+    # plotting.plot_ts_line(all_comp_df)
+    # plotting.plot_ts_line_monthly(all_comp_df)
+    plotting.plot_ts_line_monthly_compare_only(all_comp_df)
+    plotting.plot_histogram(all_comp_df)
+    # plotting.plot_ts_line_seasonal(all_comp_df)
+    # plotting.plot_ts_line_single_month(all_comp_df, month = 6, self_units=True)
+    # plotting.plot_ts_line_monthly_compare_only_last_2(all_comp_df, self_units=True)
+    # plotting.plot_histogram_monthly(all_comp_df)
+    # plotting.plot_pair_scatter(all_comp_df)
+    # try:
+    #     plotting.plot_pair_scatter_monthly(all_comp_df)
+    # except np.linalg.LinAlgError:
+    #     plt.rcParams.update(plt.rcParamsDefault)
+    #     plt.close('all')
+    #     # plt.clf()         # Clear current figure 
+    #     # plt.cla()         # Clear current axes
+    #     # plt.rcParams.update(plt.rcParamsDefault)
+
+    #     # # Reset matplotlib's date converters which might be corrupted
+    #     # import matplotlib.units as munits
+    #     # import matplotlib.dates as mdates
+    #     # munits.registry.clear()
+    #     # from pandas.plotting import register_matplotlib_converters
+    #     # register_matplotlib_converters(explicit=True)
+
+    #     print("Skipping scatter plot due to insufficient data for regression analysis")
 
     if conf['output']['save_to_pdf'] is True:
         if conf['output']['save_figs'] is True: 
 
             # Get all PNG files 
             png_files = glob.glob(os.path.join(output_path, "*.png"))
-            plot_files = [f for f in png_files if conf['output']['org'] in os.path.basename(f)]
+            plot_files = [f for f in png_files if conf['base']['name'] in os.path.basename(f)]
             
             # Generate PDF with plots
             csv_to_pdf.generate_pdf_report(all_latex_tables, output_path, conf, 

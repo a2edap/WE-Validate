@@ -65,7 +65,6 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
     plots_latex = ""
     if plot_files:
         plots_latex = r"""
-    \newpage
     \section*{Plots}
     """
         for i, plot_file in enumerate(plot_files):
@@ -73,12 +72,14 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
                 # Get relative path for LaTeX
                 plot_name = os.path.basename(plot_file)
                 plot_title = plot_name.replace('_', ' ').replace('.png', '')
-                # plot_title = ' '.join(word.capitalize() for word in plot_title.split())s
-                
+                # plot_title = ' '.join(word.capitalize() for word in plot_title.split())
+
+                width = 0.95 if 'Timeseries_Monthly' in plot_name else 0.8
+
                 plots_latex += rf"""
     \begin{{figure}}[!htbp]
         \centering
-        \includegraphics[width=0.8\textwidth]{{{plot_name}}}
+        \includegraphics[width={width}\textwidth]{{{plot_name}}}
         \caption{{{plot_title}}}
     \end{{figure}}
     """
