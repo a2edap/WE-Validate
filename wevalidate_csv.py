@@ -11,10 +11,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import datetime 
+from collections.abc import Mapping
+from copy import deepcopy
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'southern_co_config/2025_actual/58766_2025.yaml'
 config = 'southern_co_config/2025_actual/58766_2025.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
@@ -23,13 +24,18 @@ config = 'southern_co_config/2025_actual/58766_2025.yaml'
 def compare(config=None, threshold=None):
 
     config_dir = os.path.join(pathlib.Path(os.getcwd()), 'config')
-    if config is None:
+    if isinstance(config, Mapping):
+        conf = deepcopy(config)
+    elif config is None:
         config_file = os.path.join(config_dir, 'config.yaml')
+        with open(config_file) as config_handle:
+            conf = yaml.load(config_handle, Loader=yaml.FullLoader)
     else:
         config_file = os.path.join(config_dir, config)
+        with open(config_file) as config_handle:
+            conf = yaml.load(config_handle, Loader=yaml.FullLoader)
     sys.path.insert(0, str(pathlib.Path(__file__).parent))
 
-    conf = yaml.load(open(config_file), Loader=yaml.FullLoader)
     if threshold is not None:
         conf['ramping']['threshold'] = threshold
         conf['output']['path'] = conf['output']['path'] + f'/thresh_{threshold:.2f}'
@@ -369,8 +375,8 @@ def compare(config=None, threshold=None):
         # latex_table = csv_to_pdf.create_ramping_tables()
 
     # plotting.plot_ts_line(all_comp_df)
-    # plotting.plot_ts_line_monthly(all_comp_df)
-    plotting.plot_ts_line_monthly_compare_only(all_comp_df)
+    plotting.plot_ts_line_monthly(all_comp_df)
+    # plotting.plot_ts_line_monthly_compare_only(all_comp_df)
     plotting.plot_histogram(all_comp_df)
     # plotting.plot_ts_line_seasonal(all_comp_df)
     # plotting.plot_ts_line_single_month(all_comp_df, month = 6, self_units=True)

@@ -17,7 +17,7 @@ class plot_ramp:
         self.savefig = conf['output']['save_figs']
 
         self.showfig = conf['output']['show_figs']
-
+        
         self.path = conf['output']['path']
         output_path = Path(self.path)
 

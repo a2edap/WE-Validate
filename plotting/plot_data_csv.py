@@ -128,13 +128,23 @@ class plot_data_csv:
         # Set the font size of the figure title
         plt.rc('figure', titlesize=24)
         if self.savefig is True:
+            # Build a color map for ALL columns so colors are consistent across subplots
+            default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+            other_cols = [c for c in df.columns
+                        if c not in (self.base_name, self.first_comp_name)]
+            # Reserve C0 and C1 for the swapped base/first_comp
+            colors = {self.base_name: default_colors[1],
+                    self.first_comp_name: default_colors[0]}
+            for i, col in enumerate(other_cols):
+                colors[col] = default_colors[(i + 2) % len(default_colors)]
+
             count = 1
             for month in months:
                 selected_month = df[df.index.month == month]
                 plt.subplot(n_rows, n_cols, count)
-                colors = {self.base_name: 'C1', self.first_comp_name: 'C0'}
                 for col in df.columns:
-                    plt.plot(selected_month.index, selected_month[col], label=col, color=colors.get(col, None))
+                    plt.plot(selected_month.index, selected_month[col],
+                            label=col, color=colors[col])
                 count += 1
                 plt.title(selected_month.index[0].strftime("%B"))
                 plt.xticks(rotation=90)
@@ -157,15 +167,27 @@ class plot_data_csv:
 
         if self.savefig is False:
             if self.showfig is True:
+                # Build a color map for ALL columns so colors are consistent across subplots
+                default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+                other_cols = [c for c in df.columns
+                            if c not in (self.base_name, self.first_comp_name)]
+                # Reserve C0 and C1 for the swapped base/first_comp
+                colors = {self.base_name: default_colors[1],
+                        self.first_comp_name: default_colors[0]}
+                for i, col in enumerate(other_cols):
+                    colors[col] = default_colors[(i + 2) % len(default_colors)]
+
                 count = 1
                 for month in months:
                     selected_month = df[df.index.month == month]
                     plt.subplot(n_rows, n_cols, count)
                     for col in df.columns:
-                        plt.plot(selected_month.index, selected_month[col], label=col)
+                        plt.plot(selected_month.index, selected_month[col],
+                                label=col, color=colors[col])
                     count += 1
                     plt.title(selected_month.index[0].strftime("%B"))
                     plt.xticks(rotation=90)
+                    
                     if self_units is True:
                         plt.ylabel(self.var + ' (' + self.units + ')')
                     else:
@@ -344,19 +366,25 @@ class plot_data_csv:
         plt.rc('figure', titlesize=24)
 
         if self.savefig is True:
+            # Build a color map for ALL columns so colors are consistent across subplots
+            default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+            other_cols = [c for c in df.columns
+                        if c not in (self.base_name, self.first_comp_name)]
+            # Reserve C0 and C1 for the swapped base/first_comp
+            colors = {self.base_name: default_colors[1],
+                    self.first_comp_name: default_colors[0]}
+            for i, col in enumerate(other_cols):
+                colors[col] = default_colors[(i + 2) % len(default_colors)]
 
             count = 1
             for month in months:
                 selected_month = df[df.index.month == month]
                 plt.subplot(n_rows, n_cols, count)
-
-                comp_cols = df.columns[1:]
-                for comp_col in comp_cols:
-                    plt.plot(selected_month.index, selected_month[comp_col], label=comp_col)
-
+                for col in df.columns:
+                    plt.plot(selected_month.index, selected_month[col],
+                            label=col, color=colors[col])
                 count += 1
                 plt.title(selected_month.index[0].strftime("%B"))
-                plt.tight_layout(rect=[0,0,1,0.95])
                 plt.xticks(rotation=90)
                 
                 if self_units is True:
@@ -378,17 +406,25 @@ class plot_data_csv:
         if self.savefig is False:
 
             if self.showfig is True:
+                # Build a color map for ALL columns so colors are consistent across subplots
+                default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+                other_cols = [c for c in df.columns
+                            if c not in (self.base_name, self.first_comp_name)]
+                # Reserve C0 and C1 for the swapped base/first_comp
+                colors = {self.base_name: default_colors[1],
+                        self.first_comp_name: default_colors[0]}
+                for i, col in enumerate(other_cols):
+                    colors[col] = default_colors[(i + 2) % len(default_colors)]
 
                 count = 1
                 for month in months:
                     selected_month = df[df.index.month == month]
                     plt.subplot(n_rows, n_cols, count)
-
-                    for col in df.columns[1:]:
-                        plt.plot(selected_month.index, selected_month[col], label=col)
+                    for col in df.columns:
+                        plt.plot(selected_month.index, selected_month[col],
+                                label=col, color=colors[col])
                     count += 1
                     plt.title(selected_month.index[0].strftime("%B"))
-                    plt.tight_layout(rect=[0, 0, 1, 0.95])
                     plt.xticks(rotation=90)
 
                     if self_units is True:
