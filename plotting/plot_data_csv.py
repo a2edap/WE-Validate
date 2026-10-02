@@ -12,7 +12,6 @@ import os
 import pathlib
 from pathlib import Path
 
-
 class plot_data_csv:
     """Class for plotting 1 dimensional data at 1 height level."""
 

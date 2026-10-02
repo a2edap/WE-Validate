@@ -54,7 +54,7 @@ def add_df_to_latex(df, section, aggregation):
 def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summary", plot_files = None):
 
     org = conf['output']['org']
-    thresh = conf.get('threshold', 0.1)  # Default threshold if not specified
+    thresh = conf['ramping'].get('threshold', 0.1)  # Default threshold if not specified
     select_method = conf['reference']['select_method']
     if any('swingdoor' in i for i in conf['analysis']):
         filename = f"{org}_report_{select_method}_{thresh:.2f}"
@@ -85,6 +85,10 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
     """
     org_title = org.replace('_', ' ')
     plant_capacity = conf['capacity']
+    report_title = org_title
+    if conf['reference']['units'] == 'MW':
+        report_title += f' ({plant_capacity} MW)'
+    report_title += f' {title}'
     # Create LaTeX document
     final_latex = rf"""
     \documentclass[11pt]{{article}}
@@ -100,7 +104,7 @@ def generate_pdf_report(latex_tables, output_path, conf, title="WE-Validate Summ
     \floatplacement{{table}}{{H}}
     \begin{{document}}
     \begin{{center}}
-    \Large \textbf{{{org_title + ' ' + '(' + str(plant_capacity) + ' ' +  'MW)' + ' ' + title}}}
+    \Large \textbf{{{report_title}}}
     \end{{center}}
         """ + "".join(latex_tables) + plots_latex + r"""
     \end{document}"""
@@ -234,7 +238,7 @@ def create_ramping_tables(swingdoor_ts, df, conf, max_freq_str, c, start_time=No
 def save_ramping_to_pdf(latex_tables, output_path, conf, title="WE-Validate Ramping Analysis"):
 
     org = conf['output']['org']
-    thresh = conf.get('threshold', 0.1)
+    thresh = conf['ramping'].get('threshold', 0.1)
     select_method = conf['reference']['select_method']
     filename = f"{org}_ramping_analysis_{select_method}_{thresh:.2f}"
 
