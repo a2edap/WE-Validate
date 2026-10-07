@@ -379,7 +379,7 @@ def compare(config=None, threshold=None):
     # plotting.plot_ts_line_monthly_compare_only(all_comp_df)
     plotting.plot_histogram(all_comp_df)
     # plotting.plot_ts_line_seasonal(all_comp_df)
-    # plotting.plot_ts_line_single_month(all_comp_df, month = 6, self_units=True)
+    # plotting.plot_ts_line_single_month(all_comp_df, month = 10, self_units=True)
     # plotting.plot_ts_line_monthly_compare_only_last_2(all_comp_df, self_units=True)
     # plotting.plot_histogram_monthly(all_comp_df)
     # plotting.plot_pair_scatter(all_comp_df)

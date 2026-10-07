@@ -28,6 +28,7 @@ class csv:
         self.name = info['name']
         self.freq = info['freq']
         self.flag = info['flag']
+        self.height = info.get('height')
         if 'df' in info:
             self.df = info['df'][info['path']]
 
@@ -43,6 +44,12 @@ class csv:
         """
 
         df = pd.read_csv(os.path.join(self.path))
+        if self.height is not None:
+            if 'height' not in df.columns:
+                raise ValueError(f"Height filtering requires a 'height' column in {self.path}")
+            df = df.loc[pd.to_numeric(df['height'], errors='coerce') == self.height].copy()
+            if df.empty:
+                raise ValueError(f'No data at height {self.height} m in {self.path}')
         if 'time_stamp' in df.columns:
             df.index = pd.to_datetime(df['time_stamp'])
         elif 'datetime' in df.columns:
