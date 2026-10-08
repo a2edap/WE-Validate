@@ -16,7 +16,7 @@ from copy import deepcopy
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
 import glob
 
-config = 'southern_co_config/2025_actual/58766_2025.yaml'
+config = 'config.yaml'
 
 # this section checks to see if there is a set configuration. If so, it assigns the config file based on the configuration name.
 # If not, it assigns the default configuration
