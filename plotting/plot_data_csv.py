@@ -144,6 +144,7 @@ class plot_data_csv:
                 for col in df.columns:
                     plt.plot(selected_month.index, selected_month[col],
                             label=col, color=colors[col])
+                plt.legend()
                 count += 1
                 plt.title(selected_month.index[0].strftime("%B"))
                 plt.xticks(rotation=90)
@@ -155,7 +156,6 @@ class plot_data_csv:
 
             plt.suptitle(self.var + ': ' + self._title_label(df))
             plt.tight_layout(rect=[0,0,1,0.95])
-            plt.legend()
 
             os.makedirs(self.path, exist_ok=True)
             plt.savefig(os.path.join(self.path, f'Timeseries_Monthly_{self._filename_label(df)}.png'), bbox_inches='tight')
@@ -183,6 +183,7 @@ class plot_data_csv:
                     for col in df.columns:
                         plt.plot(selected_month.index, selected_month[col],
                                 label=col, color=colors[col])
+                    plt.legend()
                     count += 1
                     plt.title(selected_month.index[0].strftime("%B"))
                     plt.xticks(rotation=90)
@@ -194,7 +195,6 @@ class plot_data_csv:
 
                 plt.suptitle(self.var + ': ' + self._title_label(df))
                 plt.tight_layout(rect=[0, 0, 1, 0.95])
-                plt.legend()
                 plt.show()
 
         plt.rcParams.update(plt.rcParamsDefault)

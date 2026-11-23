@@ -31,7 +31,7 @@ ramping: #turn on save_ramping_comparison in output
 
 aggregation:
   - MS
-  # - QS-DEC #meteorological seasons (DJF, MAM, JJA, SON)
+  # - QS-DEC #four pooled seasonal metrics: Winter (DJF), Spring (MAM), Summer (JJA), Fall (SON)
   # - W
   # - D
   # - H

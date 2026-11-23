@@ -66,9 +66,29 @@ def remove_na(combine_df, conf, ramp_txt=False):
     return compute_df
 
 def calc_metrics(x, y, freq, func=None, z=None): #'MS','W','A','D','H'
+    """Calculate metrics by period, pooling each season's samples for QS-DEC."""
     if freq=='H':
         x_list = list(x.groupby([x.index.hour]))
         y_list = list(y.groupby([y.index.hour]))
+    elif freq == 'QS-DEC':
+        seasons = {
+            'Winter': [12, 1, 2],
+            'Spring': [3, 4, 5],
+            'Summer': [6, 7, 8],
+            'Fall': [9, 10, 11]
+        }
+        seasonal_metrics = {}
+        for season, months in seasons.items():
+            x_season = x[x.index.month.isin(months)]
+            y_season = y[y.index.month.isin(months)]
+            if x_season.empty or y_season.empty:
+                seasonal_metrics[season] = np.nan
+            else:
+                seasonal_metrics[season] = (
+                    func(x_season, y_season, z) if z is not None
+                    else func(x_season, y_season)
+                )
+        return pd.Series(seasonal_metrics)
     else:
         x_list = list(x.resample(freq))
         y_list = list(y.resample(freq))
