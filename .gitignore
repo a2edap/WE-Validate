@@ -122,5 +122,6 @@ pnw_report.ipynb
 /inputs/csv_pnw.py
 /actual_data_run_and_plot
 .git-old/
+combine_actual_and_synthetic.py
 
 

@@ -42,6 +42,8 @@ Beyond the datasets, you can list which metrics to compute. Each must correspond
 
 Currently, only local datasets are supported. Future versions will fetch data over SFTP (i.e., PNNL DAP) and other protocols.
 
+For capacity filtering in the CSV workflow, set `capacity_filtering.save_config_stats: true` to save a summary to `<output.path>/<output.org>_capacity_filter_stats.csv`. The summary reports the threshold, counts and percentages retained and removed, and timestamps retained specifically by the actual-generation exception.
+
 ## Use this code
 
 The main routine in this repo is the `compare` function in `validate.py`. By calling `validate.compare()`, it would run the default configuration listed in `config.yaml`. Users can choose a different YAML file for specific data and cases as well. For example, by calling `validate.compare('config_test.yaml')`, it would use the configuration in `config_test.yaml`, which contains erroneous datasets for testing purposes.

@@ -14,6 +14,7 @@ import datetime
 from collections.abc import Mapping
 from copy import deepcopy
 from tools import eval_tools, cal_print_metrics_csv, csv_to_pdf
+from qc import capacity_filtering
 import glob
 
 config = 'config.yaml'
@@ -182,6 +183,25 @@ def compare(config=None, threshold=None):
     base = conf['base']
     comp = conf['comp']
 
+    # This section loads available capacity data if capacity_filtering is enabled
+    available_capacity_data = None
+    filter_config = conf.get('capacity_filtering', {})
+    
+    if filter_config.get('enabled', False):
+        available_capacity_var = filter_config.get('available_capacity_var', None)
+        
+        # Find the available capacity dataset in comp
+        for c in comp:
+            if c['name'] == available_capacity_var:
+                print(f"\n--- Loading Available Capacity Data for Filtering ---")
+                c_input = eval_tools.get_module_class('inputs', c['function'])(c, conf)
+                available_capacity_data = c_input.get_ts()
+                
+                # Remove this dataset from comp so it's not used in comparisons
+                comp = [dataset for dataset in comp if dataset['name'] != available_capacity_var]
+                print(f"Available Capacity data loaded and removed from comparison datasets")
+                break
+    
     # Load modules
     metrics = [eval_tools.get_module_class('metrics', m)()
                 for m in conf['metrics']]
@@ -276,11 +296,51 @@ def compare(config=None, threshold=None):
             'inputs', c['function'])(c, conf)
 
         c['data'] = c['input'].get_ts()
-        # c['data'].columns = [c['name']]
-        # plotting.plot_ts_line_monthly_compare_only(c['data'])
+        
+        # This section filters validation timestamps based on available capacity
+        if filter_config.get('enabled', False) and available_capacity_data is not None:
+            # Trim available capacity to the same time window as base
+            available_cap_trimmed = available_capacity_data.loc[
+                (available_capacity_data.index >= conf['time']['window']['start']) &
+                (available_capacity_data.index <= conf['time']['window']['end'])
+            ]
+            
+            # Align both to same index (they should already match at 5-min resolution)
+            common_index = base['data'].index.intersection(available_cap_trimmed.index)
+            base_data_to_filter = base['data'].loc[common_index]
+            available_cap_to_filter = available_cap_trimmed.loc[common_index]
+            
+            # Extract column values if DataFrame
+            base_vals = base_data_to_filter.iloc[:, 0] if isinstance(base_data_to_filter, pd.DataFrame) else base_data_to_filter
+            avail_vals = available_cap_to_filter.iloc[:, 0] if isinstance(available_cap_to_filter, pd.DataFrame) else available_cap_to_filter
+            
+            # Create a mask for which timestamps to keep (at common_index)
+            threshold_percent = filter_config.get('threshold_percent', 95.0)
+            tolerance_mw = filter_config.get('actual_vs_available_tolerance_mw', 10)
+            capacity_mask = avail_vals >= conf['capacity'] * (threshold_percent / 100.0)
+            exception_mask = (base_vals - avail_vals) >= tolerance_mw
+            mask_at_common = capacity_mask | exception_mask
+            
+            # Create full mask aligned with base['data'] (outside common_index = False, at common_index = mask values)
+            full_mask = pd.Series(False, index=base['data'].index)
+            full_mask.loc[common_index] = mask_at_common
 
+            if ind == 0 and filter_config.get('save_config_stats', False):
+                full_capacity_mask = pd.Series(False, index=base['data'].index)
+                full_exception_mask = pd.Series(False, index=base['data'].index)
+                full_capacity_mask.loc[common_index] = capacity_mask
+                full_exception_mask.loc[common_index] = exception_mask
+                capacity_filtering.save_filter_stats(
+                    conf, full_capacity_mask, full_exception_mask, base['data'].index,
+                    conf['capacity'], threshold_percent, tolerance_mw
+                )
+            
+            # Apply filter to base data
+            base['data'] = base['data'].loc[full_mask]
+        
+        #align the base data with comparison dataset
         combine_df = crosscheck_ts.align_time(base, c)
-
+        
         if all_comp_df.empty:
             all_comp_df = combine_df.copy()
         else:
